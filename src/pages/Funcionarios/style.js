@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 export const FuncionariosContainer = styled.div`
   padding: 20px;
+  min-height: 77.8vh;
 `;
 
 export const FuncionariosTitle = styled.h2`

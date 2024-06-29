@@ -10,6 +10,9 @@ import Servicos from './pages/Servicos';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import Footer from './components/Footer';
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root');
 
 function App() {
   return (

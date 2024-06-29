@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 export const EstoqueContainer = styled.div`
   padding: 20px;
+  min-height: 77.8vh;
 `;
 
 export const EstoqueTitle = styled.h2`

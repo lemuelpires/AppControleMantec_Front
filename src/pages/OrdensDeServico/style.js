@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 export const OrdemDeServicoContainer = styled.div`
   padding: 20px;
+  min-height: 77.8vh;
 `;
 
 export const OrdemDeServicoTitle = styled.h2`

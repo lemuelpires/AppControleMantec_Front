@@ -1,4 +1,3 @@
-// src/pages/Servico.js
 import React, { useState } from 'react';
 import { ServicoContainer, ServicoTitle, ServicoButton, ServicoTable } from './style';
 import ModalDetalhes from '../../components/Modais/ModalDetalhes';

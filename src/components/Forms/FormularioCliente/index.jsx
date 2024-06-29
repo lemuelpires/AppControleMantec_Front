@@ -1,85 +1,54 @@
-// src/components/Formularios/FormularioCliente.js
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Button = styled.button`
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const FormularioCliente = ({ initialValues = {}, onSubmit, onClose }) => {
-  const [values, setValues] = useState(initialValues);
+const FormularioCliente = ({ onSubmit, onClose, initialData }) => {
+  const [formData, setFormData] = useState({
+    nome: '',
+    endereco: '',
+    telefone: '',
+    email: '',
+    ...initialData
+  });
 
   useEffect(() => {
-    setValues(initialValues);
-  }, [initialValues]);
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(values);
-    onClose();
+    onSubmit(formData);
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Input
-        name="id"
-        value={values.id || ''}
-        onChange={handleChange}
-        placeholder="ID"
-        readOnly={Boolean(initialValues.id)}
-      />
-      <Input
-        name="nome"
-        value={values.nome || ''}
-        onChange={handleChange}
-        placeholder="Nome"
-      />
-      <Input
-        name="endereco"
-        value={values.endereco || ''}
-        onChange={handleChange}
-        placeholder="Endereço"
-      />
-      <Input
-        name="telefone"
-        value={values.telefone || ''}
-        onChange={handleChange}
-        placeholder="Telefone"
-      />
-      <Input
-        name="email"
-        value={values.email || ''}
-        onChange={handleChange}
-        placeholder="E-mail"
-      />
-      <Button type="submit">Salvar</Button>
-    </Form>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Nome:</label>
+        <input name="nome" value={formData.nome} onChange={handleChange} />
+      </div>
+      <div>
+        <label>Endereço:</label>
+        <input name="endereco" value={formData.endereco} onChange={handleChange} />
+      </div>
+      <div>
+        <label>Telefone:</label>
+        <input name="telefone" value={formData.telefone} onChange={handleChange} />
+      </div>
+      <div>
+        <label>E-mail:</label>
+        <input name="email" value={formData.email} onChange={handleChange} />
+      </div>
+      <button type="submit">Salvar</button>
+      <button type="button" onClick={onClose}>Cancelar</button>
+    </form>
   );
 };
 
