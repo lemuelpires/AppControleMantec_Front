@@ -10,6 +10,12 @@ export const ClientesTitle = styled.h2`
   margin-bottom: 20px;
 `;
 
+export const BotaoEspacamento = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom:1em;
+`;
 export const ClientesButton = styled.button`
   padding: 10px;
   background-color: #007bff;

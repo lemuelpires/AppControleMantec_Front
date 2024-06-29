@@ -1,53 +1,73 @@
+// src/components/Forms/FormularioCliente/index.jsx
 import React, { useState, useEffect } from 'react';
+import { Campo, Input, Botoes } from './style';
 
-const FormularioCliente = ({ onSubmit, onClose, initialData }) => {
-  const [formData, setFormData] = useState({
-    nome: '',
-    endereco: '',
-    telefone: '',
-    email: '',
-    ...initialData
-  });
+const FormularioCliente = ({ initialValues = {}, onSubmit, onClose }) => {
+  const [formValues, setFormValues] = useState(initialValues);
 
   useEffect(() => {
-    if (initialData) {
-      setFormData(initialData);
-    }
-  }, [initialData]);
+    // Atualiza os valores do formulário quando initialValues mudar
+    setFormValues(initialValues);
+  }, [initialValues]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
+    setFormValues({ ...formValues, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(formValues);
+    setFormValues({}); // Limpa o formulário após enviar
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label>Nome:</label>
-        <input name="nome" value={formData.nome} onChange={handleChange} />
-      </div>
-      <div>
+      <Campo>
+        <label>Nome Completo:</label>
+        <Input
+          type="text"
+          name="nome"
+          value={formValues.nome || ''}
+          onChange={handleChange}
+          required
+        />
+      </Campo>
+      <Campo>
         <label>Endereço:</label>
-        <input name="endereco" value={formData.endereco} onChange={handleChange} />
-      </div>
-      <div>
+        <Input
+          type="text"
+          name="endereco"
+          value={formValues.endereco || ''}
+          onChange={handleChange}
+          required
+        />
+      </Campo>
+      <Campo>
         <label>Telefone:</label>
-        <input name="telefone" value={formData.telefone} onChange={handleChange} />
-      </div>
-      <div>
+        <Input
+          type="text"
+          name="telefone"
+          value={formValues.telefone || ''}
+          onChange={handleChange}
+          required
+        />
+      </Campo>
+      <Campo>
         <label>E-mail:</label>
-        <input name="email" value={formData.email} onChange={handleChange} />
-      </div>
-      <button type="submit">Salvar</button>
-      <button type="button" onClick={onClose}>Cancelar</button>
+        <Input
+          type="email"
+          name="email"
+          value={formValues.email || ''}
+          onChange={handleChange}
+          required
+        />
+      </Campo>
+      <Botoes>
+          <button type="submit">Salvar</button>
+          <button type="button" onClick={onClose}>Cancelar</button>
+      </Botoes>
+     
     </form>
   );
 };

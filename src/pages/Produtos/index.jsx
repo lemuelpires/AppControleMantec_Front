@@ -1,15 +1,33 @@
-// src/pages/Produto.js
-import React, { useState } from 'react';
-import { ProdutoContainer, ProdutoTitle, ProdutoButton, ProdutoTable } from './style';
-import ModalDetalhes from '../../components/Modais/ModalDetalhes';
-import ModalEdicao from '../../components/Modais/ModalEdicao';
-import ModalNovo from '../../components/Modais/ModalNovo';
+import React, { useState, useEffect } from 'react';
+import { ProdutosContainer, ProdutosTitle, ProdutosButton, ProdutosTable, BotaoEspacamento } from './style';
+import ModalDetalhesProduto from '../../components/Modais/Produto/ModalDetalhes';
+import ModalEdicaoProduto from '../../components/Modais/Produto/ModalEdicao';
+import ModalNovoProduto from '../../components/Modais/Produto/ModalNovo';
+import apiProduto from '../../services/apiCliente';
+import Modal from 'react-modal';
 
-const Produto = () => {
+// Defina o elemento de aplicação para react-modal
+Modal.setAppElement('#root');
+
+const Produtos = () => {
   const [isDetalhesModalOpen, setIsDetalhesModalOpen] = useState(false);
   const [isEdicaoModalOpen, setIsEdicaoModalOpen] = useState(false);
   const [isNovoModalOpen, setIsNovoModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [produtos, setProdutos] = useState([]);
+
+  useEffect(() => {
+    fetchProdutos();
+  }, []);
+
+  const fetchProdutos = async () => {
+    try {
+      const response = await apiProduto.get('/Produto');
+      setProdutos(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+    }
+  };
 
   const openDetalhesModal = (item) => {
     setSelectedItem(item);
@@ -22,7 +40,6 @@ const Produto = () => {
   };
 
   const openNovoModal = () => {
-    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
@@ -33,17 +50,31 @@ const Produto = () => {
     setSelectedItem(null);
   };
 
-  const handleSave = (item) => {
-    // Lógica para salvar o item (novo ou editado)
-    console.log(item);
-    closeModal();
+  const handleSave = async (formData) => {
+    try {
+      if (formData.id) {
+        // Atualização de produto existente
+        const response = await apiProduto.put(`/Produto/${formData.id}`, formData);
+        console.log('Produto atualizado:', response.data);
+      } else {
+        // Criação de novo produto
+        const response = await apiProduto.post('/Produto', formData);
+        console.log('Novo produto criado:', response.data);
+      }
+      fetchProdutos(); // Atualiza lista de produtos após salvar
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao salvar produto:', error);
+    }
   };
 
   return (
-    <ProdutoContainer>
-      <ProdutoTitle>Produtos</ProdutoTitle>
-      <ProdutoButton onClick={openNovoModal}>Adicionar Produto</ProdutoButton>
-      <ProdutoTable>
+    <ProdutosContainer>
+      <ProdutosTitle>Produtos</ProdutosTitle>
+      <BotaoEspacamento>
+        <ProdutosButton onClick={openNovoModal}>Adicionar Produto</ProdutosButton>
+      </BotaoEspacamento>
+      <ProdutosTable>
         <thead>
           <tr>
             <th>ID</th>
@@ -53,36 +84,34 @@ const Produto = () => {
             <th>Preço</th>
             <th>Fornecedor</th>
             <th>Data de Entrada</th>
-            <th>Imagem</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {/* Exibir dados dinâmicos aqui */}
-          <tr>
-            <td>1</td>
-            <td>Produto A</td>
-            <td>Descrição do Produto A</td>
-            <td>10</td>
-            <td>100.00</td>
-            <td>Fornecedor A</td>
-            <td>2024-06-26</td>
-            <td><img src="url/to/image" alt="Produto A" width="50" /></td>
-            <td>
-              <button onClick={() => openDetalhesModal({ id: 1, nome: 'Produto A', descricao: 'Descrição do Produto A', quantidade: 10, preco: 100.00, fornecedor: 'Fornecedor A', dataEntrada: '2024-06-26', imagemURL: 'url/to/image' })}>Detalhes</button>
-              <button onClick={() => openEdicaoModal({ id: 1, nome: 'Produto A', descricao: 'Descrição do Produto A', quantidade: 10, preco: 100.00, fornecedor: 'Fornecedor A', dataEntrada: '2024-06-26', imagemURL: 'url/to/image' })}>Editar</button>
-            </td>
-          </tr>
-          {/* Outros produtos */}
+          {produtos.map(produto => (
+            <tr key={produto.id}>
+              <td>{produto.id}</td>
+              <td>{produto.nome}</td>
+              <td>{produto.descricao}</td>
+              <td>{produto.quantidade}</td>
+              <td>{produto.preco}</td>
+              <td>{produto.fornecedor}</td>
+              <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
+              <td>
+                <button onClick={() => openDetalhesModal(produto)}>Detalhes</button>
+                <button onClick={() => openEdicaoModal(produto)}>Editar</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
-      </ProdutoTable>
+      </ProdutosTable>
 
       {/* Modais */}
-      <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicao isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
-      <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
-    </ProdutoContainer>
+      <ModalDetalhesProduto isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
+      <ModalEdicaoProduto isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
+      <ModalNovoProduto isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
+    </ProdutosContainer>
   );
 };
 
-export default Produto;
+export default Produtos;

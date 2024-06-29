@@ -1,4 +1,3 @@
-// src/styles/FuncionariosStyles.js
 import styled from 'styled-components';
 
 export const FuncionariosContainer = styled.div`
@@ -8,6 +7,13 @@ export const FuncionariosContainer = styled.div`
 
 export const FuncionariosTitle = styled.h2`
   margin-bottom: 20px;
+`;
+
+export const BotaoEspacamento = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom: 1em;
 `;
 
 export const FuncionariosButton = styled.button`
@@ -35,23 +41,5 @@ export const FuncionariosTable = styled.table`
 
   th {
     background-color: #f2f2f2;
-  }
-
-  tr:hover {
-    background-color: #f5f5f5;
-  }
-
-  button {
-    margin-right: 5px;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056b3;
-    }
   }
 `;

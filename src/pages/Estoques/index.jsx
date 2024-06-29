@@ -1,15 +1,33 @@
-// src/pages/Estoque.js
-import React, { useState } from 'react';
-import { EstoqueContainer, EstoqueTitle, EstoqueButton, EstoqueTable } from './style';
-import ModalDetalhes from '../../components/Modais/ModalDetalhes';
-import ModalEdicao from '../../components/Modais/ModalEdicao';
-import ModalNovo from '../../components/Modais/ModalNovo';
+import React, { useState, useEffect } from 'react';
+import { EstoqueContainer, EstoqueTitle, EstoqueButton, EstoqueTable, BotaoEspacamento } from './style';
+import ModalDetalhesEstoque from '../../components/Modais/Estoque/ModalDetalhes';
+import ModalEdicaoEstoque from '../../components/Modais/Estoque/ModalEdicao';
+import ModalNovoEstoque from '../../components/Modais/Estoque/ModalNovo';
+import apiEstoque from '../../services/apiCliente';
+import Modal from 'react-modal';
+
+// Defina o elemento de aplicação para react-modal
+Modal.setAppElement('#root');
 
 const Estoque = () => {
   const [isDetalhesModalOpen, setIsDetalhesModalOpen] = useState(false);
   const [isEdicaoModalOpen, setIsEdicaoModalOpen] = useState(false);
   const [isNovoModalOpen, setIsNovoModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [estoque, setEstoque] = useState([]);
+
+  useEffect(() => {
+    fetchEstoque();
+  }, []);
+
+  const fetchEstoque = async () => {
+    try {
+      const response = await apiEstoque.get('/Estoque');
+      setEstoque(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar estoque:', error);
+    }
+  };
 
   const openDetalhesModal = (item) => {
     setSelectedItem(item);
@@ -22,7 +40,6 @@ const Estoque = () => {
   };
 
   const openNovoModal = () => {
-    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
@@ -33,44 +50,60 @@ const Estoque = () => {
     setSelectedItem(null);
   };
 
-  const handleSave = (item) => {
-    // Lógica para salvar o item (novo ou editado)
-    console.log(item);
-    closeModal();
+  const handleSave = async (formData) => {
+    try {
+      if (formData.id) {
+        // Atualização de entrada de estoque existente
+        const response = await apiEstoque.put(`/Estoque/${formData.id}`, formData);
+        console.log('Entrada de estoque atualizada:', response.data);
+      } else {
+        // Criação de nova entrada de estoque
+        const response = await apiEstoque.post('/Estoque', formData);
+        console.log('Nova entrada de estoque criada:', response.data);
+      }
+      fetchEstoque(); // Atualiza lista de estoque após salvar
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao salvar entrada de estoque:', error);
+    }
   };
 
   return (
     <EstoqueContainer>
       <EstoqueTitle>Estoque</EstoqueTitle>
-      <EstoqueButton onClick={openNovoModal}>Adicionar Item ao Estoque</EstoqueButton>
+      <BotaoEspacamento>
+        <EstoqueButton onClick={openNovoModal}>Adicionar Entrada de Estoque</EstoqueButton>
+      </BotaoEspacamento>
       <EstoqueTable>
         <thead>
           <tr>
             <th>Produto ID</th>
             <th>Quantidade</th>
             <th>Data de Atualização</th>
+            <th>Ativo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {/* Exibir dados dinâmicos aqui */}
-          <tr>
-            <td>1</td>
-            <td>10</td>
-            <td>2024-06-26T20:55:09.178Z</td>
-            <td>
-              <button onClick={() => openDetalhesModal({ produtoID: '1', quantidade: 10, dataAtualizacao: '2024-06-26T20:55:09.178Z' })}>Detalhes</button>
-              <button onClick={() => openEdicaoModal({ produtoID: '1', quantidade: 10, dataAtualizacao: '2024-06-26T20:55:09.178Z' })}>Editar</button>
-            </td>
-          </tr>
-          {/* Outros itens do estoque */}
+          {estoque.map(item => (
+            <tr key={item.produtoID}>
+              <td>{item.produtoID}</td>
+              <td>{item.quantidade}</td>
+              <td>{new Date(item.dataAtualizacao).toLocaleDateString()}</td>
+              <td>{item.ativo ? 'Sim' : 'Não'}</td>
+              <td>
+                <button onClick={() => openDetalhesModal(item)}>Detalhes</button>
+                <button onClick={() => openEdicaoModal(item)}>Editar</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </EstoqueTable>
 
       {/* Modais */}
-      <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicao isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
-      <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
+      <ModalDetalhesEstoque isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
+      <ModalEdicaoEstoque isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
+      <ModalNovoEstoque isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
     </EstoqueContainer>
   );
 };

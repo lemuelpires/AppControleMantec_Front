@@ -1,119 +1,63 @@
-// src/components/Formularios/FormularioOrdemDeServico.js
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import { Form, FormGroup, Label, Input, Button } from './style';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Select = styled.select`
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Button = styled.button`
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const FormularioOrdemDeServico = ({ initialValues = {}, onSubmit, onClose }) => {
-  const [values, setValues] = useState(initialValues);
-
-  useEffect(() => {
-    setValues(initialValues);
-  }, [initialValues]);
+const FormularioOrdemDeServico = ({ initialValues, onSubmit, onClose }) => {
+  const [formData, setFormData] = useState(initialValues);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(values);
-    onClose();
+    onSubmit(formData);
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Input
-        name="id"
-        value={values.id || ''}
-        onChange={handleChange}
-        placeholder="ID"
-        readOnly={Boolean(initialValues.id)}
-      />
-      <Input
-        name="clienteID"
-        value={values.clienteID || ''}
-        onChange={handleChange}
-        placeholder="Cliente ID"
-      />
-      <Input
-        name="funcionarioID"
-        value={values.funcionarioID || ''}
-        onChange={handleChange}
-        placeholder="Funcionário ID"
-      />
-      <Input
-        name="produtoID"
-        value={values.produtoID || ''}
-        onChange={handleChange}
-        placeholder="Produto ID"
-      />
-      <Input
-        name="servicoID"
-        value={values.servicoID || ''}
-        onChange={handleChange}
-        placeholder="Serviço ID"
-      />
-      <Input
-        name="dataEntrada"
-        type="date"
-        value={values.dataEntrada || ''}
-        onChange={handleChange}
-      />
-      <Input
-        name="dataConclusao"
-        type="date"
-        value={values.dataConclusao || ''}
-        onChange={handleChange}
-      />
-      <Select
-        name="status"
-        value={values.status || ''}
-        onChange={handleChange}
-      >
-        <option value="">Selecione o status</option>
-        <option value="Em andamento">Em andamento</option>
-        <option value="Concluída">Concluída</option>
-        <option value="Cancelada">Cancelada</option>
-      </Select>
-      <Input
-        name="observacoes"
-        value={values.observacoes || ''}
-        onChange={handleChange}
-        placeholder="Observações"
-      />
+      <FormGroup>
+        <Label htmlFor="id">ID</Label>
+        <Input type="text" id="id" name="id" value={formData.id} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="clienteID">Cliente ID</Label>
+        <Input type="text" id="clienteID" name="clienteID" value={formData.clienteID} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="funcionarioID">Funcionário ID</Label>
+        <Input type="text" id="funcionarioID" name="funcionarioID" value={formData.funcionarioID} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="produtoID">Produto ID</Label>
+        <Input type="text" id="produtoID" name="produtoID" value={formData.produtoID} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="servicoID">Serviço ID</Label>
+        <Input type="text" id="servicoID" name="servicoID" value={formData.servicoID} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="dataEntrada">Data de Entrada</Label>
+        <Input type="date" id="dataEntrada" name="dataEntrada" value={formData.dataEntrada} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="dataConclusao">Data de Conclusão</Label>
+        <Input type="date" id="dataConclusao" name="dataConclusao" value={formData.dataConclusao} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="status">Status</Label>
+        <Input type="text" id="status" name="status" value={formData.status} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="observacoes">Observações</Label>
+        <Input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="ativo">Ativo</Label>
+        <Input type="checkbox" id="ativo" name="ativo" checked={formData.ativo} onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })} />
+      </FormGroup>
       <Button type="submit">Salvar</Button>
+      <Button type="button" onClick={onClose}>Cancelar</Button>
     </Form>
   );
 };

@@ -1,8 +1,9 @@
+// src/pages/Clientes/index.jsx
 import React, { useState, useEffect } from 'react';
-import { ClientesContainer, ClientesTitle, ClientesButton, ClientesTable } from './style';
-import ModalDetalhes from '../../components/Modais/ModalDetalhes';
-import ModalEdicao from '../../components/Modais/ModalEdicao';
-import ModalNovo from '../../components/Modais/ModalNovo';
+import { ClientesContainer, ClientesTitle, ClientesButton, ClientesTable, BotaoEspacamento } from './style';
+import ModalDetalhes from '../../components/Modais/Cliente/ModalDetalhes';
+import ModalEdicao from '../../components/Modais/Cliente/ModalEdicao';
+import ModalNovo from '../../components/Modais/Cliente/ModalNovo';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 
@@ -40,7 +41,6 @@ const Clientes = () => {
   };
 
   const openNovoModal = () => {
-    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
@@ -51,17 +51,30 @@ const Clientes = () => {
     setSelectedItem(null);
   };
 
-  const handleSave = (item) => {
-    // Lógica para salvar o item (novo ou editado)
-    console.log(item);
-    closeModal();
-    fetchClientes(); // Refetch clientes após salvar um novo ou editado
+  const handleSave = async (formData) => {
+    try {
+      if (formData.id) {
+        // Atualização de cliente existente
+        const response = await apiCliente.put(`/Cliente/${formData.id}`, formData);
+        console.log('Cliente atualizado:', response.data);
+      } else {
+        // Criação de novo cliente
+        const response = await apiCliente.post('/Cliente', formData);
+        console.log('Novo cliente criado:', response.data);
+      }
+      fetchClientes(); // Atualiza lista de clientes após salvar
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
+    }
   };
 
   return (
     <ClientesContainer>
-      <ClientesTitle>Clientes</ClientesTitle>
-      <ClientesButton onClick={openNovoModal}>Adicionar Cliente</ClientesButton>
+              <ClientesTitle>Clientes</ClientesTitle>
+      <BotaoEspacamento>
+          <ClientesButton onClick={openNovoModal}>Adicionar Cliente</ClientesButton>
+      </BotaoEspacamento>
       <ClientesTable>
         <thead>
           <tr>

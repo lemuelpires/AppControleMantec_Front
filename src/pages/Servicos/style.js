@@ -1,17 +1,16 @@
-// src/styles/ServicoStyles.js
 import styled from 'styled-components';
 
 export const ServicoContainer = styled.div`
   padding: 20px;
-  min-height: 77.8vh;
 `;
 
-export const ServicoTitle = styled.h2`
+export const ServicoTitle = styled.h1`
   margin-bottom: 20px;
 `;
 
 export const ServicoButton = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -28,30 +27,19 @@ export const ServicoTable = styled.table`
   border-collapse: collapse;
 
   th, td {
-    padding: 8px;
+    padding: 10px;
+    border: 1px solid #ddd;
     text-align: left;
-    border-bottom: 1px solid #ddd;
   }
 
   th {
-    background-color: #f2f2f2;
+    background-color: #f4f4f4;
   }
+`;
 
-  tr:hover {
-    background-color: #f5f5f5;
-  }
-
-  button {
-    margin-right: 5px;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-  }
+export const BotaoEspacamento = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom: 1em;
 `;

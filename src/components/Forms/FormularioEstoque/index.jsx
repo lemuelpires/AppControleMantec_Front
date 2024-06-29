@@ -1,66 +1,39 @@
-// src/components/Formularios/FormularioEstoque.js
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import { Form, FormGroup, Label, Input, Button } from './style';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Button = styled.button`
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const FormularioEstoque = ({ initialValues = {}, onSubmit, onClose }) => {
-  const [values, setValues] = useState(initialValues);
-
-  useEffect(() => {
-    setValues(initialValues);
-  }, [initialValues]);
+const FormularioEstoque = ({ initialValues, onSubmit, onClose }) => {
+  const [formData, setFormData] = useState(initialValues);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(values);
-    onClose();
+    onSubmit(formData);
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Input
-        name="produtoID"
-        value={values.produtoID || ''}
-        onChange={handleChange}
-        placeholder="Produto ID"
-      />
-      <Input
-        name="quantidade"
-        type="number"
-        value={values.quantidade || ''}
-        onChange={handleChange}
-        placeholder="Quantidade"
-      />
+      <FormGroup>
+        <Label htmlFor="produtoID">Produto ID</Label>
+        <Input type="text" id="produtoID" name="produtoID" value={formData.produtoID} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="quantidade">Quantidade</Label>
+        <Input type="number" id="quantidade" name="quantidade" value={formData.quantidade} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="dataAtualizacao">Data de Atualização</Label>
+        <Input type="date" id="dataAtualizacao" name="dataAtualizacao" value={formData.dataAtualizacao} onChange={handleChange} required />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="ativo">Ativo</Label>
+        <Input type="checkbox" id="ativo" name="ativo" checked={formData.ativo} onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })} />
+      </FormGroup>
       <Button type="submit">Salvar</Button>
+      <Button type="button" onClick={onClose}>Cancelar</Button>
     </Form>
   );
 };
