@@ -16,6 +16,10 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
+       <FormGroup>
+        <Label htmlFor="imagemURL">URL da Imagem</Label>
+        <Input type="text" id="imagemURL" name="imagemURL" value={formData.imagemURL} onChange={handleChange} />
+      </FormGroup>
       <FormGroup>
         <Label htmlFor="nome">Nome</Label>
         <Input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
@@ -39,10 +43,6 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
       <FormGroup>
         <Label htmlFor="dataEntrada">Data de Entrada</Label>
         <Input type="date" id="dataEntrada" name="dataEntrada" value={formData.dataEntrada} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="imagemURL">URL da Imagem</Label>
-        <Input type="text" id="imagemURL" name="imagemURL" value={formData.imagemURL} onChange={handleChange} />
       </FormGroup>
       <FormGroup>
         <Label htmlFor="ativo">Ativo</Label>

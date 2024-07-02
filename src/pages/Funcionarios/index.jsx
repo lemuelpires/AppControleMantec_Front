@@ -1,8 +1,9 @@
+// src/pages/Funcionarios.js
 import React, { useState, useEffect } from 'react';
 import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento } from './style';
-import ModalDetalhesFuncionario from '../../components/Modais/Funcionario/ModalDetalhes';
-import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao';
-import ModalNovoFuncionario from '../../components/Modais/Funcionario/ModalNovo';
+import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
+import ModalEdicao from '../../components/Modais/Funcionario/ModalEdicao';
+import ModalNovo from '../../components/Modais/Funcionario/ModalNovo';
 import apiFuncionario from '../../services/apiCliente';
 import Modal from 'react-modal';
 
@@ -23,9 +24,27 @@ const Funcionarios = () => {
   const fetchFuncionarios = async () => {
     try {
       const response = await apiFuncionario.get('/Funcionario');
-      setFuncionarios(response.data);
+      setFuncionarios(response.data.filter(funcionario => funcionario.ativo)); // Exibir apenas funcionários ativos
     } catch (error) {
       console.error('Erro ao buscar funcionários:', error);
+    }
+  };
+
+  const handleExcluir = async (id) => {
+    const confirmar = window.confirm('Deseja excluir esse funcionário?');
+    if (confirmar) {
+      try {
+        const response = await apiFuncionario.delete(`/Funcionario/Desativar/${id}`);
+        console.log('Funcionário Excluído:', response.data);
+        fetchFuncionarios(); // Atualiza lista de funcionários após desativar
+        alert('Funcionário excluído com sucesso!');
+      } catch (error) {
+        if (error.response) {
+          console.error('Erro ao desativar funcionário:', error.response.data);
+        } else {
+          console.error('Erro desconhecido ao desativar funcionário:', error.message);
+        }
+      }
     }
   };
 
@@ -77,27 +96,24 @@ const Funcionarios = () => {
       <FuncionariosTable>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nome</th>
             <th>Cargo</th>
             <th>Telefone</th>
-            <th>Email</th>
-            <th>Data de Contratação</th>
+            <th>E-mail</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           {funcionarios.map(funcionario => (
             <tr key={funcionario.id}>
-              <td>{funcionario.id}</td>
               <td>{funcionario.nome}</td>
               <td>{funcionario.cargo}</td>
               <td>{funcionario.telefone}</td>
               <td>{funcionario.email}</td>
-              <td>{new Date(funcionario.dataContratacao).toLocaleDateString()}</td>
               <td>
                 <button onClick={() => openDetalhesModal(funcionario)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(funcionario)}>Editar</button>
+                <button onClick={() => handleExcluir(funcionario.id)}>Excluir</button>
               </td>
             </tr>
           ))}
@@ -105,9 +121,9 @@ const Funcionarios = () => {
       </FuncionariosTable>
 
       {/* Modais */}
-      <ModalDetalhesFuncionario isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicaoFuncionario isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
-      <ModalNovoFuncionario isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
+      <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
+      <ModalEdicao isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
+      <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
     </FuncionariosContainer>
   );
 };

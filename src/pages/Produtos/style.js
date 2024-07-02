@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
-export const ProdutosContainer = styled.div`
+export const ProdutoContainer = styled.div`
   padding: 20px;
   min-height: 77.8vh;
 `;
 
-export const ProdutosTitle = styled.h2`
+export const ProdutoTitle = styled.h2`
   margin-bottom: 20px;
 `;
 
@@ -16,7 +16,7 @@ export const BotaoEspacamento = styled.div`
   margin-bottom: 1em;
 `;
 
-export const ProdutosButton = styled.button`
+export const ProdutoButton = styled.button`
   padding: 10px;
   background-color: #007bff;
   color: white;
@@ -29,7 +29,7 @@ export const ProdutosButton = styled.button`
   }
 `;
 
-export const ProdutosTable = styled.table`
+export const ProdutoTable = styled.table`
   width: 100%;
   border-collapse: collapse;
 
@@ -40,6 +40,9 @@ export const ProdutosTable = styled.table`
   }
 
   th {
-    background-color: #f2f2f2;
+    background-color: #141516;
+  }
+  tr:hover {
+    background-color: #141516;
   }
 `;

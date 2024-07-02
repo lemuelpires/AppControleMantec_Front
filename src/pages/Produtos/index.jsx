@@ -1,15 +1,16 @@
+// src/pages/Produto.js
 import React, { useState, useEffect } from 'react';
-import { ProdutosContainer, ProdutosTitle, ProdutosButton, ProdutosTable, BotaoEspacamento } from './style';
+import { ProdutoContainer, ProdutoTitle, ProdutoTable,ProdutoButton, BotaoEspacamento } from './style';
 import ModalDetalhesProduto from '../../components/Modais/Produto/ModalDetalhes';
 import ModalEdicaoProduto from '../../components/Modais/Produto/ModalEdicao';
 import ModalNovoProduto from '../../components/Modais/Produto/ModalNovo';
-import apiProduto from '../../services/apiCliente';
+import apiProduto from '../../services/apiCliente'; // Atualize o import para o serviço de API de Produto
 import Modal from 'react-modal';
 
 // Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
 
-const Produtos = () => {
+const Produto = () => {
   const [isDetalhesModalOpen, setIsDetalhesModalOpen] = useState(false);
   const [isEdicaoModalOpen, setIsEdicaoModalOpen] = useState(false);
   const [isNovoModalOpen, setIsNovoModalOpen] = useState(false);
@@ -23,9 +24,27 @@ const Produtos = () => {
   const fetchProdutos = async () => {
     try {
       const response = await apiProduto.get('/Produto');
-      setProdutos(response.data);
+      setProdutos(response.data.filter(produto => produto.ativo)); // Exibir apenas produtos ativos
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
+    }
+  };
+
+  const handleExcluir = async (id) => {
+    const confirmar = window.confirm('Deseja excluir esse produto?');
+    if (confirmar) {
+      try {
+        const response = await apiProduto.delete(`/Produto/Desativar/${id}`);
+        console.log('Produto Excluído:', response.data);
+        fetchProdutos(); // Atualiza lista de produtos após desativar
+        alert('Produto excluído com sucesso!');
+      } catch (error) {
+        if (error.response) {
+          console.error('Erro ao desativar produto:', error.response.data);
+        } else {
+          console.error('Erro desconhecido ao desativar produto:', error.message);
+        }
+      }
     }
   };
 
@@ -40,6 +59,7 @@ const Produtos = () => {
   };
 
   const openNovoModal = () => {
+    setSelectedItem(null); // Limpa o item selecionado para adicionar novo
     setIsNovoModalOpen(true);
   };
 
@@ -69,15 +89,15 @@ const Produtos = () => {
   };
 
   return (
-    <ProdutosContainer>
-      <ProdutosTitle>Produtos</ProdutosTitle>
+    <ProdutoContainer>
+      <ProdutoTitle>Produtos</ProdutoTitle>
       <BotaoEspacamento>
-        <ProdutosButton onClick={openNovoModal}>Adicionar Produto</ProdutosButton>
+        <ProdutoButton onClick={openNovoModal}>Adicionar Produto</ProdutoButton>
       </BotaoEspacamento>
-      <ProdutosTable>
+      <ProdutoTable>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Imagem</th>
             <th>Nome</th>
             <th>Descrição</th>
             <th>Quantidade</th>
@@ -90,28 +110,29 @@ const Produtos = () => {
         <tbody>
           {produtos.map(produto => (
             <tr key={produto.id}>
-              <td>{produto.id}</td>
+               <td><img src={produto.imagemURL} alt={produto.nome} width="50" /></td>
               <td>{produto.nome}</td>
               <td>{produto.descricao}</td>
               <td>{produto.quantidade}</td>
-              <td>{produto.preco}</td>
+              <td>{"R$ " + produto.preco.toFixed(2)}</td>
               <td>{produto.fornecedor}</td>
               <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
               <td>
                 <button onClick={() => openDetalhesModal(produto)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(produto)}>Editar</button>
+                <button onClick={() => handleExcluir(produto.id)}>Excluir</button>
               </td>
             </tr>
           ))}
         </tbody>
-      </ProdutosTable>
+      </ProdutoTable>
 
       {/* Modais */}
       <ModalDetalhesProduto isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoProduto isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoProduto isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
-    </ProdutosContainer>
+    </ProdutoContainer>
   );
 };
 
-export default Produtos;
+export default Produto;

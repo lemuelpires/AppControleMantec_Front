@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
+import Select from 'react-select';
 import { EstoqueContainer, EstoqueTitle, EstoqueButton, EstoqueTable, BotaoEspacamento } from './style';
 import ModalDetalhesEstoque from '../../components/Modais/Estoque/ModalDetalhes';
-import ModalEdicaoEstoque from '../../components/Modais/Estoque/ModalEdicao';
+import ModalEdicaoEstoque from '../../components/Modais/Estoque/ModalEdicao'; // Importe o componente corretamente
 import ModalNovoEstoque from '../../components/Modais/Estoque/ModalNovo';
-import apiEstoque from '../../services/apiCliente';
-import Modal from 'react-modal';
+import apiEstoque from '../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
 
 // Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -14,18 +15,32 @@ const Estoque = () => {
   const [isEdicaoModalOpen, setIsEdicaoModalOpen] = useState(false);
   const [isNovoModalOpen, setIsNovoModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [estoque, setEstoque] = useState([]);
+  const [itensEstoque, setItensEstoque] = useState([]);
 
   useEffect(() => {
-    fetchEstoque();
+    fetchItensEstoque();
   }, []);
 
-  const fetchEstoque = async () => {
+  const fetchItensEstoque = async () => {
     try {
       const response = await apiEstoque.get('/Estoque');
-      setEstoque(response.data);
+      setItensEstoque(response.data.filter(item => item.ativo)); // Exibir apenas itens ativos
     } catch (error) {
-      console.error('Erro ao buscar estoque:', error);
+      console.error('Erro ao buscar itens de estoque:', error);
+    }
+  };
+
+  const handleExcluir = async (id) => {
+    const confirmar = window.confirm('Deseja excluir este item do estoque?');
+    if (confirmar) {
+      try {
+        const response = await apiEstoque.put(`/Estoque/desativar/${id}`);
+        console.log('Item de estoque desativado:', response.data);
+        fetchItensEstoque(); // Atualiza lista de itens de estoque após excluir
+        alert('Item de estoque excluído com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir item de estoque:', error);
+      }
     }
   };
 
@@ -39,7 +54,8 @@ const Estoque = () => {
     setIsEdicaoModalOpen(true);
   };
 
-  const openNovoModal = () => {
+  const openNovoModal = async () => {
+    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
@@ -52,19 +68,41 @@ const Estoque = () => {
 
   const handleSave = async (formData) => {
     try {
-      if (formData.id) {
-        // Atualização de entrada de estoque existente
-        const response = await apiEstoque.put(`/Estoque/${formData.id}`, formData);
-        console.log('Entrada de estoque atualizada:', response.data);
+      const existingItem = itensEstoque.find(item => item.produtoID === formData.produtoID);
+      if (existingItem) {
+        alert('O produto já possui um estoque cadastrado. Redirecionando para a página de edição.');
+        openEdicaoModal(existingItem);
       } else {
-        // Criação de nova entrada de estoque
+        // Criação de novo item de estoque
         const response = await apiEstoque.post('/Estoque', formData);
-        console.log('Nova entrada de estoque criada:', response.data);
+        console.log('Novo item de estoque criado:', response.data);
+        
+        // Atualizar quantidade na tabela de produtos
+        const produtoResponse = await apiEstoque.put(`/Produto/${formData.produtoID}`, { quantidade: formData.quantidade });
+        console.log('Quantidade do produto atualizada:', produtoResponse.data);
+  
+        fetchItensEstoque(); // Atualiza lista de itens de estoque após salvar
+        closeModal();
       }
-      fetchEstoque(); // Atualiza lista de estoque após salvar
+    } catch (error) {
+      console.error('Erro ao salvar item de estoque:', error);
+    }
+  };
+  
+  const handleUpdate = async (formData) => {
+    try {
+      // Atualização de item de estoque existente
+      const response = await apiEstoque.put(`/Estoque/${formData.produtoID}`, formData);
+      console.log('Item de estoque atualizado:', response.data);
+  
+      // Atualizar quantidade na tabela de produtos
+      const produtoResponse = await apiEstoque.put(`/Produto/${formData.produtoID}`, { quantidade: formData.quantidade });
+      console.log('Quantidade do produto atualizada:', produtoResponse.data);
+  
+      fetchItensEstoque(); // Atualiza lista de itens de estoque após salvar
       closeModal();
     } catch (error) {
-      console.error('Erro ao salvar entrada de estoque:', error);
+      console.error('Erro ao atualizar item de estoque:', error);
     }
   };
 
@@ -72,7 +110,7 @@ const Estoque = () => {
     <EstoqueContainer>
       <EstoqueTitle>Estoque</EstoqueTitle>
       <BotaoEspacamento>
-        <EstoqueButton onClick={openNovoModal}>Adicionar Entrada de Estoque</EstoqueButton>
+        <EstoqueButton onClick={openNovoModal}>Adicionar Item ao Estoque</EstoqueButton>
       </BotaoEspacamento>
       <EstoqueTable>
         <thead>
@@ -80,20 +118,19 @@ const Estoque = () => {
             <th>Produto ID</th>
             <th>Quantidade</th>
             <th>Data de Atualização</th>
-            <th>Ativo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {estoque.map(item => (
+          {itensEstoque.map(item => (
             <tr key={item.produtoID}>
               <td>{item.produtoID}</td>
               <td>{item.quantidade}</td>
-              <td>{new Date(item.dataAtualizacao).toLocaleDateString()}</td>
-              <td>{item.ativo ? 'Sim' : 'Não'}</td>
+              <td>{item.dataAtualizacao}</td>
               <td>
                 <button onClick={() => openDetalhesModal(item)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(item)}>Editar</button>
+                <button onClick={() => handleExcluir(item.id)}>Excluir</button>
               </td>
             </tr>
           ))}
@@ -102,7 +139,7 @@ const Estoque = () => {
 
       {/* Modais */}
       <ModalDetalhesEstoque isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicaoEstoque isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
+      <ModalEdicaoEstoque isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleUpdate} fetchItensEstoque={fetchItensEstoque} />
       <ModalNovoEstoque isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
     </EstoqueContainer>
   );

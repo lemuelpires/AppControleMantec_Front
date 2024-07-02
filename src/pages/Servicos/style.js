@@ -33,7 +33,11 @@ export const ServicoTable = styled.table`
   }
 
   th {
-    background-color: #f4f4f4;
+    background-color: #141516;
+  }
+
+  tr:hover {
+    background-color: #141516;
   }
 `;
 

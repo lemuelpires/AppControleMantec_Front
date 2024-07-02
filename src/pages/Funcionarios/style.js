@@ -40,6 +40,9 @@ export const FuncionariosTable = styled.table`
   }
 
   th {
-    background-color: #f2f2f2;
+    background-color: #141516;
+  }
+  tr:hover {
+    background-color: #141516;
   }
 `;

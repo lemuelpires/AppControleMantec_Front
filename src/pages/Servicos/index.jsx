@@ -23,9 +23,27 @@ const Servico = () => {
   const fetchServicos = async () => {
     try {
       const response = await apiServico.get('/Servico');
-      setServicos(response.data);
+      setServicos(response.data.filter(servico => servico.ativo)); // Exibir apenas serviços ativos
     } catch (error) {
       console.error('Erro ao buscar serviços:', error);
+    }
+  };
+
+  const handleExcluir = async (id) => {
+    const confirmar = window.confirm('Deseja excluir esse serviço?');
+    if (confirmar) {
+      try {
+        const response = await apiServico.delete(`/Servico/Desativar/${id}`);
+        console.log('Serviço Excluído:', response.data);
+        fetchServicos(); // Atualiza lista de serviços após desativar
+        alert('Serviço excluído com sucesso!');
+      } catch (error) {
+        if (error.response) {
+          console.error('Erro ao desativar serviço:', error.response.data);
+        } else {
+          console.error('Erro desconhecido ao desativar serviço:', error.message);
+        }
+      }
     }
   };
 
@@ -77,7 +95,6 @@ const Servico = () => {
       <ServicoTable>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nome</th>
             <th>Descrição</th>
             <th>Preço</th>
@@ -86,16 +103,16 @@ const Servico = () => {
           </tr>
         </thead>
         <tbody>
-          {servicos.map(item => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.nome}</td>
-              <td>{item.descricao}</td>
-              <td>{item.preco}</td>
-              <td>{item.ativo ? 'Sim' : 'Não'}</td>
+          {servicos.map(servico => (
+            <tr key={servico.id}>
+              <td>{servico.nome}</td>
+              <td>{servico.descricao}</td>
+              <td>{servico.preco}</td>
+              <td>{servico.ativo ? 'Sim' : 'Não'}</td>
               <td>
-                <button onClick={() => openDetalhesModal(item)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(item)}>Editar</button>
+                <button onClick={() => openDetalhesModal(servico)}>Detalhes</button>
+                <button onClick={() => openEdicaoModal(servico)}>Editar</button>
+                <button onClick={() => handleExcluir(servico.id)}>Excluir</button>
               </td>
             </tr>
           ))}

@@ -39,12 +39,12 @@ export const ClientesTable = styled.table`
     border-bottom: 1px solid #ddd;
   }
 
-  th {
-    background-color: #f2f2f2;
+  th{
+    background-color: #141516;
   }
 
-  tr:hover {
-    background-color: #f5f5f5;
+   tr:hover {
+    background-color: #141516;
   }
 
   button {

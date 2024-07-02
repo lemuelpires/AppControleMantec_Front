@@ -1,4 +1,3 @@
-// src/pages/Clientes/index.jsx
 import React, { useState, useEffect } from 'react';
 import { ClientesContainer, ClientesTitle, ClientesButton, ClientesTable, BotaoEspacamento } from './style';
 import ModalDetalhes from '../../components/Modais/Cliente/ModalDetalhes';
@@ -24,9 +23,27 @@ const Clientes = () => {
   const fetchClientes = async () => {
     try {
       const response = await apiCliente.get('/Cliente');
-      setClientes(response.data);
+      setClientes(response.data.filter(cliente => cliente.ativo)); // Exibir apenas clientes ativos
     } catch (error) {
       console.error('Erro ao buscar clientes:', error);
+    }
+  };
+
+  const handleExcluir = async (id) => {
+    const confirmar = window.confirm('Deseja excluir esse cliente?');
+    if (confirmar) {
+      try {
+        const response = await apiCliente.delete(`/Cliente/Desativar/${id}`);
+        console.log('Cliente Excluído:', response.data);
+        fetchClientes(); // Atualiza lista de clientes após desativar
+        alert('Cliente excluído com sucesso!');
+      } catch (error) {
+        if (error.response) {
+          console.error('Erro ao desativar cliente:', error.response.data);
+        } else {
+          console.error('Erro desconhecido ao desativar cliente:', error.message);
+        }
+      }
     }
   };
 
@@ -62,7 +79,7 @@ const Clientes = () => {
         const response = await apiCliente.post('/Cliente', formData);
         console.log('Novo cliente criado:', response.data);
       }
-      fetchClientes(); // Atualiza lista de clientes após salvar
+      fetchClientes();
       closeModal();
     } catch (error) {
       console.error('Erro ao salvar cliente:', error);
@@ -71,14 +88,13 @@ const Clientes = () => {
 
   return (
     <ClientesContainer>
-              <ClientesTitle>Clientes</ClientesTitle>
+      <ClientesTitle>Clientes</ClientesTitle>
       <BotaoEspacamento>
-          <ClientesButton onClick={openNovoModal}>Adicionar Cliente</ClientesButton>
+        <ClientesButton onClick={openNovoModal}>Adicionar Cliente</ClientesButton>
       </BotaoEspacamento>
       <ClientesTable>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nome</th>
             <th>Endereço</th>
             <th>Telefone</th>
@@ -89,7 +105,6 @@ const Clientes = () => {
         <tbody>
           {clientes.map(cliente => (
             <tr key={cliente.id}>
-              <td>{cliente.id}</td>
               <td>{cliente.nome}</td>
               <td>{cliente.endereco}</td>
               <td>{cliente.telefone}</td>
@@ -97,6 +112,7 @@ const Clientes = () => {
               <td>
                 <button onClick={() => openDetalhesModal(cliente)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(cliente)}>Editar</button>
+                <button onClick={() => handleExcluir(cliente.id)}>Excluir</button>
               </td>
             </tr>
           ))}

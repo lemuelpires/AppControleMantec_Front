@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import FormularioEstoque from '../../../Forms/FormularioEstoque';
+import Select from 'react-select';
+import FormularioOrdemDeServico from '../../../Forms/FormularioOrdemDeServico'; // Importe o formulário de ordem de serviço
 import { Titulo } from './style';
 
 // Definir as classes do Modal
@@ -22,12 +23,52 @@ const modalStyles = {
   },
 };
 
-const ModalNovoEstoque = ({ isOpen, onClose, onSubmit }) => {
+const ModalNovaOrdemDeServico = ({ isOpen, onClose, onSubmit }) => {
+  const [selectedCliente, setSelectedCliente] = useState(null);
+  const [selectedFuncionario, setSelectedFuncionario] = useState(null);
+  const [selectedProduto, setSelectedProduto] = useState(null);
+  const [selectedServico, setSelectedServico] = useState(null);
+
   const initialValues = {
+    clienteID: '',
+    funcionarioID: '',
     produtoID: '',
-    quantidade: 0,
-    dataAtualizacao: '',
+    servicoID: '',
+    dataEntrada: '',
+    dataConclusao: '',
+    status: '',
+    observacoes: '',
     ativo: true,
+  };
+
+  useEffect(() => {
+    // Coloque aqui qualquer inicialização necessária ao abrir o modal
+  }, []);
+
+  const handleSelectCliente = (selectedOption) => {
+    setSelectedCliente(selectedOption);
+  };
+
+  const handleSelectFuncionario = (selectedOption) => {
+    setSelectedFuncionario(selectedOption);
+  };
+
+  const handleSelectProduto = (selectedOption) => {
+    setSelectedProduto(selectedOption);
+  };
+
+  const handleSelectServico = (selectedOption) => {
+    setSelectedServico(selectedOption);
+  };
+
+  const handleSubmit = async (formData) => {
+    try {
+      // Aqui você pode adicionar validações ou formatações antes de enviar para o onSubmit
+      onSubmit(formData);
+      onClose();
+    } catch (error) {
+      console.error('Erro ao salvar ordem de serviço:', error);
+    }
   };
 
   return (
@@ -40,14 +81,18 @@ const ModalNovoEstoque = ({ isOpen, onClose, onSubmit }) => {
       contentElement={(props, children) => (
         <div {...props}>{children}</div>
       )}
-      style = {modalStyles}
+      style={modalStyles}
     >
       <Titulo>
-        <h2>Adicionar Entrada de Estoque</h2>
+        <h2>Adicionar Ordem de Serviço</h2>
       </Titulo>
-      <FormularioEstoque initialValues={initialValues} onSubmit={onSubmit} onClose={onClose} />
+      <FormularioOrdemDeServico
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        onClose={onClose}
+      />
     </Modal>
   );
 };
 
-export default ModalNovoEstoque;
+export default ModalNovaOrdemDeServico;

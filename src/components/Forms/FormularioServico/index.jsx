@@ -17,10 +17,6 @@ const FormularioServico = ({ initialValues, onSubmit, onClose }) => {
   return (
     <Form onSubmit={handleSubmit}>
       <FormGroup>
-        <Label htmlFor="id">ID</Label>
-        <Input type="text" id="id" name="id" value={formData.id} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
         <Label htmlFor="nome">Nome</Label>
         <Input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
       </FormGroup>
