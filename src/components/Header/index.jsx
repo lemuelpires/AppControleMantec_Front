@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaBars } from 'react-icons/fa'; // Importa o ícone do menu hamburguer
+import ModalLogin from '../Modais/Login'; // Importa o modal de login
 
 const MenuContainer = styled.nav`
   background-color: #333;
@@ -42,18 +43,27 @@ const MenuLink = styled(NavLink)`
 
 const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const toggleLoginModal = () => {
+    setIsLoginModalOpen(!isLoginModalOpen);
   };
 
   return (
     <MenuContainer>
       <MenuHeader>
         <h2>Menu</h2>
-        <MenuIcon onClick={toggleMenu}>
-          <FaBars />
-        </MenuIcon>
+        <div>
+          <MenuIcon onClick={toggleMenu}>
+            <FaBars />
+          </MenuIcon>
+          <button onClick={toggleLoginModal}>Login</button>
+          <ModalLogin isOpen={isLoginModalOpen} onClose={toggleLoginModal} />
+        </div>
       </MenuHeader>
       <MenuList open={isOpen}>
         <MenuItem>
