@@ -2,9 +2,10 @@ import styled from 'styled-components';
 
 export const ServicoContainer = styled.div`
   padding: 20px;
+  min-height: 77.8vh;
 `;
 
-export const ServicoTitle = styled.h1`
+export const ServicoTitle = styled.h2`
   margin-bottom: 20px;
 `;
 
@@ -28,7 +29,7 @@ export const ServicoTable = styled.table`
 
   th, td {
     padding: 10px;
-    border: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     text-align: left;
   }
 

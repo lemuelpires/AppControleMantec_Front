@@ -1,11 +1,12 @@
 import React from 'react';
+import { DashboardContainer } from './style';
 
 const Dashboard = () => {
   return (
-    <div>
+    <DashboardContainer>
       <h2>Dashboard</h2>
       {/* Conteúdo do Dashboard */}
-    </div>
+    </DashboardContainer>
   );
 };
 
