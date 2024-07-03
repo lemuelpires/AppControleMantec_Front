@@ -1,5 +1,5 @@
 // style.js
-import styled, { css } from 'styled-components'; // Importe 'css' do styled-components
+/*import styled, { css } from 'styled-components'; // Importe 'css' do styled-components
 import { Link } from 'react-router-dom';
 
 export const HeaderStyles = css`
@@ -12,5 +12,5 @@ export const HeaderStyles = css`
 `;
 
 export const HeaderContainer = styled.header`
-  ${HeaderStyles}; /* Aplica os estilos importados */
-`;
+  ${HeaderStyles}; /* Aplica os estilos importados 
+`;*/
