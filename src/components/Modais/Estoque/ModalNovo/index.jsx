@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import Select from 'react-select';
-import FormularioOrdemDeServico from '../../../Forms/FormularioOrdemDeServico'; // Importe o formulário de ordem de serviço
-import { Titulo } from './style';
+import { FormGroup, Label } from './style';
+import FormularioEstoque from '../../../Forms/FormularioEstoque';
+import apiCliente from '../../../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
 
-// Definir as classes do Modal
+// Estilos do modal
 const modalStyles = {
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -23,76 +24,83 @@ const modalStyles = {
   },
 };
 
-const ModalNovaOrdemDeServico = ({ isOpen, onClose, onSubmit }) => {
-  const [selectedCliente, setSelectedCliente] = useState(null);
-  const [selectedFuncionario, setSelectedFuncionario] = useState(null);
-  const [selectedProduto, setSelectedProduto] = useState(null);
-  const [selectedServico, setSelectedServico] = useState(null);
-
-  const initialValues = {
-    clienteID: '',
-    funcionarioID: '',
+const ModalNovoEstoque = ({ isOpen, onClose, onSubmit }) => {
+  const [formData, setFormData] = useState({
     produtoID: '',
-    servicoID: '',
-    dataEntrada: '',
-    dataConclusao: '',
-    status: '',
-    observacoes: '',
+    quantidade: 0,
+    dataAtualizacao: new Date().toISOString().substr(0, 10), // Inicializar com a data atual no formato YYYY-MM-DD
     ativo: true,
-  };
+  });
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [produtoOptions, setProdutoOptions] = useState([]);
 
   useEffect(() => {
-    // Coloque aqui qualquer inicialização necessária ao abrir o modal
+    fetchProdutos(); // Buscar produtos disponíveis para seleção
   }, []);
 
-  const handleSelectCliente = (selectedOption) => {
-    setSelectedCliente(selectedOption);
-  };
-
-  const handleSelectFuncionario = (selectedOption) => {
-    setSelectedFuncionario(selectedOption);
-  };
-
-  const handleSelectProduto = (selectedOption) => {
-    setSelectedProduto(selectedOption);
-  };
-
-  const handleSelectServico = (selectedOption) => {
-    setSelectedServico(selectedOption);
-  };
-
-  const handleSubmit = async (formData) => {
+  const fetchProdutos = async () => {
     try {
-      // Aqui você pode adicionar validações ou formatações antes de enviar para o onSubmit
-      onSubmit(formData);
-      onClose();
+      // Requisição para obter lista de produtos disponíveis
+      const response = await apiCliente.get('/Produto'); // Ajustar para a rota correta que lista produtos
+      const produtos = response.data.map((produto) => ({
+        value: produto.id, // Atributo que representa o ID do produto
+        label: produto.nome, // Atributo que representa o nome do produto
+      }));
+      setProdutoOptions(produtos); // Atualizar opções disponíveis no Select
     } catch (error) {
-      console.error('Erro ao salvar ordem de serviço:', error);
+      console.error('Erro ao buscar produtos:', error);
+    }
+  };
+
+  const handleSelectProduct = (selectedOption) => {
+    setSelectedProduct(selectedOption);
+    if (selectedOption) {
+      setFormData((prevData) => ({
+        ...prevData,
+        produtoID: selectedOption.value, // Atualizar ID do produto selecionado no formulário
+      }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formattedData = {
+        ...formData,
+        dataAtualizacao: new Date(formData.dataAtualizacao).toISOString().substr(0, 10),
+      };
+      // Enviar requisição POST para criar novo item de estoque
+      await onSubmit(formattedData);
+      alert('Novo item de inventário criado com sucesso!');
+      onClose(); // Fechar modal após salvar
+    } catch (error) {
+      console.error('Erro ao criar item de estoque:', error);
+      if (error.response && error.response.data) {
+        alert(`Erro: ${error.response.data}`);
+      } else {
+        alert('Erro ao criar item de estoque.');
+      }
     }
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      overlayElement={(props, contentElement) => (
-        <div {...props}>{contentElement}</div>
-      )}
-      contentElement={(props, children) => (
-        <div {...props}>{children}</div>
-      )}
-      style={modalStyles}
-    >
-      <Titulo>
-        <h2>Adicionar Ordem de Serviço</h2>
-      </Titulo>
-      <FormularioOrdemDeServico
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        onClose={onClose}
-      />
+    <Modal isOpen={isOpen} onRequestClose={onClose} style={modalStyles}>
+      <h2>Novo Item de Estoque</h2>
+      <FormGroup>
+        <Label>Produto</Label>
+        <Select
+          value={selectedProduct}
+          onChange={handleSelectProduct}
+          options={produtoOptions}
+          placeholder="Selecione um produto"
+        />
+      </FormGroup>
+      <FormularioEstoque formData={formData} setFormData={setFormData} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+        <button onClick={onClose}>Cancelar</button>
+        <button onClick={handleSubmit}>Salvar</button>
+      </div>
     </Modal>
   );
 };
 
-export default ModalNovaOrdemDeServico;
+export default ModalNovoEstoque;
