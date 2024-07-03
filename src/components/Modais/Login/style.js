@@ -20,7 +20,7 @@ export const ModalContent = styled.div`
   background-color: #151617;
   padding: 20px;
   width: 40%;
-  height: 50%;
+  height: auto;
   border-radius: 8px;
   color: #d9d9d9;
 `;
@@ -56,4 +56,10 @@ export const Label = styled.label`
     align-items: flex-start;
     padding-bottom:1em;
     gap: 0.5em;
+`;
+
+export const FormGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1em;
 `;
