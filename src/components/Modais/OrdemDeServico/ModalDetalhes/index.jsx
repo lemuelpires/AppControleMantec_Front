@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { Titulo } from './style';
+import { Titulo, Button } from './style';
+import OrdemDeServicoReport from '../../RelatorioImpressao';
 
-// Definir as classes do Modal
 const modalStyles = {
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -22,6 +22,16 @@ const modalStyles = {
 };
 
 const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
+  const [isReportOpen, setIsReportOpen] = useState(false);
+
+  const handleOpenReport = () => {
+    setIsReportOpen(true);
+  };
+
+  const handleCloseReport = () => {
+    setIsReportOpen(false);
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -47,7 +57,21 @@ const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
         ) : (
           <p>Ordem de serviço não encontrada.</p>
         )}
+        <Button onClick={handleOpenReport}>Imprimir</Button>
       </div>
+      <Modal
+        isOpen={isReportOpen}
+        onRequestClose={handleCloseReport}
+        overlayElement={(props, contentElement) => (
+          <div {...props}>{contentElement}</div>
+        )}
+        contentElement={(props, children) => (
+          <div {...props}>{children}</div>
+        )}
+        style={modalStyles}
+      >
+        <OrdemDeServicoReport ordemDeServico={item} onClose={handleCloseReport} />
+      </Modal>
     </Modal>
   );
 };
