@@ -88,7 +88,7 @@ const Menu = () => {
   return (
     <MenuContainer>
       <MenuHeader>
-        <h2>Menu</h2>
+        <h2>Mantec</h2>
         <Espacamento>
           <MenuIcon onClick={toggleMenu}>
             <FaBars />
