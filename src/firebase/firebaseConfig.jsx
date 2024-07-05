@@ -21,4 +21,4 @@ const auth = getAuth(app);
 const analytics = getAnalytics(app);
 const storage = getStorage(app);
 
-export { app, db, auth, analytics, storage, sendPasswordResetEmail }; // Exporte sendPasswordResetEmail
+export { app, db, auth, analytics, storage, sendPasswordResetEmail };
