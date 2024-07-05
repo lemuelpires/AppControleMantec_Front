@@ -5,19 +5,6 @@ export const Titulo = styled.div`
   margin-bottom: 20px;
 `;
 
-export const Button = styled.button`
-  padding: 10px 20px;
-  margin-top: 10px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
 // Estilos para o ModalContainer e ModalContent se ainda não estiverem definidos:
 export const ModalContainer = styled.div`
   position: fixed;

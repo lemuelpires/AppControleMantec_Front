@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { Titulo, Button } from './style';
+import { Titulo } from './style';
 import OrdemDeServicoReport from '../../RelatorioImpressao';
 
 const modalStyles = {
@@ -20,6 +20,7 @@ const modalStyles = {
     inset: 'unset',
   },
 };
+
 
 const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -57,7 +58,7 @@ const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
         ) : (
           <p>Ordem de serviço não encontrada.</p>
         )}
-        <Button onClick={handleOpenReport}>Imprimir</Button>
+        <button onClick={handleOpenReport}>Imprimir</button>
       </div>
       <Modal
         isOpen={isReportOpen}
