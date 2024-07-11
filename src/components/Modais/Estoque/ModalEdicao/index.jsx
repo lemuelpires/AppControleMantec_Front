@@ -101,9 +101,9 @@ const ModalEdicaoEstoque = ({ isOpen, onClose, item, fetchItensEstoque }) => {
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose} style={modalStyles}>
-      <h2>Edit Inventory Item</h2>
+      <h2>Edit Item no estoque</h2>
       <FormGroup>
-        <Label>Product</Label>
+        <Label>Produto</Label>
         <Select
           value={selectedProduct}
           onChange={handleSelectProduct}
