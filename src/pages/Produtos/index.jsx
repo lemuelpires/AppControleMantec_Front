@@ -1,4 +1,3 @@
-// src/pages/Produto.js
 import React, { useState, useEffect } from 'react';
 import { ProdutoContainer, ProdutoTitle, ProdutoTable, ProdutoButton, BotaoEspacamento } from './style';
 import ModalDetalhesProduto from '../../components/Modais/Produto/ModalDetalhes';
@@ -102,7 +101,7 @@ const Produto = () => {
     <ProdutoContainer>
       <ProdutoTitle>Produtos</ProdutoTitle>
       <BotaoEspacamento>
-        <ProdutoButton onClick={openNovoModal}>Adicionar Produto</ProdutoButton>
+        <ProdutoButton onClick={openNovoModal}>Adicionar</ProdutoButton>
       </BotaoEspacamento>
       <ProdutoTable>
         <thead>
@@ -114,7 +113,7 @@ const Produto = () => {
             <th>Preço</th>
             <th>Fornecedor</th>
             <th>Data de Entrada</th>
-            <th>Ações</th>
+            <th style={{textAlign:'center'}}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -127,7 +126,7 @@ const Produto = () => {
               <td>{"R$ " + produto.preco.toFixed(2)}</td>
               <td>{produto.fornecedor}</td>
               <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
-              <td>
+              <td style={{textAlign:'center'}}>
                 <button onClick={() => openDetalhesModal(produto)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(produto)}>Editar</button>
                 <button onClick={() => handleExcluir(produto.id)}>Excluir</button>

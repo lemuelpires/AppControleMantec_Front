@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from './style';
 
 const FormularioServico = ({ initialValues, onSubmit, onClose }) => {
-  const [formData, setFormData] = useState(initialValues);
+  const [formData, setFormData] = useState({ ...initialValues });
+
+  useEffect(() => {
+    // Atualiza o estado do formulário quando initialValues mudar
+    setFormData({ ...initialValues });
+  }, [initialValues]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -11,8 +16,10 @@ const FormularioServico = ({ initialValues, onSubmit, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({ ...formData, ativo: true });
   };
+
+  if (!initialValues) return null;
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -27,10 +34,6 @@ const FormularioServico = ({ initialValues, onSubmit, onClose }) => {
       <FormGroup>
         <Label htmlFor="preco">Preço</Label>
         <Input type="number" id="preco" name="preco" value={formData.preco} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="ativo">Ativo</Label>
-        <Input type="checkbox" id="ativo" name="ativo" checked={formData.ativo} onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })} />
       </FormGroup>
       <Button type="submit">Salvar</Button>
       <Button type="button" onClick={onClose}>Cancelar</Button>

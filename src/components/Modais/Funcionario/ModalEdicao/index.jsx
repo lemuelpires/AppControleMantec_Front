@@ -33,7 +33,7 @@ const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
       contentElement={(props, children) => (
         <div {...props}>{children}</div>
       )}
-      style = {modalStyles}
+      style={modalStyles}
     >
       <Titulo>
         <h2>Editar Funcionário</h2>

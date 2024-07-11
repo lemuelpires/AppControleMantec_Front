@@ -90,7 +90,7 @@ const Servico = () => {
     <ServicoContainer>
       <ServicoTitle>Serviços</ServicoTitle>
       <BotaoEspacamento>
-        <ServicoButton onClick={openNovoModal}>Adicionar Serviço</ServicoButton>
+        <ServicoButton onClick={openNovoModal}>Adicionar</ServicoButton>
       </BotaoEspacamento>
       <ServicoTable>
         <thead>
@@ -98,8 +98,7 @@ const Servico = () => {
             <th>Nome</th>
             <th>Descrição</th>
             <th>Preço</th>
-            <th>Ativo</th>
-            <th>Ações</th>
+            <th style={{textAlign:'center'}}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -108,8 +107,7 @@ const Servico = () => {
               <td>{servico.nome}</td>
               <td>{servico.descricao}</td>
               <td>{servico.preco}</td>
-              <td>{servico.ativo ? 'Sim' : 'Não'}</td>
-              <td>
+              <td style={{textAlign:'center'}}>
                 <button onClick={() => openDetalhesModal(servico)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(servico)}>Editar</button>
                 <button onClick={() => handleExcluir(servico.id)}>Excluir</button>

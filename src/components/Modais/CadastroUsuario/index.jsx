@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ModalContainer, ModalContent, Input, Label, FormGroup, CloseButton } from './style';
+import { ModalContainer, ModalContent, Input, Label, FormGroup, CloseButton, Select } from './style';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../firebase/firebaseConfig';
 
@@ -46,7 +46,7 @@ const ModalCadastroUsuario = ({ isOpen, onClose, onCadastro }) => {
   return (
     <ModalContainer isOpen={isOpen}>
       <ModalContent>
-        <CloseButton onClick={onClose}>X</CloseButton>
+        <CloseButton onClick={onClose}>x</CloseButton>
         <h2>Cadastro de Usuário</h2>
         {alertMessage && <p>{alertMessage}</p>}
         <form onSubmit={handleSubmit}>
@@ -71,10 +71,10 @@ const ModalCadastroUsuario = ({ isOpen, onClose, onCadastro }) => {
           <FormGroup>
             <Label>
               Tipo de Usuário:
-              <select onChange={(e) => setIsAdmin(e.target.value === 'admin')}>
+              <Select onChange={(e) => setIsAdmin(e.target.value === 'admin')}>
                 <option value="user">Usuário Comum</option>
                 <option value="admin">Administrador</option>
-              </select>
+              </Select>
             </Label>
           </FormGroup>
           <button type="submit">Cadastrar</button>

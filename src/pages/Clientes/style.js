@@ -4,6 +4,7 @@ import styled from 'styled-components';
 export const ClientesContainer = styled.div`
   padding: 20px;
   min-height: 77.8vh;
+  background-color: #242424;
 `;
 
 export const ClientesTitle = styled.h2`
@@ -17,16 +18,17 @@ export const BotaoEspacamento = styled.div`
   margin-bottom:1em;
 `;
 export const ClientesButton = styled.button`
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    flex-direction: column;
+    margin-right: 5px;
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 
-  &:hover {
-    background-color: #0056b3;
-  }
+    &:hover {
+      background-color: #0056c8;
+    }
 `;
 
 export const ClientesTable = styled.table`
@@ -44,20 +46,19 @@ export const ClientesTable = styled.table`
   }
 
    tr:hover {
-    background-color: #141516;
+    background-color: #3c3c3c;
   }
 
   button {
     margin-right: 5px;
     padding: 5px 10px;
-    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 
     &:hover {
-      background-color: #0056b3;
+      background-color: #0056c8;
     }
   }
 `;

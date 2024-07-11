@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import Select from 'react-select';
 import { EstoqueContainer, EstoqueTitle, EstoqueButton, EstoqueTable, BotaoEspacamento } from './style';
 import ModalDetalhesEstoque from '../../components/Modais/Estoque/ModalDetalhes';
 import ModalEdicaoEstoque from '../../components/Modais/Estoque/ModalEdicao';
 import ModalNovoEstoque from '../../components/Modais/Estoque/ModalNovo';
 import apiEstoque from '../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
+import apiCliente from '../../services/apiCliente'; // Importe a API para manipulação de Produto
 
 // Definir o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -23,8 +23,30 @@ const Estoque = () => {
 
   const fetchItensEstoque = async () => {
     try {
-      const response = await apiEstoque.get('/Estoque');
-      setItensEstoque(response.data.filter(item => item.ativo)); // Exibir apenas itens ativos
+      const responseEstoque = await apiEstoque.get('/Estoque');
+      const estoqueAtivo = responseEstoque.data.filter(item => item.ativo);
+  
+      const itensEstoqueComNome = await Promise.all(estoqueAtivo.map(async item => {
+        try {
+          const responseProduto = await apiCliente.get(`/Produto/${item.produtoID}`);
+          const produto = responseProduto.data; // Verifique se produto está definido antes de acessar suas propriedades
+          if (!produto) {
+            throw new Error(`Produto com ID ${item.produtoID} não encontrado`);
+          }
+          return {
+            ...item,
+            produtoNome: produto.nome,
+          };
+        } catch (error) {
+          console.error(`Erro ao buscar produto com ID ${item.produtoID}:`, error);
+          return {
+            ...item,
+            produtoNome: 'Produto não encontrado',
+          };
+        }
+      }));
+  
+      setItensEstoque(itensEstoqueComNome);
     } catch (error) {
       console.error('Erro ao buscar itens de estoque:', error);
     }
@@ -74,10 +96,11 @@ const Estoque = () => {
         openEdicaoModal(existingItem); // Abrir modal de edição com os dados do item existente
         return; // Interrompe a execução após abrir o modal de edição
       }
-  
+
       // Se não houver item existente, cria um novo item de estoque
       const response = await apiEstoque.post('/Estoque', formData);
       console.log('Novo item de estoque criado:', response.data);
+      fetchItensEstoque(); 
       
       // Atualizar quantidade na tabela de produtos
       const produtoResponse = await apiEstoque.put(`/Produto/${formData.produtoID}`, { quantidade: formData.quantidade });
@@ -89,18 +112,17 @@ const Estoque = () => {
       console.error('Erro ao salvar item de estoque:', error);
     }
   };
-  
-  
+
   const handleUpdate = async (formData) => {
     try {
       // Atualização de item de estoque existente
       const response = await apiEstoque.put(`/Estoque/${formData.produtoID}`, formData);
       console.log('Item de estoque atualizado:', response.data);
-  
+
       // Atualizar quantidade na tabela de produtos
       const produtoResponse = await apiEstoque.put(`/Produto/${formData.produtoID}`, { quantidade: formData.quantidade });
       console.log('Quantidade do produto atualizada:', produtoResponse.data);
-  
+
       fetchItensEstoque(); // Atualiza lista de itens de estoque após salvar
       closeModal();
     } catch (error) {
@@ -112,27 +134,27 @@ const Estoque = () => {
     <EstoqueContainer>
       <EstoqueTitle>Estoque</EstoqueTitle>
       <BotaoEspacamento>
-        <EstoqueButton onClick={openNovoModal}>Adicionar Item ao Estoque</EstoqueButton>
+        <EstoqueButton onClick={openNovoModal}>Adicionar</EstoqueButton>
       </BotaoEspacamento>
       <EstoqueTable>
         <thead>
           <tr>
-            <th>Produto ID</th>
+            <th>Nome do Produto</th>
             <th>Quantidade</th>
             <th>Data de Atualização</th>
-            <th>Ações</th>
+            <th style={{textAlign:'center'}}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {itensEstoque.map(item => (
             <tr key={item.produtoID}>
-              <td>{item.produtoID}</td>
+              <td>{item.produtoNome}</td>
               <td>{item.quantidade}</td>
-              <td>{item.dataAtualizacao}</td>
-              <td>
-                <button onClick={() => openDetalhesModal(item)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(item)}>Editar</button>
-                <button onClick={() => handleExcluir(item.id)}>Excluir</button>
+              <td>{new Date(item.dataAtualizacao).toLocaleDateString()}</td>
+              <td style={{textAlign:'center'}}>
+                <button onClick={() => openDetalhesModal(item)} >Detalhes</button>
+                <button onClick={() => openEdicaoModal(item)} >Editar</button>
+                <button onClick={() => handleExcluir(item.id)} >Excluir</button>
               </td>
             </tr>
           ))}

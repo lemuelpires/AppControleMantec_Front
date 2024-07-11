@@ -13,50 +13,34 @@ const modalStyles = {
   },
   content: {
     backgroundColor: '#1f1e1e',
-    padding: '20px',
+    padding: '2em 4em',
     borderRadius: '8px',
     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
-    width: '100%',
+    maxWidth: '90%', // Ajustado para 90% da largura
+    width: 'auto', // Ajustado para tamanho automático para expandir conforme necessário
     inset: 'unset',
+    margin: 'auto', // Centraliza horizontalmente
   },
 };
 
 const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
   const [formData, setFormData] = useState({
-    id: item ? item.id : '',
-    clienteID: item ? item.clienteID : '',
-    funcionarioID: item ? item.funcionarioID : '',
-    produtoID: item ? item.produtoID : '',
-    servicoID: item ? item.servicoID : '',
-    dataEntrada: item ? item.dataEntrada : '',
-    dataConclusao: item ? item.dataConclusao : '',
-    status: item ? item.status : '',
-    observacoes: item ? item.observacoes : '',
-    ativo: item ? item.ativo : true,
+    id: '',
+    clienteID: '',
+    funcionarioID: '',
+    produtoID: '',
+    servicoID: '',
+    dataEntrada: '',
+    dataConclusao: '',
+    status: '',
+    observacoes: '',
+    ativo: true,
   });
 
   const [clienteOptions, setClienteOptions] = useState([]);
   const [funcionarioOptions, setFuncionarioOptions] = useState([]);
   const [produtoOptions, setProdutoOptions] = useState([]);
   const [servicoOptions, setServicoOptions] = useState([]);
-
-  useEffect(() => {
-    if (item) {
-      setFormData({
-        id: item.id,
-        clienteID: item.clienteID,
-        funcionarioID: item.funcionarioID,
-        produtoID: item.produtoID,
-        servicoID: item.servicoID,
-        dataEntrada: item.dataEntrada,
-        dataConclusao: item.dataConclusao,
-        status: item.status,
-        observacoes: item.observacoes,
-        ativo: item.ativo,
-      });
-    }
-  }, [item]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +62,23 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (item) {
+      setFormData({
+        id: item.id,
+        clienteID: item.clienteID,
+        funcionarioID: item.funcionarioID,
+        produtoID: item.produtoID,
+        servicoID: item.servicoID,
+        dataEntrada: item.dataEntrada,
+        dataConclusao: item.dataConclusao,
+        status: item.status,
+        observacoes: item.observacoes,
+        ativo: item.ativo,
+      });
+    }
+  }, [item, isOpen]);
+
   const handleSelectChange = (selectedOption, action) => {
     setFormData({
       ...formData,
@@ -86,30 +87,15 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
   };
 
   const handleSubmit = async (data) => {
-    if (!data.id) {
-      console.error('Erro ao salvar ordem de serviço: ID da ordem de serviço está ausente.');
-      return;
-    }
-
     try {
-      const dataEntrada = data.dataEntrada ? new Date(data.dataEntrada).toISOString() : null;
-      const dataConclusao = data.dataConclusao ? new Date(data.dataConclusao).toISOString() : null;
-
-      const ordemDeServicoDto = {
-        ...data,
-        dataEntrada,
-        dataConclusao,
-      };
-
-      await apiCliente.put(`/OrdemDeServico/${data.id}`, ordemDeServicoDto);
-      onSubmit(data);
-      alert('Ordem de Serviço atualizada com sucesso!');
+      await onSubmit(data);
       onClose();
     } catch (error) {
       console.error('Erro ao salvar ordem de serviço:', error);
-      console.log('formData:', data);
     }
   };
+
+  if (!item) return null;
 
   return (
     <Modal
@@ -131,10 +117,10 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         onSubmit={handleSubmit}
         onClose={onClose}
         handleSelectChange={handleSelectChange}
-        clienteOptions={clienteOptions} // Passando as opções com nome em vez de id
-        funcionarioOptions={funcionarioOptions} // Passando as opções com nome em vez de id
-        produtoOptions={produtoOptions} // Passando as opções com nome em vez de id
-        servicoOptions={servicoOptions} // Passando as opções com nome em vez de id
+        clienteOptions={clienteOptions}
+        funcionarioOptions={funcionarioOptions}
+        produtoOptions={produtoOptions}
+        servicoOptions={servicoOptions}
       />
     </Modal>
   );

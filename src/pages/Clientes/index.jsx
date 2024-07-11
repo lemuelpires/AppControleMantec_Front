@@ -90,7 +90,7 @@ const Clientes = () => {
     <ClientesContainer>
       <ClientesTitle>Clientes</ClientesTitle>
       <BotaoEspacamento>
-        <ClientesButton onClick={openNovoModal}>Adicionar Cliente</ClientesButton>
+        <ClientesButton onClick={openNovoModal}>Adicionar</ClientesButton>
       </BotaoEspacamento>
       <ClientesTable>
         <thead>
@@ -99,7 +99,7 @@ const Clientes = () => {
             <th>Endereço</th>
             <th>Telefone</th>
             <th>E-mail</th>
-            <th>Ações</th>
+            <th style={{textAlign:'center'}}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -109,10 +109,10 @@ const Clientes = () => {
               <td>{cliente.endereco}</td>
               <td>{cliente.telefone}</td>
               <td>{cliente.email}</td>
-              <td>
+              <td style={{textAlign:'center'}}>
                 <button onClick={() => openDetalhesModal(cliente)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(cliente)}>Editar</button>
-                <button onClick={() => handleExcluir(cliente.id)}>Excluir</button>
+                <button onClick={() => openEdicaoModal(cliente)} >Editar</button>
+                <button onClick={() => handleExcluir(cliente.id)} >Excluir</button>
               </td>
             </tr>
           ))}

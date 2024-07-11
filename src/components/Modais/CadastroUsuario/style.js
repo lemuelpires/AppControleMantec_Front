@@ -10,37 +10,39 @@ export const ModalContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0,0,0,0.9);
 `;
 
 export const ModalContent = styled.div`
-  background-color: #141516;
+  background-color: #2b2b2b;
   margin: 10% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
+  width: 30%;
+  border-radius: 5px;
 `;
 
 export const CloseButton = styled.span`
   color: #aaa;
   float: right;
   font-size: 28px;
-  font-weight: bold;
   &:hover,
   &:focus {
-    color: black;
+    color: red;
     text-decoration: none;
     cursor: pointer;
   }
 `;
 
 export const FormGroup = styled.div`
-  margin-bottom: 15px;
+  display:flex;
+  flex-direction: column;
+  align-items: left;
 `;
 
 export const Label = styled.label`
   font-weight: bold;
+  text-align:left;
 `;
 
 export const Input = styled.input`
@@ -51,6 +53,16 @@ export const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+`;
+
+export const Select = styled.select`
+  width: 100%;
+  height: 2em;
+  margin-bottom: 2em;
+
+  option{
+    background-color: #5d5d5f;
+  }
 `;
 
 // Estilize conforme necessário para ajustar ao design do seu aplicativo

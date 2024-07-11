@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import Modal from 'react-modal';
 import { storage } from '../../../firebase/firebaseConfig';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import styled from 'styled-components';
 import apiCliente from '../../../services/apiCliente';
+import { StyledModal, Input, Button, PreviewImage, ProgressBar } from './style';
 
 const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setPreviewImage(URL.createObjectURL(file));
   };
 
   const handleUpload = async () => {
@@ -23,7 +26,8 @@ const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
 
     uploadTask.on('state_changed', 
       (snapshot) => {
-        // Acompanhe o progresso do upload, se necessário
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
       }, 
       (error) => {
         console.error('Erro no upload:', error);
@@ -31,7 +35,6 @@ const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
       }, 
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        // Atualize o campo imagemURL do produto com a URL do Firebase
         await apiCliente.put(`/Produto/${item.id}`, { ...item, imagemURL: downloadURL });
         setIsUploading(false);
         onClose();
@@ -46,7 +49,9 @@ const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
       contentLabel="Cadastrar Imagem"
     >
       <h2>Cadastrar Imagem para {item?.nome}</h2>
+      {previewImage && <PreviewImage src={previewImage} alt="Preview" />}
       <Input type="file" onChange={handleFileChange} />
+      {isUploading && <ProgressBar progress={uploadProgress} />}
       <Button onClick={handleUpload} disabled={isUploading}>
         {isUploading ? 'Enviando...' : 'Cadastrar Imagem'}
       </Button>
@@ -56,51 +61,3 @@ const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
 };
 
 export default ModalCadastrarImagem;
-
-// Styled Components
-const StyledModal = styled(Modal)`
-  &.ReactModal__Overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &.ReactModal__Content {
-    background-color: #1f1e1e;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 100%;
-    inset: unset;
-  }
-`;
-
-const Input = styled.input`
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background: #333;
-  color: #fff;
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  margin: 10px 5px 0 0;
-  border: none;
-  border-radius: 4px;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-
-  &:disabled {
-    background-color: #aaa;
-    cursor: not-allowed;
-  }
-
-  &:last-child {
-    background-color: #f44336;
-  }
-`;

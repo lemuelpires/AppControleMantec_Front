@@ -1,10 +1,9 @@
-// src/pages/Funcionarios.js
 import React, { useState, useEffect } from 'react';
 import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento } from './style';
 import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
-import ModalEdicao from '../../components/Modais/Funcionario/ModalEdicao';
+import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao'; // Import atualizado
 import ModalNovo from '../../components/Modais/Funcionario/ModalNovo';
-import apiFuncionario from '../../services/apiCliente';
+import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 
 // Defina o elemento de aplicação para react-modal
@@ -23,7 +22,7 @@ const Funcionarios = () => {
 
   const fetchFuncionarios = async () => {
     try {
-      const response = await apiFuncionario.get('/Funcionario');
+      const response = await apiCliente.get('/Funcionario');
       setFuncionarios(response.data.filter(funcionario => funcionario.ativo)); // Exibir apenas funcionários ativos
     } catch (error) {
       console.error('Erro ao buscar funcionários:', error);
@@ -34,7 +33,7 @@ const Funcionarios = () => {
     const confirmar = window.confirm('Deseja excluir esse funcionário?');
     if (confirmar) {
       try {
-        const response = await apiFuncionario.delete(`/Funcionario/Desativar/${id}`);
+        const response = await apiCliente.delete(`/Funcionario/Desativar/${id}`);
         console.log('Funcionário Excluído:', response.data);
         fetchFuncionarios(); // Atualiza lista de funcionários após desativar
         alert('Funcionário excluído com sucesso!');
@@ -73,11 +72,11 @@ const Funcionarios = () => {
     try {
       if (formData.id) {
         // Atualização de funcionário existente
-        const response = await apiFuncionario.put(`/Funcionario/${formData.id}`, formData);
+        const response = await apiCliente.put(`/Funcionario/${formData.id}`, formData);
         console.log('Funcionário atualizado:', response.data);
       } else {
         // Criação de novo funcionário
-        const response = await apiFuncionario.post('/Funcionario', formData);
+        const response = await apiCliente.post('/Funcionario', formData);
         console.log('Novo funcionário criado:', response.data);
       }
       fetchFuncionarios(); // Atualiza lista de funcionários após salvar
@@ -91,7 +90,7 @@ const Funcionarios = () => {
     <FuncionariosContainer>
       <FuncionariosTitle>Funcionários</FuncionariosTitle>
       <BotaoEspacamento>
-        <FuncionariosButton onClick={openNovoModal}>Adicionar Funcionário</FuncionariosButton>
+        <FuncionariosButton onClick={openNovoModal}>Adicionar</FuncionariosButton>
       </BotaoEspacamento>
       <FuncionariosTable>
         <thead>
@@ -100,7 +99,7 @@ const Funcionarios = () => {
             <th>Cargo</th>
             <th>Telefone</th>
             <th>E-mail</th>
-            <th>Ações</th>
+            <th style={{textAlign:'center'}}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -110,10 +109,10 @@ const Funcionarios = () => {
               <td>{funcionario.cargo}</td>
               <td>{funcionario.telefone}</td>
               <td>{funcionario.email}</td>
-              <td>
+              <td style={{textAlign:'center'}}>
                 <button onClick={() => openDetalhesModal(funcionario)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(funcionario)}>Editar</button>
-                <button onClick={() => handleExcluir(funcionario.id)}>Excluir</button>
+                <button onClick={() => openEdicaoModal(funcionario)} >Editar</button>
+                <button onClick={() => handleExcluir(funcionario.id)} >Excluir</button>
               </td>
             </tr>
           ))}
@@ -122,7 +121,7 @@ const Funcionarios = () => {
 
       {/* Modais */}
       <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicao isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
+      <ModalEdicaoFuncionario isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
     </FuncionariosContainer>
   );

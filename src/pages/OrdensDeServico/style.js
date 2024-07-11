@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const OrdemDeServicoContainer = styled.div`
   padding: 20px;
   min-height: 77.8vh;
+  background-color: #242424;
 `;
 
 export const OrdemDeServicoTitle = styled.h2`
@@ -10,21 +11,21 @@ export const OrdemDeServicoTitle = styled.h2`
 `;
 
 export const OrdemDeServicoButton = styled.button`
-  padding: 10px 20px;
-  margin-bottom: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    flex-direction: column;
+    margin-right: 5px;
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 
-  &:hover {
-    background-color: #0056b3;
-  }
+    &:hover {
+      background-color: #0056c8;
+    }
 `;
 
 export const OrdemDeServicoTable = styled.table`
-  width: 100%;
+width: 100%;
   border-collapse: collapse;
 
   th, td {
@@ -36,8 +37,23 @@ export const OrdemDeServicoTable = styled.table`
   th {
     background-color: #141516;
   }
+
   tr:hover {
-    background-color: #141516;
+    background-color: #3c3c3c;
+  }
+
+  button {
+    flex-direction: column;
+    margin-right: 5px;
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056c8;
+    }
   }
 `;
 
@@ -46,4 +62,12 @@ export const BotaoEspacamento = styled.div`
   width: 100%;
   justify-content: flex-end;
   margin-bottom: 1em;
+`;
+
+export const EstoqueButton = styled.div
+`
+`;
+
+export const EstoqueContainer = styled.div
+`
 `;

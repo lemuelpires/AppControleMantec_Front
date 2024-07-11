@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const ServicoContainer = styled.div`
   padding: 20px;
   min-height: 77.8vh;
+  background-color: #242424;
 `;
 
 export const ServicoTitle = styled.h2`
@@ -10,17 +11,17 @@ export const ServicoTitle = styled.h2`
 `;
 
 export const ServicoButton = styled.button`
-  padding: 10px 20px;
-  margin-bottom: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    flex-direction: column;
+    margin-right: 5px;
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 
-  &:hover {
-    background-color: #0056b3;
-  }
+    &:hover {
+      background-color: #0056c8;
+    }
 `;
 
 export const ServicoTable = styled.table`
@@ -38,7 +39,21 @@ export const ServicoTable = styled.table`
   }
 
   tr:hover {
-    background-color: #141516;
+    background-color: #3c3c3c;
+  }
+
+  button {
+    flex-direction: column;
+    margin-right: 5px;
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056c8;
+    }
   }
 `;
 

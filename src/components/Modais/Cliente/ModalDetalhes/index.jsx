@@ -1,7 +1,6 @@
-// src/components/Modais/ModalDetalhes.js
 import React from 'react';
 import Modal from 'react-modal';
-import { Titulo } from './style';
+import { Titulo, Container } from './style';
 
 // Definir as classes do Modal
 const modalStyles = {
@@ -19,6 +18,7 @@ const modalStyles = {
     maxWidth: '500px',
     width: '100%',
     inset: 'unset',
+    color: '#ffffff',
   },
 };
 
@@ -40,11 +40,15 @@ const ModalDetalhes = ({ isOpen, onClose, item }) => {
           <h2>Detalhes do Cliente</h2>
         </Titulo>
         {item ? (
-          Object.keys(item).map((key) => (
-            <div key={key}>
-              <strong>{key}:</strong> {item[key]}
-            </div>
-          ))
+          <Container>
+            {Object.keys(item).map((key) => (
+              key !== 'ativo' && (
+                <div key={key}>
+                  <strong>{key}:</strong> {item[key]}
+                </div>
+              )
+            ))}
+          </Container>
         ) : (
           <p>Cliente não encontrado.</p>
         )}
