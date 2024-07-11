@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaMapMarkerAlt } from 'react-icons/fa'; // Importe o ícone de localização
 import {
     FooterContainer,
     ContactContainer,
@@ -7,7 +8,8 @@ import {
     WhatsAppButton,
     DefaultInfoContainer,
     DefaultInfoTitle,
-    DefaultInfoText
+    DefaultInfoText,
+    Mapa,
 } from './style';
 
 const Footer = () => {
@@ -23,12 +25,20 @@ const Footer = () => {
                 <WhatsAppButton onClick={handleWhatsAppRedirect}>Enviar mensagem</WhatsAppButton>
             </ContactContainer>
 
-            {/* Informações Padrão - Exemplo */}
             <DefaultInfoContainer>
                 <DefaultInfoTitle>Informações Gerais</DefaultInfoTitle>
-                <DefaultInfoText>Endereço: Rua Exemplo, 123</DefaultInfoText>
-                <DefaultInfoText>E-mail: exemplo@example.com</DefaultInfoText>
-                <DefaultInfoText>Telefone: (12) 3456-7890</DefaultInfoText>
+                <DefaultInfoText>
+                    Endereço: Rua Américo Vezzani, 855, Bairro Jardim Italia - Matão/SP
+                    <Mapa 
+                        href="https://www.google.com/maps/search/?api=1&query=Rua+Américo+Vezzani,+855,+Bairro+Jardim+Italia+-+Matão/SP" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                    >
+                        <FaMapMarkerAlt style={{ marginLeft: '8px' }} /> Ver no mapa
+                    </Mapa>
+                </DefaultInfoText>
+                <DefaultInfoText>E-mail: mantec10design@gmail.com</DefaultInfoText>
+                <DefaultInfoText>Telefone: (16) 9926-14410</DefaultInfoText>
             </DefaultInfoContainer>
         </FooterContainer>
     );
