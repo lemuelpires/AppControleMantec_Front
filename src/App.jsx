@@ -11,24 +11,42 @@ import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import Footer from './components/Footer';
 import Modal from 'react-modal';
+import Celular from './components/PaginasComuns/Celular';
+import Computador from './components/PaginasComuns/Computador';
+import Tablet from './components/PaginasComuns/Tablet';
+import Notebook from './components/PaginasComuns/Notebook';
+import Login from './components/Modais/Login';
+import Unauthorized from './components/Modais/Unauthorized';
+import { AuthProvider } from './context/authContext';
+import ProtectedRoute from './routes/protectedRoute';
+import ModalCadastroUsuario from './components/Modais/CadastroUsuario';
 
 Modal.setAppElement('#root');
 
 function App() {
   return (
-    <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/clientes" element={<Clientes />} />
-        <Route path="/funcionarios" element={<Funcionarios />} />
-        <Route path="/estoque" element={<Estoque />} />
-        <Route path="/ordem-de-servico" element={<OrdemDeServico />} />
-        <Route path="/produtos" element={<Produtos />} />
-        <Route path="/servicos" element={<Servicos />} />
-      </Routes>
-      <Footer />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/clientes" element={<ProtectedRoute element={<Clientes />} />} />
+          <Route path="/funcionarios" element={<ProtectedRoute element={<Funcionarios />} />} />
+          <Route path="/estoque" element={<ProtectedRoute element={<Estoque />} />} />
+          <Route path="/ordem-de-servico" element={<ProtectedRoute element={<OrdemDeServico />} />} />
+          <Route path="/produtos" element={<ProtectedRoute element={<Produtos />} />} />
+          <Route path="/servicos" element={<ProtectedRoute element={<Servicos />} />} />
+          <Route path="/cadastro-usuario" element={<ProtectedRoute element={<ModalCadastroUsuario />} />} />
+          <Route path="/celular" element={<Celular />} />
+          <Route path="/computador" element={<Computador />} />
+          <Route path="/tablet" element={<Tablet />} />
+          <Route path="/notebook" element={<Notebook />} />
+        </Routes>
+        <Footer />
+      </Router>
+    </AuthProvider>
   );
 }
 
