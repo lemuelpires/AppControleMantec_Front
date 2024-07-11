@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { CloseButton, LoginForm, ModalContainer, ModalContent, Input, Label } from './style';
-import { auth } from '../../../firebase/firebaseConfig'; // Importe signInWithEmailAndPassword e sendPasswordResetEmail
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'; // Importe diretamente de firebase/auth
-import ModalCadastroUsuario from '../CadastroUsuario/index'; // Importe o modal de cadastro
+import { CloseButton, LoginForm, ModalContainer, ModalContent, Input, Label, EspacamentoCadastro, Button } from './style';
+import { auth } from '../../../firebase/firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import ModalCadastroUsuario from '../CadastroUsuario/index';
+import ResetPasswordModal from '../RedefinicaoSenha';
+import { useNavigate } from 'react-router-dom';
 
 const ModalLogin = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [isCadastroOpen, setIsCadastroOpen] = useState(false); // Estado para controlar a abertura do modal de cadastro
-  const [resetEmail, setResetEmail] = useState(''); // Estado para o email de recuperação de senha
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const { currentUser } = auth; // Obtém o usuário atualmente autenticado, se houver
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,39 +21,22 @@ const ModalLogin = ({ isOpen, onClose }) => {
       await signInWithEmailAndPassword(auth, email, password);
       alert('Login efetuado com sucesso!');
       onClose();
+      navigate('/');
     } catch (error) {
       console.error('Erro no login:', error);
       setError('Credenciais incorretas. Verifique seus dados e tente novamente.');
     }
   };
 
-  const handleForgotPassword = async () => {
-    try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      alert('Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.');
-      setResetEmail(''); // Limpa o campo de email de recuperação após o envio
-    } catch (error) {
-      console.error('Erro ao enviar email de recuperação:', error);
-      setError('Erro ao enviar email de recuperação. Verifique o email e tente novamente.');
-    }
-  };
-
-  const handleCadastro = (userData) => {
-    // Lógica para cadastrar usuário (a implementação depende de como você vai gerenciar isso no Firebase ou na API)
-    console.log('Dados do novo usuário:', userData);
-    // Fechar o modal de cadastro após a submissão
-    setIsCadastroOpen(false);
-  };
-
-  const openCadastroModal = () => {
-    setIsCadastroOpen(true); // Abrir o modal de cadastro ao clicar em "Cadastrar"
+  const openResetPasswordModal = () => {
+    setIsResetPasswordOpen(true);
   };
 
   return (
     <>
       <ModalContainer isOpen={isOpen}>
         <ModalContent>
-          <CloseButton onClick={onClose}>X</CloseButton>
+          <CloseButton onClick={onClose}>x</CloseButton>
           <h2>Login</h2>
           <LoginForm onSubmit={handleSubmit}>
             <Label>
@@ -72,17 +58,16 @@ const ModalLogin = ({ isOpen, onClose }) => {
               />
             </Label>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            <button type="submit">Conectar</button>
+            <Button type="submit">Conectar</Button>
           </LoginForm>
-          <div>
-            <a href="#" onClick={handleForgotPassword}>Esqueci a senha</a> | <a href="#" onClick={openCadastroModal}>Cadastrar</a>
-          </div>
+          <EspacamentoCadastro>
+            <a href="#" onClick={openResetPasswordModal}>Esqueci a senha</a>
+          </EspacamentoCadastro>
         </ModalContent>
       </ModalContainer>
       
-      {/* Renderização condicional do modal de cadastro */}
-      {isCadastroOpen && (
-        <ModalCadastroUsuario isOpen={isCadastroOpen} onClose={() => setIsCadastroOpen(false)} onCadastro={handleCadastro} />
+      {isResetPasswordOpen && (
+        <ResetPasswordModal isOpen={isResetPasswordOpen} onClose={() => setIsResetPasswordOpen(false)} />
       )}
     </>
   );
