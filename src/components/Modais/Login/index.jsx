@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
-import { CloseButton, LoginForm, ModalContainer, ModalContent, Input, Label, EspacamentoCadastro, Button } from './style';
+import { 
+  CloseButton, 
+  LoginForm, 
+  ModalContainer, 
+  ModalContent, 
+  Input, 
+  Label, 
+  EspacamentoCadastro, 
+  Button 
+} from './style';
 import { auth } from '../../../firebase/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import ModalCadastroUsuario from '../CadastroUsuario/index';
 import ResetPasswordModal from '../RedefinicaoSenha';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +19,6 @@ const ModalLogin = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
-  const { currentUser } = auth; // Obtém o usuário atualmente autenticado, se houver
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -34,9 +41,9 @@ const ModalLogin = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <ModalContainer isOpen={isOpen}>
+      <ModalContainer isOpen={isOpen} style={{ zIndex: 10 }}>
         <ModalContent>
-          <CloseButton onClick={onClose}>x</CloseButton>
+          <CloseButton onClick={onClose}>&times;</CloseButton>
           <h2>Login</h2>
           <LoginForm onSubmit={handleSubmit}>
             <Label>
@@ -61,7 +68,7 @@ const ModalLogin = ({ isOpen, onClose }) => {
             <Button type="submit">Conectar</Button>
           </LoginForm>
           <EspacamentoCadastro>
-            <a href="#" onClick={openResetPasswordModal}>Esqueci a senha</a>
+            <a type="button" onClick={openResetPasswordModal}>Esqueci a senha?</a>
           </EspacamentoCadastro>
         </ModalContent>
       </ModalContainer>

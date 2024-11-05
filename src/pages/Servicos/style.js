@@ -3,7 +3,6 @@ import styled from 'styled-components';
 export const ServicoContainer = styled.div`
   padding: 20px;
   min-height: 77.8vh;
-  background-color: #242424;
 `;
 
 export const ServicoTitle = styled.h2`

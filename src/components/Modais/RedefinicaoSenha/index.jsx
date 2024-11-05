@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ModalContainer, ModalContent, CloseButton, Input, Label } from './style';
+import { ModalContainer, ModalContent, CloseButton, Input, Label, Button } from './style';
 import { auth } from '../../../firebase/firebaseConfig';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
@@ -39,7 +39,7 @@ const ResetPasswordModal = ({ isOpen, onClose }) => {
           />
         </Label>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button onClick={handleResetPassword}>Enviar Email de Recuperação</button>
+        <Button onClick={handleResetPassword}>Enviar Email de Recuperação</Button>
       </ModalContent>
     </ModalContainer>
   );

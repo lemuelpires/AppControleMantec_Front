@@ -7,6 +7,8 @@ export const Form = styled.form`
 
 export const FormGroup = styled.div`
   margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
 `;
 
 export const Label = styled.label`
@@ -18,7 +20,7 @@ export const Input = styled.input`
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  width: 100%;
+  width: 70%;
 `;
 
 export const Button = styled.button`
@@ -33,4 +35,10 @@ export const Button = styled.button`
   &:hover {
     background-color: #0056b3;
   }
+`;
+
+export const ContainerBotao = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 `;

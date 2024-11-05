@@ -113,7 +113,7 @@ const Produto = () => {
             <th>Preço</th>
             <th>Fornecedor</th>
             <th>Data de Entrada</th>
-            <th style={{textAlign:'center'}}>Ações</th>
+            <th style={{ textAlign: 'center' }}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -126,7 +126,7 @@ const Produto = () => {
               <td>{"R$ " + produto.preco.toFixed(2)}</td>
               <td>{produto.fornecedor}</td>
               <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
-              <td style={{textAlign:'center'}}>
+              <td style={{ textAlign: 'center' }}>
                 <button onClick={() => openDetalhesModal(produto)}>Detalhes</button>
                 <button onClick={() => openEdicaoModal(produto)}>Editar</button>
                 <button onClick={() => handleExcluir(produto.id)}>Excluir</button>
@@ -138,14 +138,13 @@ const Produto = () => {
           ))}
         </tbody>
       </ProdutoTable>
-
       {/* Modais */}
       <ModalDetalhesProduto isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoProduto isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoProduto isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
       <ModalCadastrarImagem isOpen={isCadastrarImagemModalOpen} onClose={closeModal} item={selectedItem} />
     </ProdutoContainer>
-  );
+  );  
 };
 
 export default Produto;

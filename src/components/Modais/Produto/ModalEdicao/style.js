@@ -40,11 +40,12 @@ export const ModalContent = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    justify-content: space-between;
 
     label {
       color: #f1f1f1;
       margin-bottom: 10px;
+      width:50%;
     }
 
     input, textarea, select {

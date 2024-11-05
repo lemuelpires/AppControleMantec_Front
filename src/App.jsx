@@ -20,6 +20,7 @@ import Unauthorized from './components/Modais/Unauthorized';
 import { AuthProvider } from './context/authContext';
 import ProtectedRoute from './routes/protectedRoute';
 import ModalCadastroUsuario from './components/Modais/CadastroUsuario';
+import ResetPasswordModal from './components/Modais/RedefinicaoSenha';
 
 Modal.setAppElement('#root');
 
@@ -43,6 +44,7 @@ function App() {
           <Route path="/computador" element={<Computador />} />
           <Route path="/tablet" element={<Tablet />} />
           <Route path="/notebook" element={<Notebook />} />
+          <Route path="/esqueci-senha" element={<ResetPasswordModal/>} />
         </Routes>
         <Footer />
       </Router>
