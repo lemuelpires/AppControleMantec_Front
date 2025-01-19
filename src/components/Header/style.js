@@ -25,6 +25,7 @@ export const MenuHeader = styled.div`
   span {
     color: #d9d9d9;
     font-size: 24px;
+    font-style: italic;
   }
 `;
 

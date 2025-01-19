@@ -18,6 +18,7 @@ import tablet from '../../assets/img/tablet.avif';
 import computador from '../../assets/img/computador.webp';
 import notebook from '../../assets/img/notebook.jpeg';
 import carregador from '../../assets/img/carregador_kapbom.webp';
+//import fundo2 from '../../assets/fundo/fundo4.png';
 
 const Dashboard = () => {
     const servicesData = [

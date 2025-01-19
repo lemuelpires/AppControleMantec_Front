@@ -4,6 +4,7 @@ import { FaBars, FaSignInAlt, FaUser } from 'react-icons/fa';
 import ModalLogin from '../Modais/Login';
 import useAuthentication from '../../hooks/userAuthentication';
 import ModalCadastroUsuario from '../Modais/CadastroUsuario'; // Importa o modal de cadastro de usuário
+import logo from '../../assets/icone.png'; // Importa a logo da empresa
 import {
   MenuContainer,
   Espacamento,
