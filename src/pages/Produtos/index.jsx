@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ProdutoContainer, ProdutoTitle, ProdutoTable, ProdutoButton, BotaoEspacamento } from './style';
+import { ProdutoContainer, ProdutoTitle, ProdutoTable, ProdutoButton, BotaoEspacamento, IconWrapper } from './style';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage, faPlus, faInfoCircle, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhesProduto from '../../components/Modais/Produto/ModalDetalhes';
 import ModalEdicaoProduto from '../../components/Modais/Produto/ModalEdicao';
 import ModalNovoProduto from '../../components/Modais/Produto/ModalNovo';
 import ModalCadastrarImagem from '../../components/Modais/CadastrarImagem';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-solid-svg-icons';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 
@@ -101,7 +101,9 @@ const Produto = () => {
     <ProdutoContainer>
       <ProdutoTitle>Produtos</ProdutoTitle>
       <BotaoEspacamento>
-        <ProdutoButton onClick={openNovoModal}>Adicionar</ProdutoButton>
+        <ProdutoButton onClick={openNovoModal}>
+          <FontAwesomeIcon icon={faPlus} style={{ color: 'green' }} />
+        </ProdutoButton>
       </BotaoEspacamento>
       <ProdutoTable>
         <thead>
@@ -109,7 +111,7 @@ const Produto = () => {
             <th>Imagem</th>
             <th>Nome</th>
             <th>Descrição</th>
-            <th>Quantidade</th>
+            <th>Qtde</th>
             <th>Preço</th>
             <th>Fornecedor</th>
             <th>Data de Entrada</th>
@@ -126,25 +128,24 @@ const Produto = () => {
               <td>{"R$ " + produto.preco.toFixed(2)}</td>
               <td>{produto.fornecedor}</td>
               <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
-              <td style={{ textAlign: 'center' }}>
-                <button onClick={() => openDetalhesModal(produto)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(produto)}>Editar</button>
-                <button onClick={() => handleExcluir(produto.id)}>Excluir</button>
-                <button onClick={() => openCadastrarImagemModal(produto)}>
-                  <FontAwesomeIcon icon={faImage} />
-                </button>
+              <td>
+                <IconWrapper>
+                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', cursor: 'pointer' }} onClick={() => openDetalhesModal(produto)} />
+                  <FontAwesomeIcon icon={faEdit} style={{ color: 'orange', cursor: 'pointer' }} onClick={() => openEdicaoModal(produto)} />
+                  <FontAwesomeIcon icon={faTrash} style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleExcluir(produto.id)} />
+                  <FontAwesomeIcon icon={faImage} style={{ color: 'purple', cursor: 'pointer' }} onClick={() => openCadastrarImagemModal(produto)} />
+                </IconWrapper>
               </td>
             </tr>
           ))}
         </tbody>
       </ProdutoTable>
-      {/* Modais */}
       <ModalDetalhesProduto isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoProduto isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoProduto isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
       <ModalCadastrarImagem isOpen={isCadastrarImagemModalOpen} onClose={closeModal} item={selectedItem} />
     </ProdutoContainer>
-  );  
+  );
 };
 
 export default Produto;
