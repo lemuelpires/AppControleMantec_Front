@@ -79,6 +79,33 @@ const Dashboard = () => {
                 </Card>
                 {/* Repita o padrão para os outros produtos */}
             </ProductContainer>
+
+            {/* Botão Flutuante do WhatsApp */}
+            <a
+                href="https://wa.me/5516992614410"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    backgroundColor: '#25D366',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    width: '60px',
+                    height: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                    zIndex: 1000,
+                }}
+            >
+                <i
+                    className="fab fa-whatsapp"
+                    style={{ fontSize: '24px' }}
+                ></i>
+            </a>
         </HomeContainer>
     );
 };
