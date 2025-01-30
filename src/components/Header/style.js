@@ -31,6 +31,8 @@ export const MenuHeader = styled.div`
 
 export const MenuIcon = styled.div`
   cursor: pointer;
+  display: flex;
+  align-self: center;
 `;
 
 export const Sidebar = styled.div`
@@ -55,6 +57,7 @@ export const Sidebar = styled.div`
 
 export const MenuItem = styled.li`
   padding: 10px 0;
+  text-align: left;
 
   &:hover {
     background-color: #444;
@@ -68,6 +71,18 @@ export const MenuLink = styled(NavLink)`
   &:hover {
     text-decoration: none;
     color: #d9d9d9;
+    cursor: pointer;
+  }
+`;
+
+export const SubMenuLink = styled(NavLink)`
+  text-decoration: none;
+  color: white;
+  padding-left: 20px;
+
+  &:hover {
+    text-decoration: none;
+    color:rgb(201, 197, 197);
     cursor: pointer;
   }
 `;
@@ -88,5 +103,22 @@ export const UserMenuItem = styled.div`
 
   &:hover {
     background-color: #444;
+  }
+`;
+
+export const SubMenu = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  padding-left: 20px;
+  align-self: flex-start;
+  border-left: 3px solid #555;
+`;
+
+export const SubMenuItem = styled.li`
+  padding: 5px 0;
+
+  &:hover {
+    background-color: #555;
   }
 `;

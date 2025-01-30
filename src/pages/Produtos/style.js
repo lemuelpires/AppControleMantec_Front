@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const ProdutoContainer = styled.div`
-  padding: 0 8em;
+  padding: 0 4em;
   padding-bottom: 5em;
   min-height: 77.8vh;
   transition: padding 0.3s ease, min-height 0.3s ease; /* Transição suave para o ajuste de padding e min-height */
@@ -64,15 +64,16 @@ export const BotaoEspacamento = styled.div`
 export const ProdutoButton = styled.button`
   flex-direction: column;
   margin-right: 5px;
-  padding: 5px 10px;
+  background-color:rgb(109, 165, 18); /* Cor de fundo do botão */
+  padding: 5px 9px;
   color: white;
-  border: none;
-  border-radius: 4px;
+  border: solid 1px rgba(228, 252, 11, 0.51); /* Borda do botão */
+  border-radius: 100px;
   cursor: pointer;
   transition: all 0.3s ease; /* Transição suave para todos os estilos do botão */
 
   &:hover {
-    background-color: #0056c8;
+    background-color:rgb(114, 167, 97);
   }
 
   @media (max-width: 600px) {
@@ -92,33 +93,33 @@ export const ProdutoButton = styled.button`
 
 export const IconWrapper = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
+  color:rgb(37, 37, 37); /* Cor padrão dos ícones */
   gap: 10px;
 
   svg {
-    font-size: 1.2em;
+    font-size: 1em;
     transition: transform 0.3s ease, color 0.3s ease; /* Transição suave para transformação e cor */
 
     &:hover {
-      transform: scale(1.2);
+      transform: scale(1);
       color: #007bff; /* Cor de destaque no hover */
     }
   }
 
   @media (max-width: 550px) {
     flex-wrap: wrap; /* Quebra de linha para telas muito pequenas */
-    font-size: 0.8em;
+    font-size: 0.7em;
     transition: transform 0.3s ease, color 0.3s ease; /* Transição suave para transformação e cor */
 
     &:hover {
-      transform: scale(0.8);
+      transform: scale(0.7);
       color: #007bff; /* Cor de destaque no hover */
     }
   }
 
   @media (max-width: 450px) {
-    font-size: 0.7em; /* Tamanho de fonte reduzido para telas menores que 450px */
+    font-size: 0.6em; /* Tamanho de fonte reduzido para telas menores que 450px */
   }
 `;
 

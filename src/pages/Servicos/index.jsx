@@ -5,6 +5,7 @@ import ModalEdicaoServico from '../../components/Modais/Servico/ModalEdicao';
 import ModalNovoServico from '../../components/Modais/Servico/ModalNovo';
 import apiServico from '../../services/apiCliente';
 import Modal from 'react-modal';
+import { FaPlus, FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa'; // Importing icons
 
 // Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -90,7 +91,9 @@ const Servico = () => {
     <ServicoContainer>
       <ServicoTitle>Serviços</ServicoTitle>
       <BotaoEspacamento>
-        <ServicoButton onClick={openNovoModal}>Adicionar</ServicoButton>
+        <ServicoButton onClick={openNovoModal}>
+          <FaPlus />
+        </ServicoButton>
       </BotaoEspacamento>
       <ServicoTable>
         <thead>
@@ -98,7 +101,7 @@ const Servico = () => {
             <th>Nome</th>
             <th>Descrição</th>
             <th>Preço</th>
-            <th style={{textAlign:'center'}}>Ações</th>
+            <th style={{ textAlign: 'center' }}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -106,11 +109,11 @@ const Servico = () => {
             <tr key={servico.id}>
               <td>{servico.nome}</td>
               <td>{servico.descricao}</td>
-              <td>{servico.preco}</td>
-              <td style={{textAlign:'center'}}>
-                <button onClick={() => openDetalhesModal(servico)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(servico)}>Editar</button>
-                <button onClick={() => handleExcluir(servico.id)}>Excluir</button>
+              <td>R${servico.preco},00</td>
+              <td style={{ textAlign: 'center' }}>
+                <i onClick={() => openDetalhesModal(servico)} className="fas fa-eye"></i>
+                <i onClick={() => openEdicaoModal(servico)} className="fas fa-edit"></i>
+                <i onClick={() => handleExcluir(servico.id)} className="fas fa-trash-alt"></i>
               </td>
             </tr>
           ))}
