@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 
 export const ClientesContainer = styled.div`
-  padding: 0 8em;
+  padding: 0 4em;
   padding-bottom: 5em;
   min-height: 77.8vh;
   transition: padding 0.3s ease, min-height 0.3s ease;
 
   @media (max-width: 800px) {
-    padding: 0 5em;
+    padding: 0 4em;
   }
 
   @media (max-width: 600px) {
@@ -64,15 +64,16 @@ export const BotaoEspacamento = styled.div`
 export const ClientesButton = styled.button`
   flex-direction: column;
   margin-right: 5px;
-  padding: 5px 10px;
+  background-color:rgb(109, 165, 18); /* Cor de fundo do botão */
+  padding: 5px 9px;
   color: white;
-  border: none;
-  border-radius: 4px;
+  border: solid 1px rgba(228, 252, 11, 0.51); /* Borda do botão */
+  border-radius: 100px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* Transição suave para todos os estilos do botão */
 
   &:hover {
-    background-color: #0056c8;
+    background-color:rgb(114, 167, 97);
   }
 
   @media (max-width: 600px) {
@@ -185,8 +186,8 @@ export const ClientesTable = styled.table`
 
 export const IconWrapper = styled.div`
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 10px;
+  Justify-content: center;
   cursor: pointer;
+  gap: 10px;
+  color:rgb(37, 37, 37);
 `;

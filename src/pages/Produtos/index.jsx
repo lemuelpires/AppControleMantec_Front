@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ProdutoContainer, ProdutoTitle, ProdutoTable, ProdutoButton, BotaoEspacamento, IconWrapper } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faPlus, faInfoCircle, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faPlus, faInfoCircle, faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhesProduto from '../../components/Modais/Produto/ModalDetalhes';
 import ModalEdicaoProduto from '../../components/Modais/Produto/ModalEdicao';
 import ModalNovoProduto from '../../components/Modais/Produto/ModalNovo';
@@ -102,7 +102,7 @@ const Produto = () => {
       <ProdutoTitle>Produtos</ProdutoTitle>
       <BotaoEspacamento>
         <ProdutoButton onClick={openNovoModal}>
-          <FontAwesomeIcon icon={faPlus} style={{ color: 'green' }} />
+          <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
         </ProdutoButton>
       </BotaoEspacamento>
       <ProdutoTable>
@@ -130,10 +130,10 @@ const Produto = () => {
               <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
               <td>
                 <IconWrapper>
-                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', cursor: 'pointer' }} onClick={() => openDetalhesModal(produto)} />
-                  <FontAwesomeIcon icon={faEdit} style={{ color: 'orange', cursor: 'pointer' }} onClick={() => openEdicaoModal(produto)} />
-                  <FontAwesomeIcon icon={faTrash} style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleExcluir(produto.id)} />
-                  <FontAwesomeIcon icon={faImage} style={{ color: 'purple', cursor: 'pointer' }} onClick={() => openCadastrarImagemModal(produto)} />
+                  <FontAwesomeIcon icon={faEye} style={{ cursor: 'pointer' }} onClick={() => openDetalhesModal(produto)} />
+                  <FontAwesomeIcon icon={faEdit} style={{ cursor: 'pointer' }} onClick={() => openEdicaoModal(produto)} />
+                  <FontAwesomeIcon icon={faTrash} style={{ cursor: 'pointer' }} onClick={() => handleExcluir(produto.id)} />
+                  <FontAwesomeIcon icon={faImage} style={{ cursor: 'pointer' }} onClick={() => openCadastrarImagemModal(produto)} />
                 </IconWrapper>
               </td>
             </tr>

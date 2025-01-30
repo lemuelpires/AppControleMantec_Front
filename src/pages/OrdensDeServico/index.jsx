@@ -5,6 +5,7 @@ import ModalEdicaoOrdemDeServico from '../../components/Modais/OrdemDeServico/Mo
 import ModalNovoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalNovo';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
+import { FaPlus, FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa'; // Ícones
 
 // Definir o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -168,7 +169,9 @@ const OrdemDeServico = () => {
     <OrdemDeServicoContainer>
       <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
       <BotaoEspacamento>
-        <OrdemDeServicoButton onClick={openNovoModal}>Adicionar</OrdemDeServicoButton>
+        <OrdemDeServicoButton onClick={openNovoModal}>
+          <FaPlus /> {/* Ícone de Adicionar */}
+        </OrdemDeServicoButton>
       </BotaoEspacamento>
       {loading ? (
         <p>Carregando...</p>
@@ -182,7 +185,7 @@ const OrdemDeServico = () => {
               <th>Serviço</th>
               <th>Data de Entrada</th>
               <th>Data de Conclusão</th>
-              <th style={{textAlign:'center'}}>Ações</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -193,17 +196,19 @@ const OrdemDeServico = () => {
                 <td>{produtos[ordem.produtoID]}</td>
                 <td>{servicos[ordem.servicoID]}</td>
                 <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
-                <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : '-'}</td>
-                <td>
-                  <button onClick={() => openDetalhesModal(ordem)}>Detalhes</button>
-                  <button onClick={() => openEdicaoModal(ordem)}>Editar</button>
-                  <button onClick={() => handleExcluir(ordem.id)}>Excluir</button>
+                <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
+                <td style={{ textAlign: 'center' }}>
+                  <FaEye onClick={() => openDetalhesModal(ordem)} /> {/* Ícone de Detalhes */}
+                  <FaEdit onClick={() => openEdicaoModal(ordem)} /> {/* Ícone de Edição */}
+                  <FaTrashAlt onClick={() => handleExcluir(ordem.id)} /> {/* Ícone de Excluir */}
                 </td>
               </tr>
             ))}
           </tbody>
         </OrdemDeServicoTable>
       )}
+
+      {/* Modais */}
       <ModalDetalhesOrdemDeServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoOrdemDeServico isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoOrdemDeServico isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />

@@ -6,7 +6,10 @@ import ModalNovo from '../../components/Modais/Cliente/ModalNovo';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faEdit, faTrash, faPlusCircle, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
+import { faPlusSquare } from '@fortawesome/free-solid-svg-icons/faPlusSquare';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 
 // Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -94,7 +97,7 @@ const Clientes = () => {
       <ClientesTitle>Clientes</ClientesTitle>
       <BotaoEspacamento>
         <ClientesButton onClick={openNovoModal}>
-          <FontAwesomeIcon icon={faEdit} style={{ color: 'green' }} />
+          <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
         </ClientesButton>
       </BotaoEspacamento>
       <ClientesTable>
@@ -116,9 +119,9 @@ const Clientes = () => {
               <td>{new Date(cliente.dataCadastro).toLocaleDateString()}</td>
               <td>
                 <IconWrapper>
-                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', cursor: 'pointer' }} onClick={() => openDetalhesModal(cliente)} />
-                  <FontAwesomeIcon icon={faEdit} style={{ color: 'orange', cursor: 'pointer' }} onClick={() => openEdicaoModal(cliente)} />
-                  <FontAwesomeIcon icon={faTrash} style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleExcluir(cliente.id)} />
+                  <FontAwesomeIcon icon={faEye} style={{ cursor: 'pointer' }} onClick={() => openDetalhesModal(cliente)} />
+                  <FontAwesomeIcon icon={faEdit} style={{cursor: 'pointer' }} onClick={() => openEdicaoModal(cliente)} />
+                  <FontAwesomeIcon icon={faTrash} style={{cursor: 'pointer' }} onClick={() => handleExcluir(cliente.id)} />
                 </IconWrapper>
               </td>
             </tr>

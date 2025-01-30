@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { FaBars, FaSignInAlt, FaUser } from 'react-icons/fa';
+import { FaBars, FaSignInAlt, FaUser, FaCaretDown, FaCaretUp } from 'react-icons/fa';
 import ModalLogin from '../Modais/Login';
 import useAuthentication from '../../hooks/userAuthentication';
 import ModalCadastroUsuario from '../Modais/CadastroUsuario'; // Importa o modal de cadastro de usuário
@@ -13,8 +13,11 @@ import {
   Sidebar,
   MenuItem,
   MenuLink,
+  SubMenuLink,
   UserMenu,
   UserMenuItem,
+  SubMenu,
+  SubMenuItem,
 } from './style'; // Importa estilos do arquivo styles.js
 
 const Menu = () => {
@@ -22,6 +25,7 @@ const Menu = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isCadastroUsuarioOpen, setIsCadastroUsuarioOpen] = useState(false); // Estado para controlar se o modal de cadastro de usuário está aberto
+  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // Estado para controlar se o submenu está aberto
   const { loading, error, logout, auth } = useAuthentication(); // Use seu hook de autenticação
 
   const toggleMenu = () => {
@@ -30,6 +34,10 @@ const Menu = () => {
 
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);
+  };
+
+  const toggleSubMenu = () => {
+    setIsSubMenuOpen(!isSubMenuOpen);
   };
 
   const navigate = useNavigate();
@@ -69,7 +77,7 @@ const Menu = () => {
         <NavLink to='/'><span>Mantec</span></NavLink>
         <Espacamento>
           <MenuIcon onClick={toggleMenu}>
-            <FaBars size='1.50em' />
+            <FaBars size='1.55em' />
           </MenuIcon>
           {loading ? (
             <p>Carregando...</p>
@@ -79,14 +87,14 @@ const Menu = () => {
             <>
               {auth.currentUser ? (
                 <>
-                  <FaUser 
-                    onClick={toggleUserMenu} 
-                    style={{ cursor: 'pointer' }} 
+                  <FaUser
+                    onClick={toggleUserMenu}
+                    style={{ cursor: 'pointer' }}
                     size='1.40em'
                     onMouseEnter={() => setIsUserMenuOpen(true)}
                   />
-                  <UserMenu 
-                    open={isUserMenuOpen} 
+                  <UserMenu
+                    open={isUserMenuOpen}
                     onMouseLeave={handleUserMenuMouseLeave}
                   >
                     <UserMenuItem style={{ cursor: 'pointer' }} >{auth.currentUser.email}</UserMenuItem>
@@ -94,10 +102,10 @@ const Menu = () => {
                   </UserMenu>
                 </>
               ) : (
-                <FaSignInAlt 
-                  onClick={toggleLoginModal} 
+                <FaSignInAlt
+                  onClick={toggleLoginModal}
                   size='1.40em'
-                  style={{ cursor: 'pointer' }} 
+                  style={{ cursor: 'pointer' }}
                 />
               )}
               <ModalLogin isOpen={isLoginModalOpen} onClose={toggleLoginModal} />
@@ -117,25 +125,44 @@ const Menu = () => {
                   Início
                 </MenuLink>
               </MenuItem>
-              <MenuItem>
-                <MenuLink to="/clientes" onClick={toggleMenu}>
-                  Clientes
+              <MenuItem onClick={toggleSubMenu}>
+                <MenuLink as="div">
+                  Cadastros {isSubMenuOpen ? <FaCaretUp size="0.8em" /> : <FaCaretDown size="0.8em" />}
                 </MenuLink>
-              </MenuItem>
-              <MenuItem>
-                <MenuLink to="/produtos" onClick={toggleMenu}>
-                  Produtos
-                </MenuLink>
-              </MenuItem>
-              <MenuItem>
-                <MenuLink to="/estoque" onClick={toggleMenu}>
-                  Estoque
-                </MenuLink>
-              </MenuItem>
-              <MenuItem>
-                <MenuLink to="/funcionarios" onClick={toggleMenu}>
-                  Funcionários
-                </MenuLink>
+                {isSubMenuOpen && (
+                  <SubMenu>
+                    <SubMenuItem>
+                      <SubMenuLink to="/clientes" onClick={toggleMenu}>
+                        Clientes
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink to="/produtos" onClick={toggleMenu}>
+                        Produtos
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink to="/funcionarios" onClick={toggleMenu}>
+                        Funcionários
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink to="/servicos" onClick={toggleMenu}>
+                        Serviços
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink to="/estoque" onClick={toggleMenu}>
+                        Estoque
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <UserMenuItem>
+                      <SubMenuLink onClick={openCadastroUsuarioModal}> {/* Substitui o to="/cadastro-usuario" por onClick */}
+                        Usuários
+                      </SubMenuLink>
+                    </UserMenuItem>
+                  </SubMenu>
+                )}
               </MenuItem>
               <MenuItem>
                 <MenuLink to="/ordem-de-servico" onClick={toggleMenu}>
@@ -143,15 +170,10 @@ const Menu = () => {
                 </MenuLink>
               </MenuItem>
               <MenuItem>
-                <MenuLink to="/servicos" onClick={toggleMenu}>
-                  Serviços
+                <MenuLink to="/vendas-de-servico" onClick={toggleMenu}>
+                  Vendas de Serviço
                 </MenuLink>
               </MenuItem>
-              <UserMenuItem>
-                <MenuLink onClick={openCadastroUsuarioModal}> {/* Substitui o to="/cadastro-usuario" por onClick */}
-                  Cadastrar Usuário
-                </MenuLink>
-              </UserMenuItem>
             </>
           ) : (
             <>

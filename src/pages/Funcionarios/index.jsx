@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento } from './style';
 import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
-import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao'; // Import atualizado
+import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao';
 import ModalNovo from '../../components/Modais/Funcionario/ModalNovo';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
@@ -90,7 +90,9 @@ const Funcionarios = () => {
     <FuncionariosContainer>
       <FuncionariosTitle>Funcionários</FuncionariosTitle>
       <BotaoEspacamento>
-        <FuncionariosButton onClick={openNovoModal}>Adicionar</FuncionariosButton>
+        <FuncionariosButton onClick={openNovoModal}>
+          <i className="fas fa-plus"></i> 
+        </FuncionariosButton>
       </BotaoEspacamento>
       <FuncionariosTable>
         <thead>
@@ -99,7 +101,7 @@ const Funcionarios = () => {
             <th>Cargo</th>
             <th>Telefone</th>
             <th>E-mail</th>
-            <th style={{textAlign:'center'}}>Ações</th>
+            <th style={{ textAlign: 'center' }}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -109,10 +111,10 @@ const Funcionarios = () => {
               <td>{funcionario.cargo}</td>
               <td>{funcionario.telefone}</td>
               <td>{funcionario.email}</td>
-              <td style={{textAlign:'center'}}>
-                <button onClick={() => openDetalhesModal(funcionario)}>Detalhes</button>
-                <button onClick={() => openEdicaoModal(funcionario)} >Editar</button>
-                <button onClick={() => handleExcluir(funcionario.id)} >Excluir</button>
+              <td style={{ textAlign: 'center' }}>
+                  <i onClick={() => openDetalhesModal(funcionario)} className="fas fa-eye"></i>
+                  <i onClick={() => openEdicaoModal(funcionario)} className="fas fa-edit"></i>
+                  <i onClick={() => handleExcluir(funcionario.id)} className="fas fa-trash-alt"></i> 
               </td>
             </tr>
           ))}
