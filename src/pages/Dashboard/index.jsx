@@ -18,6 +18,10 @@ import tablet from '../../assets/img/tablet.avif';
 import computador from '../../assets/img/computador.webp';
 import notebook from '../../assets/img/notebook.jpeg';
 import carregador from '../../assets/img/carregador_kapbom.webp';
+import pelicula from '../../assets/img/pelicula.webp';
+import cabos from '../../assets/img/cabo_usb.webp';
+import mouses from '../../assets/img/mouse.webp';
+import teclados from '../../assets/img/teclado.webp';
 //import fundo2 from '../../assets/fundo/fundo4.png';
 
 const Dashboard = () => {
@@ -71,10 +75,38 @@ const Dashboard = () => {
             <SectionTitle>Produtos Disponíveis</SectionTitle>
             <ProductContainer>
                 <Card>
-                    <CardImage src={carregador} alt="Carregador Kapbom tipo C" />
+                    <CardImage src={carregador} alt="Carregadores Kapbom" />
                     <CardContent>
-                        <CardTitle>Carregador Kapbom tipo C</CardTitle>
-                        <CardDescription>Descrição do produto 1.</CardDescription>
+                        <CardTitle>Carregadores Kapbom</CardTitle>
+                        <CardDescription>Carregadores de diversos tipos</CardDescription>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardImage src={pelicula} alt="Peliculas 3D de diversos tipos" />
+                    <CardContent>
+                        <CardTitle>Películas 3D</CardTitle>
+                        <CardDescription>Peliculas de diversos modelos</CardDescription>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardImage src={cabos} alt="Cabos de diversos tipos" />
+                    <CardContent>
+                        <CardTitle>Cabos USB</CardTitle>
+                        <CardDescription>Cabos de diversos tipos</CardDescription>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardImage src={mouses} alt="Mouses de diversos tipos" />
+                    <CardContent>
+                        <CardTitle>Mouses</CardTitle>
+                        <CardDescription>Mouses de diversos tipos</CardDescription>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardImage src={teclados} alt="Teclados de diversos tipos" />
+                    <CardContent>
+                        <CardTitle>Teclados</CardTitle>
+                        <CardDescription>Teclados de diversos tipos</CardDescription>
                     </CardContent>
                 </Card>
                 {/* Repita o padrão para os outros produtos */}
