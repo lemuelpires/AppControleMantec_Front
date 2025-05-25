@@ -22,7 +22,6 @@ import pelicula from '../../assets/img/pelicula.webp';
 import cabos from '../../assets/img/cabo_usb.webp';
 import mouses from '../../assets/img/mouse.webp';
 import teclados from '../../assets/img/teclado.webp';
-//import fundo2 from '../../assets/fundo/fundo4.png';
 
 const Dashboard = () => {
     const servicesData = [
