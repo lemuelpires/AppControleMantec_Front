@@ -4,7 +4,6 @@ import { FaBars, FaSignInAlt, FaUser, FaCaretDown, FaCaretUp } from 'react-icons
 import ModalLogin from '../Modais/Login';
 import useAuthentication from '../../hooks/userAuthentication';
 import ModalCadastroUsuario from '../Modais/CadastroUsuario'; // Importa o modal de cadastro de usuário
-import logo from '../../assets/icone.png'; // Importa a logo da empresa
 import {
   MenuContainer,
   Espacamento,
@@ -25,7 +24,8 @@ const Menu = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isCadastroUsuarioOpen, setIsCadastroUsuarioOpen] = useState(false); // Estado para controlar se o modal de cadastro de usuário está aberto
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // Estado para controlar se o submenu está aberto
+  const [isListagensSubMenuOpen, setIsListagensSubMenuOpen] = useState(false); // Estado para controlar o submenu de Listagens
+  const [isOperacoesSubMenuOpen, setIsOperacoesSubMenuOpen] = useState(false); // Estado para controlar o submenu de Operações
   const { loading, error, logout, auth } = useAuthentication(); // Use seu hook de autenticação
 
   const toggleMenu = () => {
@@ -36,8 +36,14 @@ const Menu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);
   };
 
-  const toggleSubMenu = () => {
-    setIsSubMenuOpen(!isSubMenuOpen);
+  const toggleListagensSubMenu = () => {
+    setIsListagensSubMenuOpen(!isListagensSubMenuOpen);
+    if (isOperacoesSubMenuOpen) setIsOperacoesSubMenuOpen(false); // Fecha o submenu de Operações se estiver aberto
+  };
+
+  const toggleOperacoesSubMenu = () => {
+    setIsOperacoesSubMenuOpen(!isOperacoesSubMenuOpen);
+    if (isListagensSubMenuOpen) setIsListagensSubMenuOpen(false); // Fecha o submenu de Listagens se estiver aberto
   };
 
   const navigate = useNavigate();
@@ -125,11 +131,11 @@ const Menu = () => {
                   Início
                 </MenuLink>
               </MenuItem>
-              <MenuItem onClick={toggleSubMenu}>
+              <MenuItem onClick={toggleListagensSubMenu}>
                 <MenuLink as="div">
-                  Cadastros {isSubMenuOpen ? <FaCaretUp size="0.8em" /> : <FaCaretDown size="0.8em" />}
+                  Listagens {isListagensSubMenuOpen ? <FaCaretUp size="0.8em" /> : <FaCaretDown size="0.8em" />}
                 </MenuLink>
-                {isSubMenuOpen && (
+                {isListagensSubMenuOpen && (
                   <SubMenu>
                     <SubMenuItem>
                       <SubMenuLink to="/clientes" onClick={toggleMenu}>
@@ -157,22 +163,31 @@ const Menu = () => {
                       </SubMenuLink>
                     </SubMenuItem>
                     <UserMenuItem>
-                      <SubMenuLink onClick={openCadastroUsuarioModal}> {/* Substitui o to="/cadastro-usuario" por onClick */}
+                      <SubMenuLink onClick={openCadastroUsuarioModal}>
                         Usuários
                       </SubMenuLink>
                     </UserMenuItem>
                   </SubMenu>
                 )}
               </MenuItem>
-              <MenuItem>
-                <MenuLink to="/ordem-de-servico" onClick={toggleMenu}>
-                  Ordens de Serviço
+              <MenuItem onClick={toggleOperacoesSubMenu}>
+                <MenuLink as="div">
+                  Operações {isOperacoesSubMenuOpen ? <FaCaretUp size="0.8em" /> : <FaCaretDown size="0.8em" />}
                 </MenuLink>
-              </MenuItem>
-              <MenuItem>
-                <MenuLink to="/vendas-de-servico" onClick={toggleMenu}>
-                  Vendas de Serviço
-                </MenuLink>
+                {isOperacoesSubMenuOpen && (
+                  <SubMenu>
+                    <SubMenuItem>
+                      <SubMenuLink to="/ordem-de-servico" onClick={toggleMenu}>
+                        Ordens de Serviço
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink to="/vendas-de-servico" onClick={toggleMenu}>
+                        Vendas de Serviço
+                      </SubMenuLink>
+                    </SubMenuItem>
+                  </SubMenu>
+                )}
               </MenuItem>
             </>
           ) : (

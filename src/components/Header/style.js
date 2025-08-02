@@ -82,7 +82,7 @@ export const SubMenuLink = styled(NavLink)`
 
   &:hover {
     text-decoration: none;
-    color:rgb(201, 197, 197);
+    color: rgb(201, 197, 197);
     cursor: pointer;
   }
 `;

@@ -1,13 +1,20 @@
+// OrdemDeServico.jsx
 import React, { useState, useEffect } from 'react';
-import { OrdemDeServicoContainer, OrdemDeServicoTitle, OrdemDeServicoButton, OrdemDeServicoTable, BotaoEspacamento } from './style';
+import {
+  OrdemDeServicoContainer,
+  OrdemDeServicoTitle,
+  OrdemDeServicoButton,
+  OrdemDeServicoTable,
+  BotaoEspacamento,
+  IconWrapper
+} from './style';
+import { FaPlus, FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import Modal from 'react-modal';
+import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
 import ModalEdicaoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalEdicao';
 import ModalNovoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalNovo';
-import apiCliente from '../../services/apiCliente';
-import Modal from 'react-modal';
-import { FaPlus, FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa'; // Ícones
 
-// Definir o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
 
 const OrdemDeServico = () => {
@@ -20,7 +27,9 @@ const OrdemDeServico = () => {
   const [funcionarios, setFuncionarios] = useState({});
   const [produtos, setProdutos] = useState({});
   const [servicos, setServicos] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   useEffect(() => {
     fetchOrdensDeServico();
@@ -29,94 +38,41 @@ const OrdemDeServico = () => {
   const fetchOrdensDeServico = async () => {
     try {
       const response = await apiCliente.get('/OrdemDeServico');
-      const ordensAtivas = response.data.filter(ordem => ordem.ativo); // Filtrar apenas ordens ativas
+      const ordensAtivas = response.data.filter(ordem => ordem.ativo);
       setOrdensDeServico(ordensAtivas);
 
-      // Buscar detalhes de clientes, funcionários, produtos e serviços
-      const clientesIds = new Set(ordensAtivas.map(ordem => ordem.clienteID));
-      const funcionariosIds = new Set(ordensAtivas.map(ordem => ordem.funcionarioID));
-      const produtosIds = new Set(ordensAtivas.map(ordem => ordem.produtoID));
-      const servicosIds = new Set(ordensAtivas.map(ordem => ordem.servicoID));
+      const clientesIds = new Set(ordensAtivas.map(o => o.clienteID));
+      const funcionariosIds = new Set(ordensAtivas.map(o => o.funcionarioID));
+      const produtosIds = new Set(ordensAtivas.map(o => o.produtoID));
+      const servicosIds = new Set(ordensAtivas.map(o => o.servicoID));
 
       await Promise.all([
-        fetchClientes(clientesIds),
-        fetchFuncionarios(funcionariosIds),
-        fetchProdutos(produtosIds),
-        fetchServicos(servicosIds)
+        fetchMap(clientesIds, clientes, '/Cliente/', setClientes),
+        fetchMap(funcionariosIds, funcionarios, '/Funcionario/', setFuncionarios),
+        fetchMap(produtosIds, produtos, '/Produto/', setProdutos),
+        fetchMap(servicosIds, servicos, '/Servico/', setServicos),
       ]);
     } catch (error) {
       console.error('Erro ao buscar ordens de serviço:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const fetchClientes = async (ids) => {
-    try {
-      const clientesData = {};
-      await Promise.all(Array.from(ids).map(async clienteID => {
-        if (!clientes[clienteID]) {
-          const response = await apiCliente.get(`/Cliente/${clienteID}`);
-          clientesData[clienteID] = response.data.nome;
-        }
-      }));
-      setClientes(prevState => ({ ...prevState, ...clientesData }));
-    } catch (error) {
-      console.error('Erro ao buscar clientes:', error);
-    }
-  };
-
-  const fetchFuncionarios = async (ids) => {
-    try {
-      const funcionariosData = {};
-      await Promise.all(Array.from(ids).map(async funcionarioID => {
-        if (!funcionarios[funcionarioID]) {
-          const response = await apiCliente.get(`/Funcionario/${funcionarioID}`);
-          funcionariosData[funcionarioID] = response.data.nome;
-        }
-      }));
-      setFuncionarios(prevState => ({ ...prevState, ...funcionariosData }));
-    } catch (error) {
-      console.error('Erro ao buscar funcionários:', error);
-    }
-  };
-
-  const fetchProdutos = async (ids) => {
-    try {
-      const produtosData = {};
-      await Promise.all(Array.from(ids).map(async produtoID => {
-        if (!produtos[produtoID]) {
-          const response = await apiCliente.get(`/Produto/${produtoID}`);
-          produtosData[produtoID] = response.data.nome;
-        }
-      }));
-      setProdutos(prevState => ({ ...prevState, ...produtosData }));
-    } catch (error) {
-      console.error('Erro ao buscar produtos:', error);
-    }
-  };
-
-  const fetchServicos = async (ids) => {
-    try {
-      const servicosData = {};
-      await Promise.all(Array.from(ids).map(async servicoID => {
-        if (!servicos[servicoID]) {
-          const response = await apiCliente.get(`/Servico/${servicoID}`);
-          servicosData[servicoID] = response.data.nome;
-        }
-      }));
-      setServicos(prevState => ({ ...prevState, ...servicosData }));
-    } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-    }
+  const fetchMap = async (ids, existing, endpoint, setState) => {
+    const dataMap = {};
+    await Promise.all(Array.from(ids).map(async id => {
+      if (!existing[id]) {
+        const response = await apiCliente.get(`${endpoint}${id}`);
+        dataMap[id] = response.data.nome;
+      }
+    }));
+    setState(prev => ({ ...prev, ...dataMap }));
   };
 
   const handleExcluir = async (id) => {
-    const confirmar = window.confirm('Deseja excluir esta ordem de serviço?');
-    if (confirmar) {
+    if (window.confirm('Deseja excluir esta ordem de serviço?')) {
       try {
         await apiCliente.put(`/OrdemDeServico/desativar/${id}`);
-        await fetchOrdensDeServico(); // Atualiza lista de ordens de serviço após excluir
+        fetchOrdensDeServico();
         alert('Ordem de Serviço excluída com sucesso!');
       } catch (error) {
         console.error('Erro ao excluir ordem de serviço:', error);
@@ -148,65 +104,106 @@ const OrdemDeServico = () => {
 
   const handleSave = async (formData) => {
     try {
-      let response;
       if (formData.id) {
-        // Atualização de ordem de serviço existente
-        response = await apiCliente.put(`/OrdemDeServico/${formData.id}`, formData);
-        console.log('Ordem de Serviço atualizada:', response.data);
+        await apiCliente.put(`/OrdemDeServico/${formData.id}`, formData);
       } else {
-        // Criação de nova ordem de serviço
-        response = await apiCliente.post('/OrdemDeServico', formData);
-        console.log('Nova Ordem de Serviço criada:', response.data);
-        await fetchOrdensDeServico();
+        await apiCliente.post('/OrdemDeServico', formData);
       }
-      await fetchOrdensDeServico(); // Atualiza lista de ordens de serviço após salvar
+      fetchOrdensDeServico();
+      closeModal();
     } catch (error) {
       console.error('Erro ao salvar ordem de serviço:', error);
     }
   };
+
+  const filteredOrdens = ordensDeServico.filter(ordem =>
+    clientes[ordem.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredOrdens.length / itemsPerPage);
+  const paginatedOrdens = filteredOrdens.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <OrdemDeServicoContainer>
       <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
       <BotaoEspacamento>
         <OrdemDeServicoButton onClick={openNovoModal}>
-          <FaPlus /> {/* Ícone de Adicionar */}
+          <FaPlus />
         </OrdemDeServicoButton>
       </BotaoEspacamento>
-      {loading ? (
-        <p>Carregando...</p>
-      ) : (
-        <OrdemDeServicoTable>
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Funcionário</th>
-              <th>Produto</th>
-              <th>Serviço</th>
-              <th>Data de Entrada</th>
-              <th>Data de Conclusão</th>
-              <th style={{ textAlign: 'center' }}>Ações</th>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>
+        <input
+          type="text"
+          placeholder="Buscar cliente..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <div>
+          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+            <option value={25}>25 por página</option>
+            <option value={50}>50 por página</option>
+            <option value={100}>100 por página</option>
+          </select>
+        </div>
+      </div>
+
+      <OrdemDeServicoTable>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Funcionário</th>
+            <th>Produto</th>
+            <th>Serviço</th>
+            <th>Entrada</th>
+            <th>Conclusão</th>
+            <th style={{ textAlign: 'center' }}>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedOrdens.map(ordem => (
+            <tr key={ordem.id}>
+              <td>{clientes[ordem.clienteID]}</td>
+              <td>{funcionarios[ordem.funcionarioID]}</td>
+              <td>{produtos[ordem.produtoID]}</td>
+              <td>{servicos[ordem.servicoID]}</td>
+              <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
+              <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
+              <td>
+                <IconWrapper>
+                  <FaEye onClick={() => openDetalhesModal(ordem)} />
+                  <FaEdit onClick={() => openEdicaoModal(ordem)} />
+                  <FaTrashAlt onClick={() => handleExcluir(ordem.id)} />
+                </IconWrapper>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {ordensDeServico.map(ordem => (
-              <tr key={ordem.id}>
-                <td>{clientes[ordem.clienteID]}</td>
-                <td>{funcionarios[ordem.funcionarioID]}</td>
-                <td>{produtos[ordem.produtoID]}</td>
-                <td>{servicos[ordem.servicoID]}</td>
-                <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
-                <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
-                <td style={{ textAlign: 'center' }}>
-                  <FaEye onClick={() => openDetalhesModal(ordem)} /> {/* Ícone de Detalhes */}
-                  <FaEdit onClick={() => openEdicaoModal(ordem)} /> {/* Ícone de Edição */}
-                  <FaTrashAlt onClick={() => handleExcluir(ordem.id)} /> {/* Ícone de Excluir */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </OrdemDeServicoTable>
-      )}
+          ))}
+        </tbody>
+      </OrdemDeServicoTable>
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => setCurrentPage(i + 1)}
+            style={{
+              margin: '0 5px',
+              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
+              color: currentPage === i + 1 ? '#fff' : '#000',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
 
       {/* Modais */}
       <ModalDetalhesOrdemDeServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />

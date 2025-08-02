@@ -1,3 +1,4 @@
+
 import styled from 'styled-components';
 
 export const ClientesContainer = styled.div`
@@ -7,15 +8,11 @@ export const ClientesContainer = styled.div`
   transition: padding 0.3s ease, min-height 0.3s ease;
 
   @media (max-width: 800px) {
-    padding: 0 4em;
+    padding: 0 2em;
   }
 
   @media (max-width: 600px) {
-    padding: 2em;
-  }
-
-  @media (max-width: 550px) {
-    padding: 0.8em;
+    padding: 1em;
   }
 
   @media (max-width: 450px) {
@@ -32,11 +29,11 @@ export const ClientesTitle = styled.h2`
   }
 
   @media (max-width: 550px) {
-    font-size: 0.5em;
+    font-size: 1.2em;
   }
 
   @media (max-width: 450px) {
-    font-size: 0.4em;
+    font-size: 1em;
   }
 `;
 
@@ -45,35 +42,24 @@ export const BotaoEspacamento = styled.div`
   width: 100%;
   justify-content: flex-end;
   margin-bottom: 1em;
-  transition: margin-bottom 0.3s ease;
 
   @media (max-width: 600px) {
     justify-content: center;
-    margin-bottom: 0.5em;
-  }
-
-  @media (max-width: 550px) {
-    margin-bottom: 0.3em;
-  }
-
-  @media (max-width: 450px) {
-    margin-bottom: 0.2em;
   }
 `;
 
 export const ClientesButton = styled.button`
-  flex-direction: column;
   margin-right: 5px;
-  background-color:rgb(109, 165, 18); /* Cor de fundo do botão */
+  background-color: rgb(109, 165, 18);
   padding: 5px 9px;
   color: white;
-  border: solid 1px rgba(228, 252, 11, 0.51); /* Borda do botão */
+  border: solid 1px rgba(228, 252, 11, 0.51);
   border-radius: 100px;
   cursor: pointer;
-  transition: all 0.3s ease; /* Transição suave para todos os estilos do botão */
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color:rgb(114, 167, 97);
+    background-color: rgb(114, 167, 97);
   }
 
   @media (max-width: 600px) {
@@ -81,20 +67,16 @@ export const ClientesButton = styled.button`
     margin: 5px 0;
     padding: 10px;
   }
+`;
 
-  @media (max-width: 550px) {
-    padding: 8px;
-  }
-
-  @media (max-width: 450px) {
-    padding: 6px;
-  }
+export const ClientesTableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
 `;
 
 export const ClientesTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  transition: transform 0.3s ease;
 
   th,
   td {
@@ -102,12 +84,11 @@ export const ClientesTable = styled.table`
     border-bottom: 1px solid #ddd;
     text-align: left;
     color: black;
-    transition: padding 0.3s ease;
   }
 
   th {
     background-color: #2e3b4e;
-    color: black;
+    color: white;
   }
 
   tr:nth-child(odd) {
@@ -122,72 +103,27 @@ export const ClientesTable = styled.table`
     background-color: #cce7ff;
   }
 
-  button {
-    flex-direction: column;
-    margin-right: 5px;
-    padding: 5px 10px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056c8;
-    }
-  }
-
-  th:nth-child(3),
-  td:nth-child(3) {
-    display: none;
-  }
-
-  @media (max-width: 880px) {
-    display: block;
-    overflow-x: auto;
-    width: 100%;
-
-    th:nth-child(6),
-    td:nth-child(6),
-    th:nth-child(7),
-    td:nth-child(7) {
-      display: none;
-    }
-  }
-
   @media (max-width: 750px) {
-    table {
-      width: 100%;
-    }
-
-    table:not(:root) {
-      transform: scale(0.5);
-      transform-origin: top center;
-    }
-  }
-
-  @media (max-width: 600px) {
-    table {
-      transform: scale(0.8);
+    th,
+    td {
+      font-size: 0.85em;
+      padding: 6px;
     }
   }
 
   @media (max-width: 550px) {
-    table {
-      transform: scale(0.4);
-    }
-  }
-
-  @media (max-width: 450px) {
-    table {
-      transform: scale(0.3);
+    th,
+    td {
+      font-size: 0.75em;
+      padding: 4px;
     }
   }
 `;
 
 export const IconWrapper = styled.div`
   display: flex;
-  Justify-content: center;
-  cursor: pointer;
+  justify-content: center;
   gap: 10px;
-  color:rgb(37, 37, 37);
+  color: rgb(37, 37, 37);
+  cursor: pointer;
 `;

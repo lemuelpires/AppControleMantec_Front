@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { ClientesContainer, ClientesTitle, ClientesButton, ClientesTable, BotaoEspacamento, IconWrapper } from './style';
+import {
+  ClientesContainer,
+  ClientesTitle,
+  ClientesButton,
+  ClientesTable,
+  ClientesTableWrapper,
+  BotaoEspacamento,
+  IconWrapper
+} from './style';
+
 import ModalDetalhes from '../../components/Modais/Cliente/ModalDetalhes';
 import ModalEdicao from '../../components/Modais/Cliente/ModalEdicao';
 import ModalNovo from '../../components/Modais/Cliente/ModalNovo';
 import apiCliente from '../../services/apiCliente';
+
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faEdit, faTrash, faPlusCircle, faEye } from '@fortawesome/free-solid-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
-import { faPlusSquare } from '@fortawesome/free-solid-svg-icons/faPlusSquare';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
+import { faEye, faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-// Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
 
 const Clientes = () => {
@@ -21,14 +27,23 @@ const Clientes = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [clientes, setClientes] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     fetchClientes();
-  }, []);
+  }, [currentPage, itemsPerPage]);
 
   const fetchClientes = async () => {
     try {
-      const response = await apiCliente.get('/Cliente');
-      setClientes(response.data.filter(cliente => cliente.ativo)); // Exibir apenas clientes ativos
+      const response = await apiCliente.get('/Cliente', {
+        params: {
+          page: 1,
+          pageSize: 6000,
+        },
+      });
+      setClientes(response.data);
     } catch (error) {
       console.error('Erro ao buscar clientes:', error);
     }
@@ -40,7 +55,7 @@ const Clientes = () => {
       try {
         const response = await apiCliente.delete(`/Cliente/Desativar/${id}`);
         console.log('Cliente Excluído:', response.data);
-        fetchClientes(); // Atualiza lista de clientes após desativar
+        fetchClientes();
         alert('Cliente excluído com sucesso!');
       } catch (error) {
         if (error.response) {
@@ -63,7 +78,7 @@ const Clientes = () => {
   };
 
   const openNovoModal = () => {
-    setSelectedItem(null); // Limpa o item selecionado para adicionar novo
+    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
@@ -77,13 +92,9 @@ const Clientes = () => {
   const handleSave = async (formData) => {
     try {
       if (formData.id) {
-        // Atualização de cliente existente
-        const response = await apiCliente.put(`/Cliente/${formData.id}`, formData);
-        console.log('Cliente atualizado:', response.data);
+        await apiCliente.put(`/Cliente/${formData.id}`, formData);
       } else {
-        // Criação de novo cliente
-        const response = await apiCliente.post('/Cliente', formData);
-        console.log('Novo cliente criado:', response.data);
+        await apiCliente.post('/Cliente', formData);
       }
       fetchClientes();
       closeModal();
@@ -92,42 +103,93 @@ const Clientes = () => {
     }
   };
 
+  const filteredClientes = clientes.filter((cliente) =>
+    cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredClientes.length / itemsPerPage);
+  const paginatedClientes = filteredClientes.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <ClientesContainer>
       <ClientesTitle>Clientes</ClientesTitle>
+
       <BotaoEspacamento>
         <ClientesButton onClick={openNovoModal}>
           <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
         </ClientesButton>
       </BotaoEspacamento>
-      <ClientesTable>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Telefone</th>
-            <th>Data de Cadastro</th>
-            <th style={{ textAlign: 'center' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clientes.map(cliente => (
-            <tr key={cliente.id}>
-              <td>{cliente.nome}</td>
-              <td>{cliente.email}</td>
-              <td>{cliente.telefone}</td>
-              <td>{new Date(cliente.dataCadastro).toLocaleDateString()}</td>
-              <td>
-                <IconWrapper>
-                  <FontAwesomeIcon icon={faEye} style={{ cursor: 'pointer' }} onClick={() => openDetalhesModal(cliente)} />
-                  <FontAwesomeIcon icon={faEdit} style={{cursor: 'pointer' }} onClick={() => openEdicaoModal(cliente)} />
-                  <FontAwesomeIcon icon={faTrash} style={{cursor: 'pointer' }} onClick={() => handleExcluir(cliente.id)} />
-                </IconWrapper>
-              </td>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em', flexWrap: 'wrap', gap: '1em' }}>
+        <input
+          type="text"
+          placeholder="Buscar cliente por nome..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+          style={{ padding: '8px', width: '250px' }}
+        />
+        <select
+          value={itemsPerPage}
+          onChange={(e) => {
+            setItemsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          style={{ padding: '8px' }}
+        >
+          <option value={25}>25 por página</option>
+          <option value={50}>50 por página</option>
+          <option value={75}>75 por página</option>
+          <option value={100}>100 por página</option>
+        </select>
+      </div>
+
+      <ClientesTableWrapper>
+        <ClientesTable>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Email</th>
+              <th>Data de Cadastro</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </ClientesTable>
+          </thead>
+          <tbody>
+            {paginatedClientes.map((cliente) => (
+              <tr key={cliente.id}>
+                <td>{cliente.nome}</td>
+                <td>{cliente.telefone}</td>
+                <td>{cliente.email}</td>
+                <td>{new Date(cliente.dataCadastro).toLocaleDateString()}</td>
+                <td>
+                  <IconWrapper>
+                    <FontAwesomeIcon icon={faEye} onClick={() => openDetalhesModal(cliente)} />
+                    <FontAwesomeIcon icon={faEdit} onClick={() => openEdicaoModal(cliente)} />
+                    <FontAwesomeIcon icon={faTrash} onClick={() => handleExcluir(cliente.id)} />
+                  </IconWrapper>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </ClientesTable>
+      </ClientesTableWrapper>
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em', gap: '0.5em', flexWrap: 'wrap' }}>
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+          Anterior
+        </button>
+        <span>Página {currentPage} de {totalPages}</span>
+        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+          Próxima
+        </button>
+      </div>
+
       <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicao isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />

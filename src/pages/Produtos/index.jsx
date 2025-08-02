@@ -1,3 +1,6 @@
+// Este é o componente Produto com paginação, filtro e seleção de itens por página
+// Mantém as modais e as funcionalidades já existentes
+
 import React, { useState, useEffect } from 'react';
 import { ProdutoContainer, ProdutoTitle, ProdutoTable, ProdutoButton, BotaoEspacamento, IconWrapper } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,7 +12,6 @@ import ModalCadastrarImagem from '../../components/Modais/CadastrarImagem';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 
-// Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
 
 const Produto = () => {
@@ -19,6 +21,9 @@ const Produto = () => {
   const [isCadastrarImagemModalOpen, setIsCadastrarImagemModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [produtos, setProdutos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   useEffect(() => {
     fetchProdutos();
@@ -26,8 +31,10 @@ const Produto = () => {
 
   const fetchProdutos = async () => {
     try {
-      const response = await apiCliente.get('/Produto');
-      setProdutos(response.data.filter(produto => produto.ativo)); // Exibir apenas produtos ativos
+      const response = await apiCliente.get('/Produto', {
+        params: { page: 1, pageSize: 6000 }
+      });
+      setProdutos(response.data.filter(produto => produto.ativo));
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
     }
@@ -37,16 +44,11 @@ const Produto = () => {
     const confirmar = window.confirm('Deseja excluir esse produto?');
     if (confirmar) {
       try {
-        const response = await apiCliente.delete(`/Produto/Desativar/${id}`);
-        console.log('Produto Excluído:', response.data);
-        fetchProdutos(); // Atualiza lista de produtos após desativar
+        await apiCliente.delete(`/Produto/Desativar/${id}`);
+        fetchProdutos();
         alert('Produto excluído com sucesso!');
       } catch (error) {
-        if (error.response) {
-          console.error('Erro ao desativar produto:', error.response.data);
-        } else {
-          console.error('Erro desconhecido ao desativar produto:', error.message);
-        }
+        console.error('Erro ao desativar produto:', error);
       }
     }
   };
@@ -62,49 +64,72 @@ const Produto = () => {
   };
 
   const openNovoModal = () => {
-    setSelectedItem(null); // Limpa o item selecionado para adicionar novo
+    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
   const openCadastrarImagemModal = (item) => {
     setSelectedItem(item);
-    setIsCadastrarImagemModalOpen(true); // Abre o modal de imagem
+    setIsCadastrarImagemModalOpen(true);
   };
 
   const closeModal = () => {
     setIsDetalhesModalOpen(false);
     setIsEdicaoModalOpen(false);
     setIsNovoModalOpen(false);
-    setIsCadastrarImagemModalOpen(false); // Fecha o modal de imagem
+    setIsCadastrarImagemModalOpen(false);
     setSelectedItem(null);
   };
 
   const handleSave = async (formData) => {
     try {
       if (formData.id) {
-        // Atualização de produto existente
-        const response = await apiCliente.put(`/Produto/${formData.id}`, formData);
-        console.log('Produto atualizado:', response.data);
+        await apiCliente.put(`/Produto/${formData.id}`, formData);
       } else {
-        // Criação de novo produto
-        const response = await apiCliente.post('/Produto', formData);
-        console.log('Novo produto criado:', response.data);
+        await apiCliente.post('/Produto', formData);
       }
-      fetchProdutos(); // Atualiza lista de produtos após salvar
+      fetchProdutos();
       closeModal();
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
     }
   };
 
+  const filteredProdutos = produtos.filter(produto =>
+    produto.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredProdutos.length / itemsPerPage);
+  const paginatedProdutos = filteredProdutos.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <ProdutoContainer>
       <ProdutoTitle>Produtos</ProdutoTitle>
-      <BotaoEspacamento>
-        <ProdutoButton onClick={openNovoModal}>
-          <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
-        </ProdutoButton>
-      </BotaoEspacamento>
+        <BotaoEspacamento>
+          <ProdutoButton onClick={openNovoModal}>
+            <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
+          </ProdutoButton>
+        </BotaoEspacamento>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1em' }}>
+        <input
+          type="text"
+          placeholder="Buscar produto..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <div>
+          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+            <option value={25}>25 por página</option>
+            <option value={50}>50 por página</option>
+            <option value={100}>100 por página</option>
+          </select>
+        </div>
+      </div>
       <ProdutoTable>
         <thead>
           <tr>
@@ -119,27 +144,46 @@ const Produto = () => {
           </tr>
         </thead>
         <tbody>
-          {produtos.map(produto => (
+          {paginatedProdutos.map(produto => (
             <tr key={produto.id}>
               <td><img src={produto.imagemURL} alt={produto.nome} width="50" /></td>
               <td>{produto.nome}</td>
               <td>{produto.descricao}</td>
               <td>{produto.quantidade}</td>
-              <td>{"R$ " + produto.preco.toFixed(2)}</td>
+              <td>{`R$ ${produto.preco.toFixed(2)}`}</td>
               <td>{produto.fornecedor}</td>
               <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
               <td>
                 <IconWrapper>
-                  <FontAwesomeIcon icon={faEye} style={{ cursor: 'pointer' }} onClick={() => openDetalhesModal(produto)} />
-                  <FontAwesomeIcon icon={faEdit} style={{ cursor: 'pointer' }} onClick={() => openEdicaoModal(produto)} />
-                  <FontAwesomeIcon icon={faTrash} style={{ cursor: 'pointer' }} onClick={() => handleExcluir(produto.id)} />
-                  <FontAwesomeIcon icon={faImage} style={{ cursor: 'pointer' }} onClick={() => openCadastrarImagemModal(produto)} />
+                  <FontAwesomeIcon icon={faEye} onClick={() => openDetalhesModal(produto)} />
+                  <FontAwesomeIcon icon={faEdit} onClick={() => openEdicaoModal(produto)} />
+                  <FontAwesomeIcon icon={faTrash} onClick={() => handleExcluir(produto.id)} />
+                  <FontAwesomeIcon icon={faImage} onClick={() => openCadastrarImagemModal(produto)} />
                 </IconWrapper>
               </td>
             </tr>
           ))}
         </tbody>
       </ProdutoTable>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => setCurrentPage(i + 1)}
+            style={{
+              margin: '0 5px',
+              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
+              color: currentPage === i + 1 ? '#fff' : '#000',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
       <ModalDetalhesProduto isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoProduto isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoProduto isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />

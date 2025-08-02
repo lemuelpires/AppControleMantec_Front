@@ -75,3 +75,30 @@ export const ServicoTable = styled.table`
     }
   }
 `;
+
+export const IconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  color: rgb(37, 37, 37);
+  gap: 10px;
+
+  svg {
+    font-size: 1em;
+    transition: transform 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      color: #007bff;
+    }
+  }
+
+  @media (max-width: 550px) {
+    flex-wrap: wrap;
+    font-size: 0.7em;
+  }
+
+  @media (max-width: 450px) {
+    font-size: 0.6em;
+  }
+`;
+

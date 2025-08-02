@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento } from './style';
+import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento, IconWrapper } from './style';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faEye, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
 import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao';
 import ModalNovo from '../../components/Modais/Funcionario/ModalNovo';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 
-// Defina o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
 
 const Funcionarios = () => {
@@ -15,6 +16,9 @@ const Funcionarios = () => {
   const [isNovoModalOpen, setIsNovoModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [funcionarios, setFuncionarios] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   useEffect(() => {
     fetchFuncionarios();
@@ -23,7 +27,7 @@ const Funcionarios = () => {
   const fetchFuncionarios = async () => {
     try {
       const response = await apiCliente.get('/Funcionario');
-      setFuncionarios(response.data.filter(funcionario => funcionario.ativo)); // Exibir apenas funcionários ativos
+      setFuncionarios(response.data.filter(funcionario => funcionario.ativo));
     } catch (error) {
       console.error('Erro ao buscar funcionários:', error);
     }
@@ -33,16 +37,11 @@ const Funcionarios = () => {
     const confirmar = window.confirm('Deseja excluir esse funcionário?');
     if (confirmar) {
       try {
-        const response = await apiCliente.delete(`/Funcionario/Desativar/${id}`);
-        console.log('Funcionário Excluído:', response.data);
-        fetchFuncionarios(); // Atualiza lista de funcionários após desativar
+        await apiCliente.delete(`/Funcionario/Desativar/${id}`);
+        fetchFuncionarios();
         alert('Funcionário excluído com sucesso!');
       } catch (error) {
-        if (error.response) {
-          console.error('Erro ao desativar funcionário:', error.response.data);
-        } else {
-          console.error('Erro desconhecido ao desativar funcionário:', error.message);
-        }
+        console.error('Erro ao desativar funcionário:', error);
       }
     }
   };
@@ -58,6 +57,7 @@ const Funcionarios = () => {
   };
 
   const openNovoModal = () => {
+    setSelectedItem(null);
     setIsNovoModalOpen(true);
   };
 
@@ -71,29 +71,51 @@ const Funcionarios = () => {
   const handleSave = async (formData) => {
     try {
       if (formData.id) {
-        // Atualização de funcionário existente
-        const response = await apiCliente.put(`/Funcionario/${formData.id}`, formData);
-        console.log('Funcionário atualizado:', response.data);
+        await apiCliente.put(`/Funcionario/${formData.id}`, formData);
       } else {
-        // Criação de novo funcionário
-        const response = await apiCliente.post('/Funcionario', formData);
-        console.log('Novo funcionário criado:', response.data);
+        await apiCliente.post('/Funcionario', formData);
       }
-      fetchFuncionarios(); // Atualiza lista de funcionários após salvar
+      fetchFuncionarios();
       closeModal();
     } catch (error) {
       console.error('Erro ao salvar funcionário:', error);
     }
   };
 
+  const filteredFuncionarios = funcionarios.filter(funcionario =>
+    funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredFuncionarios.length / itemsPerPage);
+  const paginatedFuncionarios = filteredFuncionarios.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <FuncionariosContainer>
       <FuncionariosTitle>Funcionários</FuncionariosTitle>
       <BotaoEspacamento>
         <FuncionariosButton onClick={openNovoModal}>
-          <i className="fas fa-plus"></i> 
+          <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
         </FuncionariosButton>
       </BotaoEspacamento>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1em' }}>
+        <input
+          type="text"
+          placeholder="Buscar funcionário..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <div>
+          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+            <option value={25}>25 por página</option>
+            <option value={50}>50 por página</option>
+            <option value={100}>100 por página</option>
+          </select>
+        </div>
+      </div>
       <FuncionariosTable>
         <thead>
           <tr>
@@ -105,23 +127,42 @@ const Funcionarios = () => {
           </tr>
         </thead>
         <tbody>
-          {funcionarios.map(funcionario => (
+          {paginatedFuncionarios.map(funcionario => (
             <tr key={funcionario.id}>
               <td>{funcionario.nome}</td>
               <td>{funcionario.cargo}</td>
               <td>{funcionario.telefone}</td>
               <td>{funcionario.email}</td>
               <td style={{ textAlign: 'center' }}>
-                  <i onClick={() => openDetalhesModal(funcionario)} className="fas fa-eye"></i>
-                  <i onClick={() => openEdicaoModal(funcionario)} className="fas fa-edit"></i>
-                  <i onClick={() => handleExcluir(funcionario.id)} className="fas fa-trash-alt"></i> 
+                <IconWrapper>
+                  <FontAwesomeIcon icon={faEye} onClick={() => openDetalhesModal(funcionario)} />
+                  <FontAwesomeIcon icon={faEdit} onClick={() => openEdicaoModal(funcionario)} />
+                  <FontAwesomeIcon icon={faTrashAlt} onClick={() => handleExcluir(funcionario.id)} />
+                </IconWrapper>
               </td>
             </tr>
           ))}
         </tbody>
       </FuncionariosTable>
-
-      {/* Modais */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => setCurrentPage(i + 1)}
+            style={{
+              margin: '0 5px',
+              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
+              color: currentPage === i + 1 ? '#fff' : '#000',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
       <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoFuncionario isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
