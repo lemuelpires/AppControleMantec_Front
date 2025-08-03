@@ -52,8 +52,8 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
         <Input type="date" id="dataEntrada" name="dataEntrada" value={formData.dataEntrada || ''} onChange={handleChange} required />
       </FormGroup>
       <ContainerBotao>
-        <Button type="submit">Salvar</Button>
-        <Button type="button" onClick={onClose}>Cancelar</Button>
+        <Button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</Button>
+        <Button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
       </ContainerBotao>
     </Form>
   );

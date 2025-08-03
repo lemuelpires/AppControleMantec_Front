@@ -17,7 +17,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  padding: 8px;
+  padding: 8px 0 8px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
@@ -26,13 +26,11 @@ export const Input = styled.input`
 export const Button = styled.button`
   padding: 10px;
   margin-top: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 
-  &:hover {
-    background-color: #0056b3;
-  }
+`;
+
+export const BotaoEspacamento = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
 `;

@@ -21,7 +21,7 @@ export const ClientesContainer = styled.div`
 `;
 
 export const ClientesTitle = styled.h2`
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   font-size: 2em;
 
   @media (max-width: 600px) {

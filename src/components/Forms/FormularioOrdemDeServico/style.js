@@ -2,6 +2,10 @@ import styled from 'styled-components';
 
 export const FormGroup = styled.div`
   margin-bottom: 15px;
+  color: #333;
+
+  label {
+    color: #d9d9d9;
 `;
 
 export const Label = styled.label`
@@ -11,24 +15,15 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-    padding: 8px;
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 20em;
-    height: 1.5em;
+    height: 1em;
 `;
 
 export const Button = styled.button`
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
-  &:hover {
-    background-color: #0056b3;
-  }
+ 
 `;
 
 export const Titulo = styled.div`
@@ -66,6 +61,7 @@ display:flex;
   flex-direction: row;
   justify-content: center;
   align-itens:center;
+  line-height: 0.8em;
 `;
 
 export const EspacamentoButton = styled.div`
@@ -80,4 +76,36 @@ export const EspacamentoContainer = styled.div`
   justify-content: center;
   align-itens:center;
   gap:4em;
+`;
+
+export const Select = styled.select`
+ -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: default;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex
+;
+    -webkit-box-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    min-height: 38px;
+    outline: 0 !important;
+    position: relative;
+    -webkit-transition: all 100ms;
+    transition: all 100ms;
+    background-color: hsla(0, 0%, 42%, 1.00);
+    border-color: hsl(0, 0%, 80%);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    width: 100%;
 `;

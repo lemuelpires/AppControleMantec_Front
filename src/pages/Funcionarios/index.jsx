@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento, IconWrapper } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEye, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
 import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao';
 import ModalNovo from '../../components/Modais/Funcionario/ModalNovo';
@@ -96,9 +96,7 @@ const Funcionarios = () => {
     <FuncionariosContainer>
       <FuncionariosTitle>Funcionários</FuncionariosTitle>
       <BotaoEspacamento>
-        <FuncionariosButton onClick={openNovoModal}>
-          <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
-        </FuncionariosButton>
+        <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
       </BotaoEspacamento>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1em' }}>
         <input

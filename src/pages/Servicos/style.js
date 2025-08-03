@@ -6,7 +6,7 @@ export const ServicoContainer = styled.div`
 `;
 
 export const ServicoTitle = styled.h2`
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   color: #d9d9d9;
 `;
 

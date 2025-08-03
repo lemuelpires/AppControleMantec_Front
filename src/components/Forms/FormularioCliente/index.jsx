@@ -22,7 +22,7 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <Campo>
         <label>Nome Completo:</label>
         <Input
@@ -64,8 +64,8 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose }) => {
         />
       </Campo>
       <Botoes>
-          <button type="submit">Salvar</button>
-          <button type="button" onClick={onClose}>Cancelar</button>
+          <button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</button>
+          <button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</button>
       </Botoes>
      
     </form>

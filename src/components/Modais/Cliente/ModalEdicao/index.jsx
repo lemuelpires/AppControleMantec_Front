@@ -13,7 +13,7 @@ const modalStyles = {
     justifyContent: 'center',
   },
   content: {
-    backgroundColor: '#0b0b0b',
+    backgroundColor: 'rgb(31, 30, 30)',
     padding: '20px',
     borderRadius: '8px',
     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',

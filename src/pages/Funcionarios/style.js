@@ -23,7 +23,7 @@ export const FuncionariosContainer = styled.div`
 `;
 
 export const FuncionariosTitle = styled.h2`
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   font-size: 2em;
 
   @media (max-width: 600px) {

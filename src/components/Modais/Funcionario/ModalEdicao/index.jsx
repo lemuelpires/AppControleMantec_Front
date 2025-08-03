@@ -13,12 +13,13 @@ const modalStyles = {
   },
   content: {
     backgroundColor: '#1f1e1e',
-    padding: '20px',
+    padding: '50px',
     borderRadius: '8px',
     //boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
     //maxWidth: '500px',
     width: '50%',
     //inset: 'unset',
+    position:'none'
   },
 };
 

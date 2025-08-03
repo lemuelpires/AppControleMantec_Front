@@ -24,7 +24,7 @@ export const ProdutoContainer = styled.div`
 `;
 
 export const ProdutoTitle = styled.h2`
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   font-size: 2em; /* Tamanho de fonte padrão */
 
   @media (max-width: 600px) {

@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { ProdutoContainer, ProdutoTitle, ProdutoTable, ProdutoButton, BotaoEspacamento, IconWrapper } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faPlus, faInfoCircle, faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faPlusCircle, faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhesProduto from '../../components/Modais/Produto/ModalDetalhes';
 import ModalEdicaoProduto from '../../components/Modais/Produto/ModalEdicao';
 import ModalNovoProduto from '../../components/Modais/Produto/ModalNovo';
@@ -109,9 +109,7 @@ const Produto = () => {
     <ProdutoContainer>
       <ProdutoTitle>Produtos</ProdutoTitle>
         <BotaoEspacamento>
-          <ProdutoButton onClick={openNovoModal}>
-            <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
-          </ProdutoButton>
+          <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
         </BotaoEspacamento>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1em' }}>

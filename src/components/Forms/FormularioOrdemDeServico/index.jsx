@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, Label, Input, Button, Espacamento, Form, Container, EspacamentoButton, EspacamentoContainer } from './style';
+import { FormGroup, Label, Input, Button, Espacamento, Form, Container, EspacamentoButton, EspacamentoContainer} from './style';
 import Select from 'react-select';
+import { height } from '@fortawesome/free-solid-svg-icons/fa0';
 
 const FormularioOrdemDeServico = ({
   initialValues,
@@ -54,6 +55,42 @@ const FormularioOrdemDeServico = ({
     onSubmit({ ...formData, observacoes, ativo: true });
   };
 
+  const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: 'white',
+    borderColor: state.isFocused ? '#016b19' : '#ccc',
+    boxShadow: state.isFocused ? '0 0 0 1px #016b19' : 'none',
+    height: '28px',         // Altura do select
+    minHeight: '28px',
+    fontSize: '12px',
+    backgroundColor: '#414040ff',
+    color: '#d9d9d9',
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused ? '#e5f4ea' : 'white',
+    color: 'black',
+    fontSize: '12px',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 10,
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#d9d9d9',
+  }),
+
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: '#d9d9d9',
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : null,
+    transition: 'transform 0.2s ease',
+    padding: '0px',
+  }),
+};
+
   return (
     <Container>
       <Form onSubmit={handleFormSubmit}>
@@ -68,6 +105,7 @@ const FormularioOrdemDeServico = ({
                 value={clienteOptions.find(option => option.value === formData.clienteID)}
                 onChange={(selectedOption) => handleSelectChange(selectedOption, 'clienteID')}
                 placeholder="Selecione um cliente"
+                styles={customSelectStyles}
               />
             </FormGroup>
             <FormGroup>
@@ -75,10 +113,12 @@ const FormularioOrdemDeServico = ({
               <Select
                 id="funcionarioID"
                 name="funcionarioID"
+                style={{ height: '6px', width: '100%' }}
                 options={funcionarioOptions}
                 value={funcionarioOptions.find(option => option.value === formData.funcionarioID)}
                 onChange={(selectedOption) => handleSelectChange(selectedOption, 'funcionarioID')}
                 placeholder="Selecione um funcionário"
+                styles={customSelectStyles}
               />
             </FormGroup>
             <FormGroup>
@@ -90,6 +130,7 @@ const FormularioOrdemDeServico = ({
                 value={produtoOptions.find(option => option.value === formData.produtoID)}
                 onChange={(selectedOption) => handleSelectChange(selectedOption, 'produtoID')}
                 placeholder="Selecione um produto"
+                styles={customSelectStyles}
               />
             </FormGroup>
             <FormGroup>
@@ -101,6 +142,7 @@ const FormularioOrdemDeServico = ({
                 value={servicoOptions.find(option => option.value === formData.servicoID)}
                 onChange={(selectedOption) => handleSelectChange(selectedOption, 'servicoID')}
                 placeholder="Selecione um serviço"
+                styles={customSelectStyles}
               />
             </FormGroup>
             <FormGroup>
@@ -178,8 +220,8 @@ const FormularioOrdemDeServico = ({
           </Espacamento>
         </EspacamentoContainer>
         <EspacamentoButton>
-          <button type="submit">Salvar</button>
-          <button type="button" onClick={onClose}>Cancelar</button>
+          <Button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</Button>
+          <Button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
         </EspacamentoButton>
       </Form>
     </Container>

@@ -15,10 +15,10 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  padding: 8px;
+  padding: 8px 0 8px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  width: 100%;
+  width: 98%;
 `;
 
 export const Button = styled.button`

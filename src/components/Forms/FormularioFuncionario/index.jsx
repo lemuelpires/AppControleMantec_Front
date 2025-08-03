@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormGroup, Label, Input, Button } from './style';
+import { Form, FormGroup, Label, Input, Button, BotaoEspacamento } from './style';
 
 const FormularioFuncionario = ({ initialValues, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({ ...initialValues, ativo: true });
@@ -40,8 +40,10 @@ const FormularioFuncionario = ({ initialValues, onSubmit, onClose }) => {
         <Label htmlFor="dataContratacao">Data de Contratação</Label>
         <Input type="date" id="dataContratacao" name="dataContratacao" value={formData.dataContratacao || ''} onChange={handleChange} required />
       </FormGroup>
-      <Button type="submit">Salvar</Button>
-      <Button type="button" onClick={onClose}>Cancelar</Button>
+      <BotaoEspacamento>
+        <Button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="submit">Salvar</Button>
+        <Button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
+      </BotaoEspacamento>
     </Form>
   );
 };

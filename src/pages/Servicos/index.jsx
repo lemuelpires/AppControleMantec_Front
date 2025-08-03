@@ -12,7 +12,10 @@ import ModalEdicaoServico from '../../components/Modais/Servico/ModalEdicao';
 import ModalNovoServico from '../../components/Modais/Servico/ModalNovo';
 import apiServico from '../../services/apiCliente';
 import Modal from 'react-modal';
-import { FaPlus, FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+
 
 Modal.setAppElement('#root');
 
@@ -101,9 +104,7 @@ const Servico = () => {
       <ServicoTitle>Serviços</ServicoTitle>
 
       <BotaoEspacamento>
-        <ServicoButton onClick={openNovoModal}>
-          <FaPlus />
-        </ServicoButton>
+        <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
       </BotaoEspacamento>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>

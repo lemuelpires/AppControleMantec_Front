@@ -13,6 +13,10 @@ height: 50px;
 
 export const FormGroup = styled.div`
   margin-bottom: 15px;
+  color: #333;
+
+  label {
+    color: #d9d9d9;
 `;
 
 export const Label = styled.label`
@@ -25,4 +29,9 @@ export const Input = styled.input`
   border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
+`;
+
+export const Button = styled.button`
+  padding: 10px;
+  margin-top: 10px;
 `;

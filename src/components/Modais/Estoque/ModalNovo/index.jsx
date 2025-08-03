@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import Select from 'react-select';
-import { FormGroup, Label } from './style';
+import { FormGroup, Label, Button } from './style';
 import FormularioEstoque from '../../../Forms/FormularioEstoque';
 import apiCliente from '../../../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
 
@@ -95,9 +95,9 @@ const ModalNovoEstoque = ({ isOpen, onClose, onSubmit }) => {
         />
       </FormGroup>
       <FormularioEstoque formData={formData} setFormData={setFormData} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-        <button onClick={onClose}>Cancelar</button>
-        <button onClick={handleSubmit}>Salvar</button>
+      <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
+        <Button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="submit">Salvar</Button>
+        <Button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>       
       </div>
     </Modal>
   );

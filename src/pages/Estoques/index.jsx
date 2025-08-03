@@ -7,6 +7,8 @@ import ModalNovoEstoque from '../../components/Modais/Estoque/ModalNovo';
 import apiEstoque from '../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
 import apiCliente from '../../services/apiCliente'; // Importe a API para manipulação de Produto
 import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa'; // Importando os ícones
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 // Definir o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -154,10 +156,8 @@ const Estoque = () => {
       <EstoqueTitle>Estoque</EstoqueTitle>
 
 
-      <BotaoEspacamento onClick={openNovoModal}>
-        <EstoqueButton>
-          <i className="fas fa-plus"></i>
-        </EstoqueButton>
+      <BotaoEspacamento >
+          <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
       </BotaoEspacamento>
 
       {/* Campo de pesquisa */}

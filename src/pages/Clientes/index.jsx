@@ -16,7 +16,7 @@ import apiCliente from '../../services/apiCliente';
 
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit, faTrash, faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 Modal.setAppElement('#root');
 
@@ -118,9 +118,7 @@ const Clientes = () => {
       <ClientesTitle>Clientes</ClientesTitle>
 
       <BotaoEspacamento>
-        <ClientesButton onClick={openNovoModal}>
-          <FontAwesomeIcon icon={faPlus} style={{ color: 'white' }} />
-        </ClientesButton>
+          <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
       </BotaoEspacamento>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em', flexWrap: 'wrap', gap: '1em' }}>

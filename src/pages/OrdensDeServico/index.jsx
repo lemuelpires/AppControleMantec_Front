@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import {
   OrdemDeServicoContainer,
   OrdemDeServicoTitle,
-  OrdemDeServicoButton,
   OrdemDeServicoTable,
   BotaoEspacamento,
   IconWrapper
 } from './style';
-import { FaPlus, FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
@@ -130,9 +131,7 @@ const OrdemDeServico = () => {
     <OrdemDeServicoContainer>
       <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
       <BotaoEspacamento>
-        <OrdemDeServicoButton onClick={openNovoModal}>
-          <FaPlus />
-        </OrdemDeServicoButton>
+        <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
       </BotaoEspacamento>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>

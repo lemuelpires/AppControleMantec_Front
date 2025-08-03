@@ -33,7 +33,7 @@ export const Container = styled.div`
   .image-container {
     margin-top: 20px;
     img {
-      max-width: 30%;
+      max-width: 100px;
       height: auto;
       border-radius: 8px;
       box-shadow: 0px 0px 10px rgba(255, 127, 80, 0.5);
