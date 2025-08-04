@@ -1,7 +1,25 @@
 import React from 'react';
 import Modal from 'react-modal';
 import FormularioProduto from '../../../Forms/FormularioProduto';
-import { ModalContainer, ModalContent, ModalTitle, ModalCloseButton } from './style';
+import { Titulo } from './style';
+
+const modalStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    backgroundColor: '#1f1e1e',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+    maxWidth: '500px',
+    width: '100%',
+    inset: 'unset',
+  },
+};
 
 const ModalEdicaoProduto = ({ isOpen, onClose, item, onSubmit }) => {
   if (!isOpen || !item) return null;
@@ -21,32 +39,18 @@ const ModalEdicaoProduto = ({ isOpen, onClose, item, onSubmit }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      contentLabel="Editar Produto"
-      style={{
-        overlay: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        content: {
-          display: 'flex',
-          justifyContent: 'center',
-          border: 'none',
-          backgroundColor: 'transparent',
-          width: '100%',
-          inset: 'unset',
-          color: '#ffffff',
-        },
-      }}
+      overlayElement={(props, contentElement) => (
+        <div {...props}>{contentElement}</div>
+      )}
+      contentElement={(props, children) => (
+        <div {...props}>{children}</div>
+      )}
+      style={modalStyles}
     >
-      <ModalContainer>
-        <ModalTitle>Editar Produto</ModalTitle>
-        <ModalCloseButton onClick={onClose}>X</ModalCloseButton>
-        <ModalContent>
-          <FormularioProduto initialValues={initialValues} onSubmit={onSubmit} onClose={onClose} />
-        </ModalContent>
-      </ModalContainer>
+      <Titulo>
+        <h2>Editar Serviço</h2>
+      </Titulo>
+      {item && <FormularioProduto initialValues={initialValues} onSubmit={onSubmit} onClose={onClose} />}
     </Modal>
   );
 };

@@ -64,14 +64,17 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 
   useEffect(() => {
     if (item) {
+       const formatDate = (dateStr) => {
+      return dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
+    };
       setFormData({
         id: item.id,
         clienteID: item.clienteID,
         funcionarioID: item.funcionarioID,
         produtoID: item.produtoID,
         servicoID: item.servicoID,
-        dataEntrada: item.dataEntrada,
-        dataConclusao: item.dataConclusao,
+        dataEntrada: formatDate(item.dataEntrada),
+        dataConclusao: formatDate(item.dataConclusao),
         status: item.status,
         observacoes: item.observacoes,
         ativo: item.ativo,

@@ -1,6 +1,6 @@
 // src/components/Forms/FormularioCliente/index.jsx
 import React, { useState, useEffect } from 'react';
-import { Campo, Input, Botoes } from './style';
+import { Campo, Input, Button, EspacamentoButton } from './style';
 
 const FormularioCliente = ({ initialValues = {}, onSubmit, onClose }) => {
   const [formValues, setFormValues] = useState(initialValues);
@@ -63,11 +63,11 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose }) => {
           required
         />
       </Campo>
-      <Botoes>
-          <button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</button>
-          <button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</button>
-      </Botoes>
-     
+      <EspacamentoButton>
+          <Button style={{ backgroundColor: '#0f9d58', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</Button>
+          <Button style={{ backgroundColor: '#e53935', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
+      </EspacamentoButton>
+
     </form>
   );
 };

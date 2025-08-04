@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormGroup, Label, Input, Button, ContainerBotao } from './style';
+import { Form, FormGroup, Label, Input, Button, EspacamentoButton, Espacamento, EspacamentoContainer } from './style';
 
 const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({ ...initialValues });
@@ -23,38 +23,44 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormGroup>
-        <Label htmlFor="imagemURL">URL da Imagem</Label>
-        <Input type="text" id="imagemURL" name="imagemURL" value={formData.imagemURL || ''} onChange={handleChange} />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="nome">Nome</Label>
-        <Input type="text" id="nome" name="nome" value={formData.nome || ''} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="descricao">Descrição</Label>
-        <Input type="text" id="descricao" name="descricao" value={formData.descricao || ''} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="quantidade">Quantidade</Label>
-        <Input type="number" id="quantidade" name="quantidade" value={formData.quantidade || ''} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="preco">Preço</Label>
-        <Input type="number" id="preco" name="preco" value={formData.preco || ''} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="fornecedor">Fornecedor</Label>
-        <Input type="text" id="fornecedor" name="fornecedor" value={formData.fornecedor || ''} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="dataEntrada">Data de Entrada</Label>
-        <Input type="date" id="dataEntrada" name="dataEntrada" value={formData.dataEntrada || ''} onChange={handleChange} required />
-      </FormGroup>
-      <ContainerBotao>
-        <Button style={{ backgroundColor: '#016b19ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</Button>
-        <Button style={{ backgroundColor: '#6d0b02ff', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
-      </ContainerBotao>
+      <EspacamentoContainer>
+        <Espacamento>
+          <FormGroup>
+            <Label htmlFor="imagemURL">URL da Imagem</Label>
+            <Input type="text" id="imagemURL" name="imagemURL" value={formData.imagemURL || ''} onChange={handleChange} />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="nome">Nome</Label>
+            <Input type="text" id="nome" name="nome" value={formData.nome || ''} onChange={handleChange} required />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="descricao">Descrição</Label>
+            <Input type="text" id="descricao" name="descricao" value={formData.descricao || ''} onChange={handleChange} required />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="quantidade">Quantidade</Label>
+            <Input type="number" id="quantidade" name="quantidade" value={formData.quantidade || ''} onChange={handleChange} required />
+          </FormGroup>
+        </Espacamento>
+        <Espacamento>
+          <FormGroup>
+            <Label htmlFor="preco">Preço</Label>
+            <Input type="number" id="preco" name="preco" value={formData.preco || ''} onChange={handleChange} required />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="fornecedor">Fornecedor</Label>
+            <Input type="text" id="fornecedor" name="fornecedor" value={formData.fornecedor || ''} onChange={handleChange} required />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="dataEntrada">Data de Entrada</Label>
+            <Input type="date" id="dataEntrada" name="dataEntrada" value={formData.dataEntrada || ''} onChange={handleChange} required />
+          </FormGroup>
+        </Espacamento>
+      </EspacamentoContainer>
+      <EspacamentoButton>
+        <Button style={{ backgroundColor: '#0f9d58', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</Button>
+        <Button style={{ backgroundColor: '#e53935', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
+      </EspacamentoButton>
     </Form>
   );
 };
