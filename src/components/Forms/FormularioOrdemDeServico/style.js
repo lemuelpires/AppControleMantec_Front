@@ -85,19 +85,17 @@ export const FormRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
-  margin-bottom: 0.6rem;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
     gap: 0;
-    margin-bottom: 0.4rem;
   }
 `;
 
 export const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.6rem;
+  
   animation: ${fadeIn} 0.6s ease-out backwards;
   animation-delay: ${props => props.delay || '0s'};
 `;
@@ -106,7 +104,6 @@ export const Label = styled.label`
   font-size: 0.7rem;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 0.2rem;
   letter-spacing: 0.3px;
   text-transform: uppercase;
 `;

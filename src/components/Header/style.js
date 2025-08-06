@@ -130,7 +130,7 @@ export const MenuIcon = styled.div`
 export const Sidebar = styled.div`
   position: fixed;
   top: 0;
-  right: 0;
+  right: ${props => (props.open ? '0' : '-320px')};
   height: 100vh;
   width: 320px;
   background: linear-gradient(145deg, 
@@ -141,14 +141,17 @@ export const Sidebar = styled.div`
   backdrop-filter: blur(20px);
   color: #ffffff;
   padding: 2rem 1.5rem;
-  display: flex;
+  display: ${props => (props.open ? 'flex' : 'none')};
   flex-direction: column;
-  transform: ${props => (props.open ? 'translateX(0)' : 'translateX(100%)')};
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: ${Z_INDEX.SIDEBAR};
+  transform: ${props => (props.open ? 'translateX(0)' : 'translateX(0)')};
+  transition: ${props => (props.open ? 'right 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none')};
+  z-index: ${props => (props.open ? Z_INDEX.SIDEBAR : -1)};
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: ${props => props.open ? '-10px 0 30px rgba(0, 0, 0, 0.3)' : 'none'};
   animation: ${props => props.open ? slideIn : 'none'} 0.4s ease-out;
+  opacity: ${props => (props.open ? 1 : 0)};
+  visibility: ${props => (props.open ? 'visible' : 'hidden')};
+  pointer-events: ${props => (props.open ? 'auto' : 'none')};
   
   &::before {
     content: '';
@@ -168,7 +171,7 @@ export const Sidebar = styled.div`
     list-style: none;
     list-style-type: none;
     padding: 0;
-    margin-top: 3rem;
+    margin-top: 1.5rem;
     position: relative;
     z-index: 1;
     
@@ -181,13 +184,14 @@ export const Sidebar = styled.div`
   @media (max-width: 480px) {
     width: 100vw;
     padding: 2rem 1rem;
+    right: ${props => (props.open ? '0' : '-100vw')};
   }
 `;
 
 export const MenuItem = styled.li`
   padding: 0;
   text-align: left;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.1rem;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -234,7 +238,7 @@ export const MenuLink = styled(NavLink)`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 1rem 1.2rem;
+  padding: 0.8rem 1.2rem;
   font-weight: 500;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -265,7 +269,7 @@ export const MenuLink = styled(NavLink)`
 export const SubMenuLink = styled(NavLink)`
   text-decoration: none;
   color: rgba(255, 255, 255, 0.9);
-  padding: 0.8rem 1rem;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -274,7 +278,7 @@ export const SubMenuLink = styled(NavLink)`
   font-weight: 400;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
-  margin: 0.2rem 0;
+  margin: 0;
   position: relative;
   width: 100%;
   box-sizing: border-box;
@@ -416,7 +420,7 @@ export const SubMenu = styled.ul`
   list-style: none;
   list-style-type: none;
   padding: 0;
-  margin: 0.5rem 0;
+  margin: 0;
   padding-left: 1rem;
   width: 100%;
   border-left: 3px solid rgba(255, 255, 255, 0.2);
@@ -449,7 +453,7 @@ export const SubMenuItem = styled.li`
   padding: 0;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin: 0.1rem 0;
+  margin: 0;
   position: relative;
   width: 100%;
   display: block;
@@ -523,8 +527,11 @@ export const MenuOverlay = styled.div`
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(3px);
-  z-index: ${Z_INDEX.MENU_OVERLAY};
+  z-index: ${props => (props.open ? Z_INDEX.MENU_OVERLAY : -1)};
   opacity: ${props => (props.open ? 1 : 0)};
   visibility: ${props => (props.open ? 'visible' : 'hidden')};
+  pointer-events: ${props => (props.open ? 'auto' : 'none')};
+  display: ${props => (props.open ? 'block' : 'none')};
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 `;

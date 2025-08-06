@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Clientes from './pages/Clientes';
 import Funcionarios from './pages/Funcionarios';
@@ -25,6 +25,26 @@ import ResetPasswordModal from './components/Modais/RedefinicaoSenha';
 
 Modal.setAppElement('#root');
 
+// Componente wrapper para ter acesso ao useNavigate
+const UnauthorizedWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleGoHome = () => {
+    navigate('/');
+  };
+  
+  const handleGoBack = () => {
+    window.history.back();
+  };
+  
+  return (
+    <Unauthorized 
+      onGoHome={handleGoHome}
+      onGoBack={handleGoBack}
+    />
+  );
+};
+
 function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCadastroUsuarioOpen, setIsCadastroUsuarioOpen] = useState(false);
@@ -47,7 +67,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/unauthorized" element={<UnauthorizedWrapper />} />
           <Route path="/clientes" element={<ProtectedRoute element={<Clientes />} />} />
           <Route path="/funcionarios" element={<ProtectedRoute element={<Funcionarios />} />} />
           <Route path="/estoque" element={<ProtectedRoute element={<Estoque />} />} />

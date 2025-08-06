@@ -22,13 +22,13 @@ const modalStyles = {
     border: 'none',
     borderRadius: '0',
     boxShadow: 'none',
-    maxWidth: '650px',
+    maxWidth: '750px',
     width: '95%',
     maxHeight: '90vh',
     inset: 'unset',
     zIndex: 10000,
     position: 'relative',
-    overflow: 'visible',
+    overflow: 'auto',
   },
 };
 
@@ -37,8 +37,8 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     id: '',
     clienteID: '',
     funcionarioID: '',
-    produtoID: '',
-    servicoID: '',
+    produtos: [{ produtoID: '', quantidade: 1 }],
+    servicos: [{ servicoID: '', quantidade: 1 }],
     dataEntrada: '',
     dataConclusao: '',
     status: '',
@@ -59,10 +59,11 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         const produtos = await apiCliente.get('/Produto');
         const servicos = await apiCliente.get('/Servico');
 
-        setClienteOptions(clientes.data.map(cliente => ({ value: cliente.id, label: cliente.nome })));
-        setFuncionarioOptions(funcionarios.data.map(funcionario => ({ value: funcionario.id, label: funcionario.nome })));
-        setProdutoOptions(produtos.data.map(produto => ({ value: produto.id, label: produto.nome })));
-        setServicoOptions(servicos.data.map(servico => ({ value: servico.id, label: servico.nome })));
+        // Filtrar apenas dados ativos
+        setClienteOptions(clientes.data.filter(cliente => cliente.ativo).map(cliente => ({ value: cliente.id, label: cliente.nome })));
+        setFuncionarioOptions(funcionarios.data.filter(funcionario => funcionario.ativo).map(funcionario => ({ value: funcionario.id, label: funcionario.nome })));
+        setProdutoOptions(produtos.data.filter(produto => produto.ativo).map(produto => ({ value: produto.id, label: produto.nome })));
+        setServicoOptions(servicos.data.filter(servico => servico.ativo).map(servico => ({ value: servico.id, label: servico.nome })));
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
@@ -73,15 +74,35 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 
   useEffect(() => {
     if (item) {
-       const formatDate = (dateStr) => {
-      return dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
-    };
+      const formatDate = (dateStr) => {
+        return dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
+      };
+      
+      // Converter dados antigos (simples) para novo formato (arrays)
+      let produtos = [{ produtoID: '', quantidade: 1 }];
+      let servicos = [{ servicoID: '', quantidade: 1 }];
+      
+      // Se existir produtos/serviços salvos como array, usar eles
+      if (item.produtos && Array.isArray(item.produtos) && item.produtos.length > 0) {
+        produtos = item.produtos;
+      } else if (item.produtoID) {
+        // Conversão de formato antigo para novo
+        produtos = [{ produtoID: item.produtoID, quantidade: item.quantidadeProduto || 1 }];
+      }
+      
+      if (item.servicos && Array.isArray(item.servicos) && item.servicos.length > 0) {
+        servicos = item.servicos;
+      } else if (item.servicoID) {
+        // Conversão de formato antigo para novo
+        servicos = [{ servicoID: item.servicoID, quantidade: item.quantidadeServico || 1 }];
+      }
+      
       setFormData({
         id: item.id,
         clienteID: item.clienteID,
         funcionarioID: item.funcionarioID,
-        produtoID: item.produtoID,
-        servicoID: item.servicoID,
+        produtos: produtos,
+        servicos: servicos,
         dataEntrada: formatDate(item.dataEntrada),
         dataConclusao: formatDate(item.dataConclusao),
         status: item.status,
@@ -93,6 +114,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 
   const handleSubmit = async (data) => {
     try {
+      console.log('Dados do formulário de edição antes do envio:', data);
       await onSubmit(data);
       onClose();
     } catch (error) {

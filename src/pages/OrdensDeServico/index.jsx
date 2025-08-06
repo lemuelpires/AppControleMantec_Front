@@ -52,8 +52,29 @@ const OrdemDeServico = () => {
 
       const clientesIds = new Set(ordensAtivas.map(o => o.clienteID));
       const funcionariosIds = new Set(ordensAtivas.map(o => o.funcionarioID));
-      const produtosIds = new Set(ordensAtivas.map(o => o.produtoID));
-      const servicosIds = new Set(ordensAtivas.map(o => o.servicoID));
+      
+      // Coleta IDs de produtos e serviços, considerando tanto formato antigo quanto arrays
+      const produtosIds = new Set();
+      const servicosIds = new Set();
+      
+      ordensAtivas.forEach(ordem => {
+        // Formato antigo (compatibilidade)
+        if (ordem.produtoID) produtosIds.add(ordem.produtoID);
+        if (ordem.servicoID) servicosIds.add(ordem.servicoID);
+        
+        // Formato novo (arrays)
+        if (ordem.produtos && Array.isArray(ordem.produtos)) {
+          ordem.produtos.forEach(produto => {
+            if (produto.produtoID) produtosIds.add(produto.produtoID);
+          });
+        }
+        
+        if (ordem.servicos && Array.isArray(ordem.servicos)) {
+          ordem.servicos.forEach(servico => {
+            if (servico.servicoID) servicosIds.add(servico.servicoID);
+          });
+        }
+      });
 
       await Promise.all([
         fetchMap(clientesIds, clientes, '/Cliente/', setClientes),
@@ -113,10 +134,31 @@ const OrdemDeServico = () => {
 
   const handleSave = async (formData) => {
     try {
+      console.log('handleSave - Dados recebidos:', formData);
+      console.log('handleSave - Produtos:', formData.produtos);
+      console.log('handleSave - Serviços:', formData.servicos);
+      
+      // Preparar dados mantendo compatibilidade com backend atual
+      const dataToSend = {
+        ...formData,
+        // Manter compatibilidade - pegar o primeiro item se existir
+        produtoID: formData.produtos?.[0]?.produtoID || null,
+        servicoID: formData.servicos?.[0]?.servicoID || null,
+        quantidadeProduto: formData.produtos?.[0]?.quantidade || 1,
+        quantidadeServico: formData.servicos?.[0]?.quantidade || 1,
+        // Manter arrays para futuro uso
+        produtos: formData.produtos || [],
+        servicos: formData.servicos || []
+      };
+      
+      console.log('Dados preparados para envio:', dataToSend);
+      
       if (formData.id) {
-        await apiCliente.put(`/OrdemDeServico/${formData.id}`, formData);
+        console.log('Editando ordem existente...');
+        await apiCliente.put(`/OrdemDeServico/${formData.id}`, dataToSend);
       } else {
-        await apiCliente.post('/OrdemDeServico', formData);
+        console.log('Criando nova ordem...');
+        await apiCliente.post('/OrdemDeServico', dataToSend);
       }
       fetchOrdensDeServico();
       closeModal();
@@ -169,56 +211,81 @@ const OrdemDeServico = () => {
             <tr>
               <th>Cliente</th>
               <th>Funcionário</th>
-              <th>Produto</th>
-              <th>Serviço</th>
+              <th>Produtos</th>
+              <th>Serviços</th>
               <th>Entrada</th>
               <th>Conclusão</th>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedOrdens.map(ordem => (
-              <tr key={ordem.id}>
-                <td>{clientes[ordem.clienteID]}</td>
-                <td>{funcionarios[ordem.funcionarioID]}</td>
-                <td>{produtos[ordem.produtoID]}</td>
-                <td>{servicos[ordem.servicoID]}</td>
-                <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
-                <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
-                <td>
-                  <IconWrapper>
-                    <ActionButton 
-                      className="view"
-                      onClick={() => openDetalhesModal(ordem)}
-                      title="Visualizar detalhes"
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                    </ActionButton>
-                    <ActionButton 
-                      className="edit"
-                      onClick={() => openEdicaoModal(ordem)}
-                      title="Editar ordem"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </ActionButton>
-                    <ActionButton 
-                      className="delete"
-                      onClick={() => handleExcluir(ordem.id)}
-                      title="Excluir ordem"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </ActionButton>
-                    <ActionButton 
-                      className="print"
-                      onClick={() => console.log('Imprimir:', ordem.id)}
-                      title="Imprimir ordem"
-                    >
-                      <FontAwesomeIcon icon={faPrint} />
-                    </ActionButton>
-                  </IconWrapper>
-                </td>
-              </tr>
-            ))}
+            {paginatedOrdens.map(ordem => {
+              // Função para formatar produtos/serviços
+              const formatProdutos = (ordem) => {
+                if (ordem.produtos && Array.isArray(ordem.produtos) && ordem.produtos.length > 0) {
+                  return ordem.produtos
+                    .filter(produto => produto.produtoID)
+                    .map(produto => `${produtos[produto.produtoID]} (${produto.quantidade})`)
+                    .join(', ') || '-';
+                }
+                // Compatibilidade com formato antigo
+                return ordem.produtoID ? produtos[ordem.produtoID] : '-';
+              };
+              
+              const formatServicos = (ordem) => {
+                if (ordem.servicos && Array.isArray(ordem.servicos) && ordem.servicos.length > 0) {
+                  return ordem.servicos
+                    .filter(servico => servico.servicoID)
+                    .map(servico => `${servicos[servico.servicoID]} (${servico.quantidade})`)
+                    .join(', ') || '-';
+                }
+                // Compatibilidade com formato antigo
+                return ordem.servicoID ? servicos[ordem.servicoID] : '-';
+              };
+              
+              return (
+                <tr key={ordem.id}>
+                  <td>{clientes[ordem.clienteID]}</td>
+                  <td>{funcionarios[ordem.funcionarioID]}</td>
+                  <td>{formatProdutos(ordem)}</td>
+                  <td>{formatServicos(ordem)}</td>
+                  <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
+                  <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
+                  <td>
+                    <IconWrapper>
+                      <ActionButton 
+                        className="view"
+                        onClick={() => openDetalhesModal(ordem)}
+                        title="Visualizar detalhes"
+                      >
+                        <FontAwesomeIcon icon={faEye} />
+                      </ActionButton>
+                      <ActionButton 
+                        className="edit"
+                        onClick={() => openEdicaoModal(ordem)}
+                        title="Editar ordem"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </ActionButton>
+                      <ActionButton 
+                        className="delete"
+                        onClick={() => handleExcluir(ordem.id)}
+                        title="Excluir ordem"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </ActionButton>
+                      <ActionButton 
+                        className="print"
+                        onClick={() => console.log('Imprimir:', ordem.id)}
+                        title="Imprimir ordem"
+                      >
+                        <FontAwesomeIcon icon={faPrint} />
+                      </ActionButton>
+                    </IconWrapper>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </OrdemDeServicoTable>
       </OrdemDeServicoTableWrapper>

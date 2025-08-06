@@ -22,13 +22,13 @@ const modalStyles = {
     border: 'none',
     borderRadius: '0',
     boxShadow: 'none',
-    maxWidth: '650px',
+    maxWidth: '750px',
     width: '95%',
     maxHeight: '90vh',
     inset: 'unset',
     zIndex: 10000,
     position: 'relative',
-    overflow: 'visible',
+    overflow: 'auto',
   },
 };
 
@@ -40,8 +40,8 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     clienteID: '',
     funcionarioID: '',
-    produtoID: '',
-    servicoID: '',
+    produtos: [{ produtoID: '', quantidade: 1 }],
+    servicos: [{ servicoID: '', quantidade: 1 }],
     dataEntrada: '',
     dataConclusao: '',
     status: '',
@@ -110,14 +110,27 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (formData) => {
     try {
+      console.log('Dados do formulário antes do envio:', formData);
+      
       const dataEntrada = formData.dataEntrada ? new Date(formData.dataEntrada).toISOString() : null;
       const dataConclusao = formData.dataConclusao ? new Date(formData.dataConclusao).toISOString() : null;
 
+      // Preparar dados mantendo compatibilidade com backend atual
       const ordemDeServicoDto = {
         ...formData,
         dataEntrada,
         dataConclusao,
+        // Manter compatibilidade - pegar o primeiro item se existir
+        produtoID: formData.produtos?.[0]?.produtoID || null,
+        servicoID: formData.servicos?.[0]?.servicoID || null,
+        quantidadeProduto: formData.produtos?.[0]?.quantidade || 1,
+        quantidadeServico: formData.servicos?.[0]?.quantidade || 1,
+        // Manter arrays para futuro uso
+        produtos: formData.produtos || [],
+        servicos: formData.servicos || []
       };
+
+      console.log('DTO a ser enviado:', ordemDeServicoDto);
 
       const response = await apiCliente.post('/OrdemDeServico', ordemDeServicoDto);
       console.log('Ordem de ServiÃ§o criada:', response.data);
