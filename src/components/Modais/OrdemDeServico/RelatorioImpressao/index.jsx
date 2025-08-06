@@ -7,83 +7,102 @@ const ReportContainer = styled.div`
   width: 100%;
   max-width: 210mm;
   margin: auto;
-  padding: 20px;
+  padding: 15px;
   font-family: Arial, sans-serif;
   background-color: #fff;
   color: #000;
   border: 1px solid #ddd;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.3;
   
   @media print {
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: 20mm;
+    padding: 15mm;
     border: none;
     box-shadow: none;
-    font-size: 12px; 
+    font-size: 11px; 
+    line-height: 1.2;
     page-break-before: always; 
   }
 `;
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 `;
 
 const HeaderTitle = styled.h1`
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   color: #333;
-  
-  @media print {
-    font-size: 18px; 
-  }
-`;
-
-const HeaderSubtitle = styled.h2`
-  margin: 0;
-  font-size: 18px;
-  font-weight: normal;
-  color: #666;
-  
-  @media print {
-    font-size: 14px; 
-  }
-`;
-
-const SectionTitle = styled.h3`
-  margin-top: 20px;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 1px solid #000;
-  padding-bottom: 5px;
-  color: #000;
   
   @media print {
     font-size: 16px; 
   }
 `;
 
+const HeaderSubtitle = styled.h2`
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: #666;
+  
+  @media print {
+    font-size: 12px; 
+  }
+`;
+
+const SectionTitle = styled.h3`
+  margin-top: 15px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #000;
+  padding-bottom: 3px;
+  color: #000;
+  
+  @media print {
+    font-size: 14px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+  }
+`;
+
 const ReportRow = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   break-inside: avoid; 
+  
+  @media print {
+    margin-bottom: 6px;
+  }
 `;
 
 const ReportLabel = styled.div`
   font-weight: bold;
   width: 30%;
+  font-size: 14px;
+  
+  @media print {
+    font-size: 11px;
+  }
 `;
 
 const ReportValue = styled.div`
   width: 65%;
+  font-size: 14px;
+  
+  @media print {
+    font-size: 11px;
+  }
 `;
 
 const ButtonContainer = styled.div`
-  margin-top: 20px;
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
 
@@ -265,6 +284,8 @@ const ReportLabel = styled.div`
 
 const ReportValue = styled.div`
   width: 65%;
+ border-bottom: 1px solid #ccc; /* linha fina e discreta */
+  padding-bottom: 4px; /* espaço entre o texto e a linha */
 `;
 
 const ObservacaoLonga = styled.div`
@@ -321,6 +342,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
   const valorUnitario = (produto?.preco || 0) + (servico?.preco || 0);
   const total = qtde * valorUnitario;
 
+  
   useEffect(() => {
     const fetchData = async () => {
       const clienteData = await apiCliente.get(`/cliente/${ordemDeServico.clienteID}`);
@@ -363,7 +385,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
       <SectionTitle>Informações Gerais</SectionTitle>
       <ReportRow>
         <ReportLabel>Nº da OS:</ReportLabel>
-        <ReportValue>{ordemDeServico.numeroOS || '____________'}</ReportValue>
+        <ReportValue>{ordemDeServico.numeroOS}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Data de Abertura:</ReportLabel>
@@ -377,7 +399,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
       </ReportRow>
       <ReportRow>
         <ReportLabel>CPF/CNPJ:</ReportLabel>
-        <ReportValue>{cliente.cpf || cliente.cnpj || '____________'}</ReportValue>
+        <ReportValue>{cliente.cpf || cliente.cnpj}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Telefone:</ReportLabel>
@@ -389,34 +411,34 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
       </ReportRow>
       <ReportRow>
         <ReportLabel>Endereço:</ReportLabel>
-        <ReportValue>{cliente.endereco || '_____________________________'}</ReportValue>
+        <ReportValue>{cliente.endereco}</ReportValue>
       </ReportRow>
 
       <SectionTitle>Dados do Equipamento</SectionTitle>
       <ReportRow>
         <ReportLabel>Tipo de Equipamento:</ReportLabel>
-        <ReportValue>{'_________________________________________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Marca / Modelo:</ReportLabel>
-        <ReportValue>{'_________________________________________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Nº de Série:</ReportLabel>
-        <ReportValue>{'_________________________________________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Acessórios Entregues:</ReportLabel>
-        <ReportValue>{'_________________________________________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
 
       <ReportRow>
         <ReportLabel>Condições Visuais:</ReportLabel>
-        <ReportValue>{'_________________________________________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Problema Aparente:</ReportLabel>
-        <ReportValue>{'_________________________________________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Diagnóstico e serviço a ser executado:</ReportLabel>
@@ -456,7 +478,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
       </ReportRow>
       <ReportRow>
         <ReportLabel>Taxas Adicionais:</ReportLabel>
-        <ReportValue>{'____'}</ReportValue>
+        <ReportValue>{''}</ReportValue>
       </ReportRow>
       <ReportRow>
         <ReportLabel>Valor Total:</ReportLabel>
@@ -464,7 +486,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
       </ReportRow>
       <ReportRow>
         <ReportLabel>Forma de Pagamento:</ReportLabel>
-        <ReportValue>{'_____________________'}</ReportValue>
+        <ReportValue>{}</ReportValue>
       </ReportRow>
 
       <SectionTitle>Status</SectionTitle>
@@ -485,10 +507,10 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
 
       <SectionTitle>Observações / Termos</SectionTitle>
       <ObservacaoLonga>
-        ☑ O cliente autoriza abertura do equipamento<br />
-        ☑ Não nos responsabilizamos por perda de dados<br />
-        ☑ Equipamento com sinais de oxidação ou queda<br />
-        ☑ Garantia de 90 dias sobre serviço realizado
+        ☐ O cliente autoriza abertura do equipamento<br />
+        ☐ Não nos responsabilizamos por perda de dados<br />
+        ☐ Equipamento com sinais de oxidação ou queda<br />
+        ☐ Garantia de 90 dias sobre serviço realizado
       </ObservacaoLonga>
 
       <SectionTitle>Assinaturas</SectionTitle>

@@ -5,20 +5,20 @@ import OrdemDeServicoReport from '../RelatorioImpressao'; // Certifique-se de aj
 
 const modalStyles = {
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   content: {
     backgroundColor: '#1f1e1e',
-    padding: '20px',
+    padding: '10px',
     borderRadius: '8px',
     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '90%', // Ajuste a largura máxima para 90%
+    maxWidth: '90%',
     width: '90%',
-    maxHeight: '90vh', // Ajuste a altura máxima para 90% da viewport
-    overflowY: 'auto', // Adicione rolagem vertical
+    maxHeight: '90vh',
+    overflowY: 'auto',
     inset: 'unset',
     color: '#ffffff',
   },
@@ -33,18 +33,20 @@ const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
         <div {...props}>{contentElement}</div>
       )}
       contentElement={(props, children) => (
-        <div {...props}>{children}</div>
+        <div {...props} className="ordem-servico-modal-content">{children}</div>
       )}
       style={modalStyles}
     >
-      <Container>
-        <Titulo>
+      <Container className="ordem-servico-modal-container">
+        <Titulo className="ordem-servico-modal-titulo">
           <h2>Detalhes da Ordem de Serviço</h2>
         </Titulo>
         {item ? (
-          <OrdemDeServicoReport ordemDeServico={item} onClose={onClose} />
+          <div className="ordem-servico-report-wrapper">
+            <OrdemDeServicoReport ordemDeServico={item} onClose={onClose} />
+          </div>
         ) : (
-          <p>Ordem de serviço não encontrada.</p>
+          <p className="ordem-servico-not-found">Ordem de serviço não encontrada.</p>
         )}
       </Container>
     </Modal>

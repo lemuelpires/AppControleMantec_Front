@@ -1,7 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import Modal from 'react-modal';
 import FormularioFuncionario from '../../../Forms/FormularioFuncionario';
-import { Titulo } from './style';
 
 // Definir as classes do Modal
 const modalStyles = {
@@ -10,13 +9,26 @@ const modalStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '50px',
-    borderRadius: '8px',
-    width: '50%',
-    position: 'none',
+    backgroundColor: 'transparent',
+    padding: '1rem',
+    border: 'none',
+    borderRadius: '0',
+    boxShadow: 'none',
+    maxWidth: '650px',
+    width: '95%',
+    maxHeight: '90vh',
+    inset: 'unset',
+    zIndex: 10000,
+    position: 'relative',
+    overflow: 'visible',
   },
 };
 
@@ -42,13 +54,10 @@ const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      <Titulo>
-        <h2>Editar Funcionário</h2>
-      </Titulo>
-
       {item && (
         <FormularioFuncionario
-          initialValues={dadosCompletos} // <== agora sim está usando os dados ajustados
+          title="Editar Funcionário"
+          initialValues={dadosCompletos} // <== agora sim estÃ¡ usando os dados ajustados
           onSubmit={onSubmit}
           onClose={onClose}
         />
@@ -58,3 +67,4 @@ const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
 };
 
 export default ModalEdicaoFuncionario;
+

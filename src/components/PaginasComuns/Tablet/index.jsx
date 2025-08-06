@@ -57,8 +57,12 @@ const Tablet = () => {
   return (
     <Container>
       {servicesData.map((service, index) => (
-        <Service key={index}>
-          <FontAwesomeIcon icon={service.icon} size="2x" style={{ marginBottom: '10px', color: '#007BFF' }} />
+        <Service key={index} style={{ animationDelay: `${index * 0.2}s` }}>
+          <FontAwesomeIcon 
+            icon={service.icon} 
+            size="3x" 
+            className="icon"
+          />
           <h2>{service.title}</h2>
           <p>{service.description}</p>
         </Service>

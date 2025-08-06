@@ -1,15 +1,23 @@
-// OrdemDeServico.jsx
 import React, { useState, useEffect } from 'react';
 import {
   OrdemDeServicoContainer,
   OrdemDeServicoTitle,
+  HeaderControls,
+  SearchContainer,
+  SearchInput,
+  PerPageSelect,
+  AddButton,
+  OrdemDeServicoTableWrapper,
   OrdemDeServicoTable,
-  BotaoEspacamento,
-  IconWrapper
+  IconWrapper,
+  ActionButton,
+  PaginationContainer,
+  PaginationButton,
+  PaginationInfo
 } from './style';
-import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash, faPrint } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
@@ -130,81 +138,111 @@ const OrdemDeServico = () => {
   return (
     <OrdemDeServicoContainer>
       <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
-      <BotaoEspacamento>
-        <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
-      </BotaoEspacamento>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>
-        <input
-          type="text"
-          placeholder="Buscar cliente..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <div>
-          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+      
+      <HeaderControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar cliente..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <PerPageSelect 
+            value={itemsPerPage} 
+            onChange={e => setItemsPerPage(Number(e.target.value))}
+          >
             <option value={25}>25 por página</option>
             <option value={50}>50 por página</option>
             <option value={100}>100 por página</option>
-          </select>
-        </div>
-      </div>
+          </PerPageSelect>
+        </SearchContainer>
+        
+        <AddButton onClick={openNovoModal}>
+          <FontAwesomeIcon icon={faPlusCircle} />
+          Nova Ordem
+        </AddButton>
+      </HeaderControls>
 
-      <OrdemDeServicoTable>
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Funcionário</th>
-            <th>Produto</th>
-            <th>Serviço</th>
-            <th>Entrada</th>
-            <th>Conclusão</th>
-            <th style={{ textAlign: 'center' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedOrdens.map(ordem => (
-            <tr key={ordem.id}>
-              <td>{clientes[ordem.clienteID]}</td>
-              <td>{funcionarios[ordem.funcionarioID]}</td>
-              <td>{produtos[ordem.produtoID]}</td>
-              <td>{servicos[ordem.servicoID]}</td>
-              <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
-              <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
-              <td>
-                <IconWrapper>
-                  <FaEye onClick={() => openDetalhesModal(ordem)} />
-                  <FaEdit onClick={() => openEdicaoModal(ordem)} />
-                  <FaTrashAlt onClick={() => handleExcluir(ordem.id)} />
-                </IconWrapper>
-              </td>
+      <OrdemDeServicoTableWrapper>
+        <OrdemDeServicoTable>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Funcionário</th>
+              <th>Produto</th>
+              <th>Serviço</th>
+              <th>Entrada</th>
+              <th>Conclusão</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </OrdemDeServicoTable>
+          </thead>
+          <tbody>
+            {paginatedOrdens.map(ordem => (
+              <tr key={ordem.id}>
+                <td>{clientes[ordem.clienteID]}</td>
+                <td>{funcionarios[ordem.funcionarioID]}</td>
+                <td>{produtos[ordem.produtoID]}</td>
+                <td>{servicos[ordem.servicoID]}</td>
+                <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
+                <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
+                <td>
+                  <IconWrapper>
+                    <ActionButton 
+                      className="view"
+                      onClick={() => openDetalhesModal(ordem)}
+                      title="Visualizar detalhes"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="edit"
+                      onClick={() => openEdicaoModal(ordem)}
+                      title="Editar ordem"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="delete"
+                      onClick={() => handleExcluir(ordem.id)}
+                      title="Excluir ordem"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="print"
+                      onClick={() => console.log('Imprimir:', ordem.id)}
+                      title="Imprimir ordem"
+                    >
+                      <FontAwesomeIcon icon={faPrint} />
+                    </ActionButton>
+                  </IconWrapper>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </OrdemDeServicoTable>
+      </OrdemDeServicoTableWrapper>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            style={{
-              margin: '0 5px',
-              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
-              color: currentPage === i + 1 ? '#fff' : '#000',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <PaginationContainer>
+        <PaginationButton
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </PaginationButton>
+        
+        <PaginationInfo>
+          Página {currentPage} de {totalPages} ({filteredOrdens.length} ordens)
+        </PaginationInfo>
+        
+        <PaginationButton
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Próxima
+        </PaginationButton>
+      </PaginationContainer>
 
-      {/* Modais */}
       <ModalDetalhesOrdemDeServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoOrdemDeServico isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoOrdemDeServico isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />

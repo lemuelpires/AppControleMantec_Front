@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ModalContainer, ModalContent, Input, Label, FormGroup, CloseButton, Select } from './style';
+import { ModalContainer, ModalContent, Input, Label, FormGroup, CloseButton, Select, Button, Form, AlertMessage } from './style';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../firebase/firebaseConfig';
 
@@ -26,10 +26,13 @@ const ModalCadastroUsuario = ({ isOpen, onClose, onCadastro }) => {
       onCadastro(newUser);
 
       // Mostrar mensagem de sucesso
-      alert('Usuário cadastrado com sucesso!');
+      setAlertMessage('Usuário cadastrado com sucesso!');
 
       // Fechar o modal após o cadastro
-      onClose();
+      setTimeout(() => {
+        onClose();
+        setAlertMessage('');
+      }, 2000);
     } catch (error) {
       console.error('Erro ao cadastrar usuário:', error.message);
       // Tratar erros de cadastro aqui
@@ -46,14 +49,15 @@ const ModalCadastroUsuario = ({ isOpen, onClose, onCadastro }) => {
   return (
     <ModalContainer isOpen={isOpen}>
       <ModalContent>
-        <CloseButton onClick={onClose}>x</CloseButton>
+        <CloseButton onClick={onClose}>×</CloseButton>
         <h2>Cadastro de Usuário</h2>
-        {alertMessage && <p>{alertMessage}</p>}
-        <form onSubmit={handleSubmit}>
+        {alertMessage && <AlertMessage>{alertMessage}</AlertMessage>}
+        <Form onSubmit={handleSubmit}>
           <FormGroup>
             <Label>Email:</Label>
             <Input
               type="email"
+              placeholder="Digite seu email..."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -63,6 +67,7 @@ const ModalCadastroUsuario = ({ isOpen, onClose, onCadastro }) => {
             <Label>Senha:</Label>
             <Input
               type="password"
+              placeholder="Digite sua senha..."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -77,8 +82,8 @@ const ModalCadastroUsuario = ({ isOpen, onClose, onCadastro }) => {
               </Select>
             </Label>
           </FormGroup>
-          <button type="submit">Cadastrar</button>
-        </form>
+          <Button type="submit">🚀 Cadastrar Usuário</Button>
+        </Form>
       </ModalContent>
     </ModalContainer>
   );

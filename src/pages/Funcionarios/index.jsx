@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { FuncionariosContainer, FuncionariosTitle, FuncionariosButton, FuncionariosTable, BotaoEspacamento, IconWrapper } from './style';
+import { 
+  FuncionariosContainer, 
+  FuncionariosTitle, 
+  HeaderControls,
+  SearchContainer,
+  SearchInput,
+  PerPageSelect,
+  AddButton,
+  FuncionariosTableWrapper,
+  FuncionariosTable, 
+  IconWrapper,
+  ActionButton,
+  PaginationContainer,
+  PaginationButton,
+  PaginationInfo
+} from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faEye, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
@@ -95,72 +110,100 @@ const Funcionarios = () => {
   return (
     <FuncionariosContainer>
       <FuncionariosTitle>Funcionários</FuncionariosTitle>
-      <BotaoEspacamento>
-        <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
-      </BotaoEspacamento>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1em' }}>
-        <input
-          type="text"
-          placeholder="Buscar funcionário..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <div>
-          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+      
+      <HeaderControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar funcionário..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <PerPageSelect 
+            value={itemsPerPage} 
+            onChange={e => setItemsPerPage(Number(e.target.value))}
+          >
             <option value={25}>25 por página</option>
             <option value={50}>50 por página</option>
             <option value={100}>100 por página</option>
-          </select>
-        </div>
-      </div>
-      <FuncionariosTable>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Cargo</th>
-            <th>Telefone</th>
-            <th>E-mail</th>
-            <th style={{ textAlign: 'center' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedFuncionarios.map(funcionario => (
-            <tr key={funcionario.id}>
-              <td>{funcionario.nome}</td>
-              <td>{funcionario.cargo}</td>
-              <td>{funcionario.telefone}</td>
-              <td>{funcionario.email}</td>
-              <td style={{ textAlign: 'center' }}>
-                <IconWrapper>
-                  <FontAwesomeIcon icon={faEye} onClick={() => openDetalhesModal(funcionario)} />
-                  <FontAwesomeIcon icon={faEdit} onClick={() => openEdicaoModal(funcionario)} />
-                  <FontAwesomeIcon icon={faTrashAlt} onClick={() => handleExcluir(funcionario.id)} />
-                </IconWrapper>
-              </td>
+          </PerPageSelect>
+        </SearchContainer>
+        
+        <AddButton onClick={openNovoModal}>
+          <FontAwesomeIcon icon={faPlusCircle} />
+          Novo Funcionário
+        </AddButton>
+      </HeaderControls>
+
+      <FuncionariosTableWrapper>
+        <FuncionariosTable>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Cargo</th>
+              <th>Telefone</th>
+              <th>E-mail</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </FuncionariosTable>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            style={{
-              margin: '0 5px',
-              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
-              color: currentPage === i + 1 ? '#fff' : '#000',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+          </thead>
+          <tbody>
+            {paginatedFuncionarios.map(funcionario => (
+              <tr key={funcionario.id}>
+                <td>{funcionario.nome}</td>
+                <td>{funcionario.cargo}</td>
+                <td>{funcionario.telefone}</td>
+                <td>{funcionario.email}</td>
+                <td>
+                  <IconWrapper>
+                    <ActionButton 
+                      className="view"
+                      onClick={() => openDetalhesModal(funcionario)}
+                      title="Visualizar detalhes"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="edit"
+                      onClick={() => openEdicaoModal(funcionario)}
+                      title="Editar funcionário"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="delete"
+                      onClick={() => handleExcluir(funcionario.id)}
+                      title="Excluir funcionário"
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </ActionButton>
+                  </IconWrapper>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </FuncionariosTable>
+      </FuncionariosTableWrapper>
+
+      <PaginationContainer>
+        <PaginationButton
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </PaginationButton>
+        
+        <PaginationInfo>
+          Página {currentPage} de {totalPages} ({filteredFuncionarios.length} funcionários)
+        </PaginationInfo>
+        
+        <PaginationButton
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Próxima
+        </PaginationButton>
+      </PaginationContainer>
+
       <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoFuncionario isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />

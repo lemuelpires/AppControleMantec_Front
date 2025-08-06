@@ -1,14 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { EstoqueContainer, EstoqueTitle, EstoqueButton, EstoqueTable, BotaoEspacamento } from './style';
+import { 
+  EstoqueContainer, 
+  EstoqueTitle, 
+  HeaderControls, 
+  SearchContainer, 
+  SearchInput, 
+  PerPageSelect, 
+  AddButton, 
+  EstoqueTable, 
+  EstoqueTableWrapper, 
+  IconWrapper, 
+  ActionButton, 
+  PaginationContainer, 
+  PaginationButton,
+  PaginationInfo
+} from './style';
 import ModalDetalhesEstoque from '../../components/Modais/Estoque/ModalDetalhes';
 import ModalEdicaoEstoque from '../../components/Modais/Estoque/ModalEdicao';
 import ModalNovoEstoque from '../../components/Modais/Estoque/ModalNovo';
 import apiEstoque from '../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
 import apiCliente from '../../services/apiCliente'; // Importe a API para manipulação de Produto
-import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa'; // Importando os ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 // Definir o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -155,72 +169,82 @@ const Estoque = () => {
     <EstoqueContainer>
       <EstoqueTitle>Estoque</EstoqueTitle>
 
-
-      <BotaoEspacamento >
-          <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
-      </BotaoEspacamento>
-
-      {/* Campo de pesquisa */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1em' }}>
-        <input
-          type="text"
-          placeholder="Pesquisar produto..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <div>
-          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+      <HeaderControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Pesquisar produto..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <PerPageSelect 
+            value={itemsPerPage} 
+            onChange={e => setItemsPerPage(Number(e.target.value))}
+          >
             <option value={25}>25 por página</option>
             <option value={50}>50 por página</option>
             <option value={100}>100 por página</option>
-          </select>
-        </div>
-      </div>
+          </PerPageSelect>
+        </SearchContainer>
+        
+        <AddButton onClick={openNovoModal}>
+          <FontAwesomeIcon icon={faPlus} />
+          Novo Item
+        </AddButton>
+      </HeaderControls>
 
-      <EstoqueTable>
-        <thead>
-          <tr>
-            <th>Nome do Produto</th>
-            <th>Quantidade</th>
-            <th>Data de Atualização</th>
-            <th style={{ textAlign: 'center' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map(item => (
-            <tr key={item.produtoID}>
-              <td>{item.produtoNome}</td>
-              <td>{item.quantidade}</td>
-              <td>{new Date(item.dataAtualizacao).toLocaleDateString()}</td>
-              <td style={{ textAlign: 'center' }}>
-                <FaEye onClick={() => openDetalhesModal(item)} style={{ cursor: 'pointer', marginRight: '10px' }} />
-                <FaEdit onClick={() => openEdicaoModal(item)} style={{ cursor: 'pointer', marginRight: '10px' }} />
-                <FaTrashAlt onClick={() => handleExcluir(item.id)} style={{ cursor: 'pointer' }} />
-              </td>
+      <EstoqueTableWrapper>
+        <EstoqueTable>
+          <thead>
+            <tr>
+              <th>Nome do Produto</th>
+              <th>Quantidade</th>
+              <th>Data de Atualização</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </EstoqueTable>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            style={{
-              margin: '0 5px',
-              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
-              color: currentPage === i + 1 ? '#fff' : '#000',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+          </thead>
+          <tbody>
+            {currentItems.map(item => (
+              <tr key={item.produtoID}>
+                <td>{item.produtoNome}</td>
+                <td>{item.quantidade}</td>
+                <td>{new Date(item.dataAtualizacao).toLocaleDateString()}</td>
+                <td>
+                  <IconWrapper>
+                    <ActionButton className="view" onClick={() => openDetalhesModal(item)}>
+                      <FontAwesomeIcon icon={faEye} />
+                    </ActionButton>
+                    <ActionButton className="edit" onClick={() => openEdicaoModal(item)}>
+                      <FontAwesomeIcon icon={faEdit} />
+                    </ActionButton>
+                    <ActionButton className="delete" onClick={() => handleExcluir(item.id)}>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </ActionButton>
+                  </IconWrapper>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </EstoqueTable>
+      </EstoqueTableWrapper>
+
+      <PaginationContainer>
+        <PaginationButton 
+          disabled={currentPage === 1} 
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          Anterior
+        </PaginationButton>
+        <PaginationInfo>
+          Página {currentPage} de {totalPages}
+        </PaginationInfo>
+        <PaginationButton 
+          disabled={currentPage === totalPages} 
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Próxima
+        </PaginationButton>
+      </PaginationContainer>
       {/* Modais */}
       <ModalDetalhesEstoque isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoEstoque isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleUpdate} fetchItensEstoque={fetchItensEstoque} />

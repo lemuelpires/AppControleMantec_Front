@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Modal from 'react-modal';
 import FormularioProduto from '../../../Forms/FormularioProduto';
 import { Titulo } from './style';
@@ -6,19 +6,30 @@ import { Titulo } from './style';
 // Definir as classes do Modal
 const modalStyles = {
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
-    width: '100%',
+    backgroundColor: 'transparent',
+    padding: '0',
+    borderRadius: '12px',
+    boxShadow: 'none',
+    maxWidth: '680px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflow: 'hidden',
     inset: 'unset',
+    zIndex: 10000,
+    position: 'relative',
+    border: 'none',
   },
 };
 
@@ -46,12 +57,15 @@ const ModalNovoProduto = ({ isOpen, onClose, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      <Titulo>
-        <h2>Adicionar Produto</h2>
-      </Titulo>
-      <FormularioProduto initialValues={initialValues} onSubmit={onSubmit} onClose={onClose} />
+      <FormularioProduto 
+        initialValues={initialValues} 
+        onSubmit={onSubmit} 
+        onClose={onClose}
+        modalTitle="Adicionar Produto"
+      />
     </Modal>
   );
 };
 
 export default ModalNovoProduto;
+

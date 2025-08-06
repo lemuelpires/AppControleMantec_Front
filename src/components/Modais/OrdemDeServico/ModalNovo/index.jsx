@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import FormularioOrdemDeServico from '../../../Forms/FormularioOrdemDeServico';
 import apiCliente from '../../../../services/apiCliente';
-import { Titulo } from './style';
 
 const modalStyles = {
   overlay: {
@@ -10,15 +9,26 @@ const modalStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '800px',
-    width: '100%',
+    backgroundColor: 'transparent',
+    padding: '1rem',
+    border: 'none',
+    borderRadius: '0',
+    boxShadow: 'none',
+    maxWidth: '650px',
+    width: '95%',
+    maxHeight: '90vh',
     inset: 'unset',
+    zIndex: 10000,
+    position: 'relative',
+    overflow: 'visible',
   },
 };
 
@@ -68,7 +78,7 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       }));
       setFuncionarioOptions(funcionarios);
     } catch (error) {
-      console.error('Erro ao buscar funcionários:', error);
+      console.error('Erro ao buscar funcionÃ¡rios:', error);
     }
   };
 
@@ -94,15 +104,8 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       }));
       setServicoOptions(servicos);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
+      console.error('Erro ao buscar serviÃ§os:', error);
     }
-  };
-
-  const handleSelectChange = (selectedOption, action) => {
-    setFormData({
-      ...formData,
-      [action.name]: selectedOption ? selectedOption.value : '',
-    });
   };
 
   const handleSubmit = async (formData) => {
@@ -117,10 +120,10 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       };
 
       const response = await apiCliente.post('/OrdemDeServico', ordemDeServicoDto);
-      console.log('Ordem de Serviço criada:', response.data);
+      console.log('Ordem de ServiÃ§o criada:', response.data);
       onClose();
     } catch (error) {
-      console.error('Erro ao salvar ordem de serviço:', error.response ? error.response.data : error.message);
+      console.error('Erro ao salvar ordem de serviÃ§o:', error.response ? error.response.data : error.message);
     }
   };
 
@@ -136,10 +139,8 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       )}
       style={modalStyles}
     >
-      <Titulo>
-        <h2>Adicionar Ordem de Serviço</h2>
-      </Titulo>
       <FormularioOrdemDeServico
+        title="Nova Ordem de Serviço"
         initialValues={formData}
         onSubmit={handleSubmit}
         onClose={onClose}
@@ -147,10 +148,10 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
         funcionarioOptions={funcionarioOptions}
         produtoOptions={produtoOptions}
         servicoOptions={servicoOptions}
-        handleSelectChange={handleSelectChange}
       />
     </Modal>
   );
 };
 
 export default ModalNovaOrdemDeServico;
+

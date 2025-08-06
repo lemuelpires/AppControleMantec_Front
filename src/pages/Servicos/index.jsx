@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import {
-  ServicoContainer,
-  ServicoTitle,
-  ServicoButton,
-  ServicoTable,
-  BotaoEspacamento,
-  IconWrapper
+  ServicosContainer,
+  ServicosTitle,
+  HeaderControls,
+  SearchContainer,
+  SearchInput,
+  PerPageSelect,
+  AddButton,
+  ServicosTableWrapper,
+  ServicosTable,
+  IconWrapper,
+  ActionButton,
+  PaginationContainer,
+  PaginationButton,
+  PaginationInfo
 } from './style';
 import ModalDetalhesServico from '../../components/Modais/Servico/ModalDetalhes';
 import ModalEdicaoServico from '../../components/Modais/Servico/ModalEdicao';
 import ModalNovoServico from '../../components/Modais/Servico/ModalNovo';
 import apiServico from '../../services/apiCliente';
 import Modal from 'react-modal';
-import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 Modal.setAppElement('#root');
@@ -100,82 +107,104 @@ const Servico = () => {
   );
 
   return (
-    <ServicoContainer>
-      <ServicoTitle>Serviços</ServicoTitle>
+    <ServicosContainer>
+      <ServicosTitle>Serviços</ServicosTitle>
 
-      <BotaoEspacamento>
-        <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
-      </BotaoEspacamento>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>
-        <input
-          type="text"
-          placeholder="Buscar serviço..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <div>
-          <select style={{padding: '8px' }} value={itemsPerPage} onChange={e => setItemsPerPage(Number(e.target.value))}>
+      <HeaderControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar serviço..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <PerPageSelect 
+            value={itemsPerPage} 
+            onChange={e => setItemsPerPage(Number(e.target.value))}
+          >
             <option value={25}>25 por página</option>
             <option value={50}>50 por página</option>
             <option value={100}>100 por página</option>
-          </select>
-        </div>
-      </div>
+          </PerPageSelect>
+        </SearchContainer>
+        
+        <AddButton onClick={openNovoModal}>
+          <FontAwesomeIcon icon={faPlusCircle} />
+          Novo Serviço
+        </AddButton>
+      </HeaderControls>
 
-      <ServicoTable>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Descrição</th>
-            <th>Preço</th>
-            <th style={{ textAlign: 'center' }}>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedServicos.map(servico => (
-            <tr key={servico.id}>
-              <td>{servico.nome}</td>
-              <td>{servico.descricao}</td>
-              <td>R${servico.preco},00</td>
-              <td>
-                <IconWrapper>
-                  <FaEye onClick={() => openDetalhesModal(servico)} />
-                  <FaEdit onClick={() => openEdicaoModal(servico)} />
-                  <FaTrashAlt onClick={() => handleExcluir(servico.id)} />
-                </IconWrapper>
-              </td>
+      <ServicosTableWrapper>
+        <ServicosTable>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Descrição</th>
+              <th>Preço</th>
+              <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </ServicoTable>
+          </thead>
+          <tbody>
+            {paginatedServicos.map(servico => (
+              <tr key={servico.id}>
+                <td>{servico.nome}</td>
+                <td>{servico.descricao}</td>
+                <td>R${servico.preco},00</td>
+                <td>
+                  <IconWrapper>
+                    <ActionButton 
+                      className="view"
+                      onClick={() => openDetalhesModal(servico)}
+                      title="Visualizar detalhes"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="edit"
+                      onClick={() => openEdicaoModal(servico)}
+                      title="Editar serviço"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </ActionButton>
+                    <ActionButton 
+                      className="delete"
+                      onClick={() => handleExcluir(servico.id)}
+                      title="Excluir serviço"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </ActionButton>
+                  </IconWrapper>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </ServicosTable>
+      </ServicosTableWrapper>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em' }}>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            style={{
-              margin: '0 5px',
-              backgroundColor: currentPage === i + 1 ? '#007bff' : '#eee',
-              color: currentPage === i + 1 ? '#fff' : '#000',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <PaginationContainer>
+        <PaginationButton
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </PaginationButton>
+        
+        <PaginationInfo>
+          Página {currentPage} de {totalPages} ({filteredServicos.length} serviços)
+        </PaginationInfo>
+        
+        <PaginationButton
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Próxima
+        </PaginationButton>
+      </PaginationContainer>
 
-      {/* Modais */}
       <ModalDetalhesServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicaoServico isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
       <ModalNovoServico isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
-    </ServicoContainer>
+    </ServicosContainer>
   );
 };
 

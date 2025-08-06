@@ -26,7 +26,7 @@ export const ModalContainer = styled.div`
   overflow-y: auto;
   max-height: 80vh;
 
-  &.servico-modal-container {
+  &.produto-modal-container {
     padding: 1.2rem !important;
     max-height: 80vh !important;
     
@@ -50,7 +50,7 @@ export const ModalContainer = styled.div`
   }
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-track {
@@ -77,7 +77,7 @@ export const ModalTitle = styled.h2`
   position: relative;
   letter-spacing: 0.3px;
 
-  &.servico-modal-title {
+  &.produto-modal-title {
     margin: 0 0 1rem 0 !important;
     font-size: 1.3rem !important;
     letter-spacing: 0.2px !important;
@@ -117,7 +117,7 @@ export const DetailsList = styled.div`
   gap: 0.8rem;
   margin-bottom: 1.2rem;
 
-  &.servico-details-list {
+  &.produto-details-list {
     gap: 0.7rem !important;
     margin-bottom: 1rem !important;
     grid-template-columns: 1fr 1fr !important;
@@ -142,7 +142,7 @@ export const DetailItem = styled.div`
   position: relative;
   overflow: hidden;
 
-  &.servico-detail-item {
+  &.produto-detail-item {
     border-radius: 10px !important;
     padding: 0.8rem !important;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%) !important;
@@ -153,6 +153,16 @@ export const DetailItem = styled.div`
       border-color: rgba(99, 102, 241, 0.4) !important;
       transform: translateY(-1px) !important;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+
+  &.produto-image-item {
+    grid-column: 1 / -1 !important;
+    text-align: center !important;
+    
+    .produto-image-container {
+      padding-left: 0 !important;
+      border-left: none !important;
     }
   }
   
@@ -191,7 +201,7 @@ export const DetailLabel = styled.div`
   display: flex;
   align-items: center;
 
-  &.servico-detail-label {
+  &.produto-detail-label {
     font-size: 0.65rem !important;
     margin-bottom: 0.35rem !important;
     letter-spacing: 0.5px !important;
@@ -231,7 +241,7 @@ export const DetailValue = styled.div`
   display: flex;
   align-items: center;
 
-  &.servico-detail-value {
+  &.produto-detail-value {
     font-size: 0.8rem !important;
     line-height: 1.25 !important;
     padding-left: 0.5rem !important;
@@ -272,7 +282,7 @@ export const CloseButton = styled.button`
   letter-spacing: 0.3px;
   text-transform: uppercase;
 
-  &.servico-close-button {
+  &.produto-close-button {
     padding: 0.75rem !important;
     border-radius: 10px !important;
     font-size: 0.85rem !important;
@@ -319,10 +329,4 @@ export const CloseButton = styled.button`
   &:hover::before {
     left: 100%;
   }
-`;
-
-// Manter compatibilidade com componentes antigos
-export const Titulo = ModalTitle;
-export const Container = styled.div`
-  display: none;
 `;

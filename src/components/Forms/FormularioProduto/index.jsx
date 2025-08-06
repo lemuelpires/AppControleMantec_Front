@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormGroup, Label, Input, Button, EspacamentoButton, Espacamento, EspacamentoContainer } from './style';
+import {
+  FormContainer,
+  FormTitle,
+  Form,
+  FormRow,
+  FormGroup,
+  Label,
+  Input,
+  EspacamentoButton,
+  Button
+} from './style';
 
-const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
+const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => {
   const [formData, setFormData] = useState({ ...initialValues });
 
   useEffect(() => {
@@ -22,46 +32,119 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose }) => {
   if (!initialValues) return null; // Adiciona um fallback para evitar renderização sem initialValues
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <EspacamentoContainer>
-        <Espacamento>
-          <FormGroup>
+    <FormContainer>
+      <FormTitle>{modalTitle || 'Formulário de Produto'}</FormTitle>
+      <Form onSubmit={handleSubmit}>
+        <FormRow>
+          <FormGroup delay="0.1s">
             <Label htmlFor="imagemURL">URL da Imagem</Label>
-            <Input type="text" id="imagemURL" name="imagemURL" value={formData.imagemURL || ''} onChange={handleChange} />
+            <Input 
+              type="text" 
+              id="imagemURL" 
+              name="imagemURL" 
+              value={formData.imagemURL || ''} 
+              onChange={handleChange}
+              placeholder="Digite a URL da imagem"
+            />
           </FormGroup>
-          <FormGroup>
-            <Label htmlFor="nome">Nome</Label>
-            <Input type="text" id="nome" name="nome" value={formData.nome || ''} onChange={handleChange} required />
+          
+          <FormGroup delay="0.2s">
+            <Label htmlFor="nome">Nome do Produto</Label>
+            <Input 
+              type="text" 
+              id="nome" 
+              name="nome" 
+              value={formData.nome || ''} 
+              onChange={handleChange} 
+              placeholder="Digite o nome do produto"
+              required 
+            />
           </FormGroup>
-          <FormGroup>
-            <Label htmlFor="descricao">Descrição</Label>
-            <Input type="text" id="descricao" name="descricao" value={formData.descricao || ''} onChange={handleChange} required />
+        </FormRow>
+
+        <FormRow>
+          <FormGroup delay="0.3s">
+            <Label htmlFor="preco">Preço (R$)</Label>
+            <Input 
+              type="number" 
+              step="0.01"
+              min="0"
+              id="preco" 
+              name="preco" 
+              value={formData.preco || ''} 
+              onChange={handleChange}
+              placeholder="0,00"
+              required 
+            />
           </FormGroup>
-          <FormGroup>
+
+          <FormGroup delay="0.4s">
             <Label htmlFor="quantidade">Quantidade</Label>
-            <Input type="number" id="quantidade" name="quantidade" value={formData.quantidade || ''} onChange={handleChange} required />
+            <Input 
+              type="number" 
+              min="0"
+              id="quantidade" 
+              name="quantidade" 
+              value={formData.quantidade || ''} 
+              onChange={handleChange}
+              placeholder="Digite a quantidade"
+              required 
+            />
           </FormGroup>
-        </Espacamento>
-        <Espacamento>
-          <FormGroup>
-            <Label htmlFor="preco">Preço</Label>
-            <Input type="number" id="preco" name="preco" value={formData.preco || ''} onChange={handleChange} required />
-          </FormGroup>
-          <FormGroup>
+        </FormRow>
+
+        <FormRow>
+          <FormGroup delay="0.5s">
             <Label htmlFor="fornecedor">Fornecedor</Label>
-            <Input type="text" id="fornecedor" name="fornecedor" value={formData.fornecedor || ''} onChange={handleChange} required />
+            <Input 
+              type="text" 
+              id="fornecedor" 
+              name="fornecedor" 
+              value={formData.fornecedor || ''} 
+              onChange={handleChange}
+              placeholder="Digite o fornecedor"
+              required 
+            />
           </FormGroup>
-          <FormGroup>
+
+          <FormGroup delay="0.6s">
             <Label htmlFor="dataEntrada">Data de Entrada</Label>
-            <Input type="date" id="dataEntrada" name="dataEntrada" value={formData.dataEntrada || ''} onChange={handleChange} required />
+            <Input 
+              type="date" 
+              id="dataEntrada" 
+              name="dataEntrada" 
+              value={formData.dataEntrada || ''} 
+              onChange={handleChange} 
+              required 
+            />
           </FormGroup>
-        </Espacamento>
-      </EspacamentoContainer>
-      <EspacamentoButton>
-        <Button style={{ backgroundColor: '#0f9d58', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }} type="submit">Salvar</Button>
-        <Button style={{ backgroundColor: '#e53935', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
-      </EspacamentoButton>
-    </Form>
+        </FormRow>
+
+        <FormGroup delay="0.7s">
+          <Label htmlFor="descricao">Descrição</Label>
+          <Input 
+            as="textarea"
+            rows="2"
+            id="descricao" 
+            name="descricao" 
+            value={formData.descricao || ''} 
+            onChange={handleChange}
+            placeholder="Digite uma descrição detalhada do produto"
+            style={{ resize: 'vertical', minHeight: '50px' }}
+            required 
+          />
+        </FormGroup>
+
+        <EspacamentoButton>
+          <Button type="submit" className="save">
+            Salvar
+          </Button>
+          <Button type="button" className="cancel" onClick={onClose}>
+            Cancelar
+          </Button>
+        </EspacamentoButton>
+      </Form>
+    </FormContainer>
   );
 };
 

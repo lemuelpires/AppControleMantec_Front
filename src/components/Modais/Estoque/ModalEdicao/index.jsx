@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import Select from 'react-select';
-import { FormGroup, Label, Button, EspacamentoButton } from './style';
 import FormularioEstoque from '../../../Forms/FormularioEstoque';
-import apiCliente from '../../../../services/apiCliente'; // Import correct API for Inventory manipulation
+import apiCliente from '../../../../services/apiCliente';
 
 // Modal styles
 const modalStyles = {
@@ -12,112 +10,96 @@ const modalStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '20px',
+    backgroundColor: 'transparent',
+    padding: '10px',
     borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
-    width: '100%',
+    border: 'none',
+    maxWidth: '650px',
+    width: '95%',
+    maxHeight: '90vh',
     inset: 'unset',
+    zIndex: 10000,
+    position: 'relative',
+    overflow: 'visible',
   },
 };
 
-const ModalEdicaoEstoque = ({ isOpen, onClose, item, fetchItensEstoque }) => {
-  const [formData, setFormData] = useState({
-    id: '',
-    produtoID: '',
-    quantidade: 0,
-    dataAtualizacao: new Date().toISOString().substr(0, 10), // Initialize with current date in YYYY-MM-DD format
-    ativo: true,
-  });
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [produtoOptions, setProdutoOptions] = useState([]);
+const ModalEdicaoEstoque = ({ isOpen, onClose, item, onSubmit }) => {
+  const [formData, setFormData] = useState({});
+  const [produtos, setProdutos] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchProdutos();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (item) {
-      // Fill form data with current inventory item details
+      // Formatar a data para datetime-local se necessário
+      const dataFormatada = item.dataAtualizacao ? 
+        new Date(item.dataAtualizacao).toISOString().slice(0, 16) : 
+        new Date().toISOString().slice(0, 16);
+      
       setFormData({
-        id: item.id,
-        produtoID: item.produtoID,
-        quantidade: item.quantidade,
-        dataAtualizacao: item.dataAtualizacao.substr(0, 10), // Format YYYY-MM-DD
-        ativo: item.ativo,
-      });
-      setSelectedProduct({
-        value: item.produtoID,
-        label: item.produtoID, // Set product name to display in Select
+        ...item,
+        dataAtualizacao: dataFormatada
       });
     }
-    fetchProdutos(); // Fetch available products for selection
   }, [item]);
 
   const fetchProdutos = async () => {
     try {
-      // Request to get list of available products
-      const response = await apiCliente.get('/Produto'); // Adjust to correct route that lists products
-      const produtos = response.data.map((produto) => ({
-        value: produto.id, // Attribute representing product ID
-        label: produto.nome, // Attribute representing product name
-      }));
-      setProdutoOptions(produtos); // Update available options in Select
+      const response = await apiCliente.get('/Produto');
+      setProdutos(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Erro ao buscar produtos:', error);
+      setProdutos([]);
     }
   };
 
-  const handleSelectProduct = (selectedOption) => {
-    setSelectedProduct(selectedOption);
-    if (selectedOption) {
-      setFormData((prevData) => ({
-        ...prevData,
-        produtoID: selectedOption.value, // Update selected product ID in form
-      }));
-    }
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (formValues) => {
     try {
       const formattedData = {
-        ...formData,
-        dataAtualizacao: new Date(formData.dataAtualizacao).toISOString().substr(0, 10),
+        ...formValues,
+        id: item.id,
+        dataAtualizacao: new Date(formValues.dataAtualizacao).toISOString(),
       };
-      // Send PUT request to update inventory item
-      const response = await apiCliente.put(`/estoque/${item.id}`, formattedData);
-      alert('Item de inventario atualizado com sucesso!');
-      fetchItensEstoque(); // Update inventory items list after saving
-      onClose(); // Close modal after saving
+      await onSubmit(formattedData);
+      alert('Item de estoque atualizado com sucesso!');
+      onClose();
     } catch (error) {
-      console.log('formData:', formData);
-      console.error('Error updating inventory item:', error);
+      console.error('Erro ao atualizar item de estoque:', error);
       if (error.response && error.response.data) {
-        alert(`Error: ${error.response.data}`);
+        alert(`Erro: ${error.response.data}`);
       } else {
-        alert('Error updating inventory item.');
+        alert('Erro ao atualizar item de estoque.');
       }
     }
   };
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose} style={modalStyles}>
-      <h2>Edit Item no estoque</h2>
-      <FormGroup>
-        <Label>Produto</Label>
-        <Select
-          value={selectedProduct}
-          onChange={handleSelectProduct}
-          options={produtoOptions}
-          placeholder="Select a product"
+      {item && (
+        <FormularioEstoque 
+          title="Editar Item de Estoque"
+          initialValues={formData} 
+          produtos={produtos}
+          onSubmit={handleSubmit} 
+          onClose={onClose} 
         />
-      </FormGroup>
-      <FormularioEstoque formData={formData} setFormData={setFormData} />
-      <EspacamentoButton>
-        <Button style={{ backgroundColor: '#0f9d58', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="submit">Salvar</Button>
-        <Button style={{ backgroundColor: '#e53935', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
-      </EspacamentoButton>
+      )}
     </Modal>
   );
 };
 
 export default ModalEdicaoEstoque;
+

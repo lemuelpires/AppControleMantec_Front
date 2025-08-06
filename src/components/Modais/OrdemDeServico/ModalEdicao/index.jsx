@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import FormularioOrdemDeServico from '../../../Forms/FormularioOrdemDeServico';
-import { Titulo } from './style';
 import apiCliente from '../../../../services/apiCliente';
 
 const modalStyles = {
@@ -10,16 +9,26 @@ const modalStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '2em 4em',
-    borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '90%', // Ajustado para 90% da largura
-    width: 'auto', // Ajustado para tamanho automático para expandir conforme necessário
+    backgroundColor: 'transparent',
+    padding: '1rem',
+    border: 'none',
+    borderRadius: '0',
+    boxShadow: 'none',
+    maxWidth: '650px',
+    width: '95%',
+    maxHeight: '90vh',
     inset: 'unset',
-    margin: 'auto', // Centraliza horizontalmente
+    zIndex: 10000,
+    position: 'relative',
+    overflow: 'visible',
   },
 };
 
@@ -82,19 +91,12 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     }
   }, [item, isOpen]);
 
-  const handleSelectChange = (selectedOption, action) => {
-    setFormData({
-      ...formData,
-      [action.name]: selectedOption ? selectedOption.value : '',
-    });
-  };
-
   const handleSubmit = async (data) => {
     try {
       await onSubmit(data);
       onClose();
     } catch (error) {
-      console.error('Erro ao salvar ordem de serviço:', error);
+      console.error('Erro ao salvar ordem de serviÃ§o:', error);
     }
   };
 
@@ -112,14 +114,11 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      <Titulo>
-        <h2>Editar Ordem de Serviço</h2>
-      </Titulo>
       <FormularioOrdemDeServico
+        title="Editar Ordem de Serviço"
         initialValues={formData}
         onSubmit={handleSubmit}
         onClose={onClose}
-        handleSelectChange={handleSelectChange}
         clienteOptions={clienteOptions}
         funcionarioOptions={funcionarioOptions}
         produtoOptions={produtoOptions}
@@ -130,3 +129,4 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 };
 
 export default ModalEdicaoOrdemDeServico;
+

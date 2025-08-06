@@ -1,7 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import Modal from 'react-modal';
 import FormularioFuncionario from '../../../Forms/FormularioFuncionario';
-import { Titulo } from './style';
 
 // Definir as classes do Modal
 const modalStyles = {
@@ -10,15 +9,26 @@ const modalStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
-    width: '100%',
+    backgroundColor: 'transparent',
+    padding: '1rem',
+    border: 'none',
+    borderRadius: '0',
+    boxShadow: 'none',
+    maxWidth: '650px',
+    width: '95%',
+    maxHeight: '90vh',
     inset: 'unset',
+    zIndex: 10000,
+    position: 'relative',
+    overflow: 'visible',
   },
 };
 
@@ -44,12 +54,15 @@ const ModalNovoFuncionario = ({ isOpen, onClose, onSubmit }) => {
       )}
       style = {modalStyles}
     >
-      <Titulo>
-        <h2>Adicionar Funcionário</h2>
-      </Titulo>
-      <FormularioFuncionario initialValues={initialValues} onSubmit={onSubmit} onClose={onClose} />
+      <FormularioFuncionario 
+        title="Nova Funcionário"
+        initialValues={initialValues} 
+        onSubmit={onSubmit} 
+        onClose={onClose} 
+      />
     </Modal>
   );
 };
 
 export default ModalNovoFuncionario;
+

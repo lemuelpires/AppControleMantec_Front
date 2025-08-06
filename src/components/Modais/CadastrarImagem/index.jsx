@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { storage } from '../../../firebase/firebaseConfig';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import apiCliente from '../../../services/apiCliente';
-import { StyledModal, Input, Button, PreviewImage, ProgressBar } from './style';
+import { StyledModal, Input, Button, PreviewImage, ProgressBar, ButtonGroup, UploadIcon } from './style';
 
 const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -47,15 +47,75 @@ const ModalCadastrarImagem = ({ isOpen, onClose, item }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Cadastrar Imagem"
+      style={{
+        overlay: {
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        },
+        content: {
+          position: 'relative',
+          top: 'auto',
+          left: 'auto',
+          right: 'auto',
+          bottom: 'auto',
+          margin: 'auto',
+          transform: 'none'
+        }
+      }}
+      parentSelector={() => document.body}
+      ariaHideApp={false}
     >
-      <h2>Cadastrar Imagem para {item?.nome}</h2>
+      <UploadIcon />
+      <h2>📸 Cadastrar Imagem</h2>
+      <p style={{ 
+        textAlign: 'center', 
+        color: 'rgba(107, 114, 128, 0.8)', 
+        fontSize: '0.8rem',
+        margin: '0 0 0.8rem 0',
+        fontWeight: '500',
+        lineHeight: '1.3'
+      }}>
+        🏷️ {item?.nome}
+      </p>
+      
       {previewImage && <PreviewImage src={previewImage} alt="Preview" />}
-      <Input type="file" onChange={handleFileChange} />
-      {isUploading && <ProgressBar progress={uploadProgress} />}
-      <Button onClick={handleUpload} disabled={isUploading}>
-        {isUploading ? 'Enviando...' : 'Cadastrar Imagem'}
-      </Button>
-      <Button onClick={onClose}>Cancelar</Button>
+      
+      <Input 
+        type="file" 
+        onChange={handleFileChange}
+        accept="image/*"
+        placeholder="Selecione uma imagem..."
+      />
+      
+      {isUploading && (
+        <div style={{ margin: '0.6rem 0' }}>
+          <p style={{ 
+            textAlign: 'center', 
+            color: '#6366f1', 
+            fontSize: '0.75rem',
+            fontWeight: '600',
+            marginBottom: '0.3rem'
+          }}>
+            ⬆️ Enviando imagem...
+          </p>
+          <ProgressBar progress={uploadProgress} />
+        </div>
+      )}
+      
+      <ButtonGroup>
+        <Button 
+          primary 
+          onClick={handleUpload} 
+          disabled={isUploading || !selectedFile}
+        >
+          {isUploading ? '⏳ Enviando...' : '✅ Cadastrar Imagem'}
+        </Button>
+        <Button onClick={onClose}>
+          ❌ Cancelar
+        </Button>
+      </ButtonGroup>
     </StyledModal>
   );
 };

@@ -1,64 +1,142 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import Z_INDEX from '../../../styles/zIndex';
+
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const gradientAnimation = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+
+const pulseGlow = keyframes`
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(102, 170, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(102, 170, 255, 0.6);
+  }
+`;
 
 export const ModalContainer = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
   position: fixed;
-  z-index: 10;
+  z-index: ${Z_INDEX.MODAL_LOGIN};
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.8);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.9), 
+    rgba(20, 20, 40, 0.9), 
+    rgba(40, 20, 60, 0.9)
+  );
+  backdrop-filter: blur(10px);
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ModalContent = styled.div`
-  background-color: #1f1f1f; /* Tom de carvão escuro para o fundo do modal */
-  margin: 10% auto;
-  padding: 40px;
-  border-radius: 10px;
+  background: linear-gradient(145deg, 
+    rgba(30, 30, 40, 0.95), 
+    rgba(40, 40, 50, 0.95)
+  );
+  backdrop-filter: blur(20px);
+  margin: 0;
+  padding: 35px 30px;
+  border-radius: 20px;
   width: 90%;
-  max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.5s ease;
-  color: #ffffff; /* Texto em branco para boa legibilidade */
+  max-width: 380px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(102, 170, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: ${fadeInUp} 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  color: #ffffff;
+  border: 1px solid rgba(102, 170, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(102, 170, 255, 0.8), 
+      rgba(102, 255, 170, 0.8), 
+      transparent
+    );
+    animation: ${gradientAnimation} 3s linear infinite;
   }
 
   h2 {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     text-align: center;
-    font-size: 1.5rem;
-    color: #ffffff; /* Título em branco */
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(102, 170, 255, 0.3);
+    letter-spacing: 1px;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        rgba(102, 170, 255, 0.8), 
+        rgba(102, 255, 170, 0.8)
+      );
+      border-radius: 2px;
+    }
   }
 
   @media (max-width: 600px) {
-    padding: 30px;
+    padding: 30px 25px;
+    border-radius: 18px;
+    max-width: 340px;
   }
 `;
 
 export const CloseButton = styled.button`
-  color: #aaa; /* Cinza claro para o botão de fechar */
+  color: rgba(255, 255, 255, 0.7);
   background: none;
   border: none;
-  font-size: 30px;
+  font-size: 28px;
   position: absolute;
-  right: 20px;
-  top: 20px;
+  right: 15px;
+  top: 15px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
 
   &:hover,
   &:focus {
-    color: #ff4d4d; /* Vermelho suave ao passar o mouse */
+    color: #ffffff;
     cursor: pointer;
+    transform: scale(1.1);
   }
 `;
 
@@ -66,6 +144,7 @@ export const LoginForm = styled.form`
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  gap: 18px;
 `;
 
 export const EspacamentoCadastro = styled.div`
@@ -75,57 +154,174 @@ export const EspacamentoCadastro = styled.div`
 
   a {
     font-size: 0.85em;
-    color: #66aaff; /* Azul suave para links */
+    color: rgba(102, 170, 255, 0.9);
     text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        rgba(102, 170, 255, 0.8), 
+        rgba(102, 255, 170, 0.8)
+      );
+      transition: width 0.3s ease;
+    }
 
     &:hover {
-      text-decoration: underline;
+      color: rgba(102, 255, 170, 1);
+      transform: translateY(-1px);
+
+      &::after {
+        width: 100%;
+      }
     }
   }
 `;
 
 export const Label = styled.label`
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 6px;
+  font-weight: 600;
   display: flex;
   flex-direction: column;
   text-align: left;
-  color: #ffffff; /* Texto do label em branco */
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+`;
+
+export const InputContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
 `;
 
 export const Input = styled.input`
-  margin-bottom: 15px;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #444; /* Bordas em cinza escuro */
-  border-radius: 20px;
-  transition: border-color 0.3s;
-  background-color: #2a2a2a; /* Fundo dos inputs em cinza escuro */
+  margin-top: 6px;
+  padding: 12px 16px;
+  padding-right: ${props => props.hasToggle ? '45px' : '16px'};
+  font-size: 15px;
+  border: 2px solid rgba(102, 170, 255, 0.3);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  backdrop-filter: blur(10px);
+  font-weight: 500;
+  width: 100%;
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
 
   &:focus {
-    border-color: #66aaff; /* Azul suave ao focar no input */
+    border-color: rgba(102, 170, 255, 0.8);
     outline: none;
-    box-shadow: 0 0 5px rgba(102, 170, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 
+      0 0 0 3px rgba(102, 170, 255, 0.1),
+      0 6px 20px rgba(102, 170, 255, 0.15);
+    transform: translateY(-1px);
+    animation: ${pulseGlow} 2s infinite;
+  }
+
+  &:hover {
+    border-color: rgba(102, 170, 255, 0.5);
+    background: rgba(255, 255, 255, 0.07);
+  }
+`;
+
+export const TogglePasswordButton = styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  transition: color 0.2s ease;
+  margin-top: 3px;
+
+  &:hover {
+    color: rgba(102, 170, 255, 0.8);
+  }
+
+  &:focus {
+    outline: none;
+    color: rgba(102, 170, 255, 1);
   }
 `;
 
 export const Button = styled.button`
-  padding: 12px;
-  background-color: #25d366;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, 
+    rgba(102, 170, 255, 0.9), 
+    rgba(102, 255, 170, 0.9)
+  );
   color: #ffffff;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s, transform 0.2s;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+  box-shadow: 
+    0 6px 20px rgba(102, 170, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.2), 
+      transparent
+    );
+    transition: left 0.5s;
+  }
 
   &:hover {
-    background-color: #25d370; /* Azul mais escuro ao passar o mouse */
+    background: linear-gradient(135deg, 
+      rgba(102, 170, 255, 1), 
+      rgba(102, 255, 170, 1)
+    );
+    transform: translateY(-2px);
+    box-shadow: 
+      0 10px 25px rgba(102, 170, 255, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
     transform: translateY(-1px);
   }
 
   &:disabled {
-    background-color: #cccccc; /* Cinza para botões desabilitados */
+    background: rgba(150, 150, 150, 0.5);
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 `;

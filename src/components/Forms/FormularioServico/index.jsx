@@ -1,45 +1,88 @@
 import React, { useState, useEffect } from 'react';
-import { Form, FormGroup, Label, Input, Button, EspacamentoButton } from './style';
+import { FormContainer, FormTitle, Form, FormRow, FormGroup, Label, Input, Button, EspacamentoButton } from './style';
 
-const FormularioServico = ({ initialValues, onSubmit, onClose }) => {
-  const [formData, setFormData] = useState({ ...initialValues });
+const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClose }) => {
+  const [formValues, setFormValues] = useState({
+    nome: '',
+    descricao: '',
+    preco: '',
+    ...initialValues
+  });
 
   useEffect(() => {
     // Atualiza o estado do formulário quando initialValues mudar
-    setFormData({ ...initialValues });
+    setFormValues({
+      nome: '',
+      descricao: '',
+      preco: '',
+      ...initialValues
+    });
   }, [initialValues]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormValues({ ...formValues, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...formData, ativo: true });
+    onSubmit({ ...formValues, ativo: true });
   };
 
   if (!initialValues) return null;
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormGroup>
-        <Label htmlFor="nome">Nome</Label>
-        <Input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="descricao">Descrição</Label>
-        <Input type="text" id="descricao" name="descricao" value={formData.descricao} onChange={handleChange} required />
-      </FormGroup>
-      <FormGroup>
-        <Label htmlFor="preco">Preço</Label>
-        <Input type="number" id="preco" name="preco" value={formData.preco} onChange={handleChange} required />
-      </FormGroup>
-      <EspacamentoButton>
-        <Button style={{ backgroundColor: '#0f9d58', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="submit">Salvar</Button>
-        <Button style={{ backgroundColor: '#e53935', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} type="button" onClick={onClose}>Cancelar</Button>
-      </EspacamentoButton>
-    </Form>
+    <FormContainer>
+      <FormTitle>{title}</FormTitle>
+      <Form onSubmit={handleSubmit}>
+        <FormRow>
+          <FormGroup delay="0.1s">
+            <Label htmlFor="nome">Nome do Serviço</Label>
+            <Input 
+              type="text" 
+              id="nome" 
+              name="nome" 
+              value={formValues.nome || ''} 
+              onChange={handleChange} 
+              placeholder="Ex: Troca de tela"
+              required 
+            />
+          </FormGroup>
+          <FormGroup delay="0.2s">
+            <Label htmlFor="preco">Preço</Label>
+            <Input 
+              type="number" 
+              id="preco" 
+              name="preco" 
+              value={formValues.preco || ''} 
+              onChange={handleChange} 
+              placeholder="Ex: 150.00"
+              step="0.01"
+              min="0"
+              required 
+            />
+          </FormGroup>
+        </FormRow>
+        
+        <FormGroup delay="0.3s">
+          <Label htmlFor="descricao">Descrição</Label>
+          <Input 
+            type="text" 
+            id="descricao" 
+            name="descricao" 
+            value={formValues.descricao || ''} 
+            onChange={handleChange} 
+            placeholder="Descreva o serviço oferecido"
+            required 
+          />
+        </FormGroup>
+        
+        <EspacamentoButton>
+          <Button className="save" type="submit">Salvar</Button>
+          <Button className="cancel" type="button" onClick={onClose}>Cancelar</Button>
+        </EspacamentoButton>
+      </Form>
+    </FormContainer>
   );
 };
 

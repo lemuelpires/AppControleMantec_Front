@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Clientes from './pages/Clientes';
@@ -16,6 +16,7 @@ import Computador from './components/PaginasComuns/Computador';
 import Tablet from './components/PaginasComuns/Tablet';
 import Notebook from './components/PaginasComuns/Notebook';
 import Login from './components/Modais/Login';
+import ModalLogin from './components/Modais/Login';
 import Unauthorized from './components/Modais/Unauthorized';
 import { AuthProvider } from './context/authContext';
 import ProtectedRoute from './routes/protectedRoute';
@@ -25,10 +26,24 @@ import ResetPasswordModal from './components/Modais/RedefinicaoSenha';
 Modal.setAppElement('#root');
 
 function App() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isCadastroUsuarioOpen, setIsCadastroUsuarioOpen] = useState(false);
+
+  const toggleLoginModal = () => {
+    setIsLoginModalOpen(!isLoginModalOpen);
+  };
+
+  const toggleCadastroUsuarioModal = () => {
+    setIsCadastroUsuarioOpen(!isCadastroUsuarioOpen);
+  };
+
   return (
     <AuthProvider>
       <Router>
-        <Header />
+        <Header 
+          onLoginClick={toggleLoginModal}
+          onCadastroUsuarioClick={toggleCadastroUsuarioModal}
+        />
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
@@ -47,6 +62,8 @@ function App() {
           <Route path="/esqueci-senha" element={<ResetPasswordModal/>} />
         </Routes>
         <Footer />
+        <ModalLogin isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+        <ModalCadastroUsuario isOpen={isCadastroUsuarioOpen} onClose={() => setIsCadastroUsuarioOpen(false)} />
       </Router>
     </AuthProvider>
   );

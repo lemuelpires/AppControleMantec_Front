@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import {
   ClientesContainer,
   ClientesTitle,
-  ClientesButton,
+  HeaderControls,
+  SearchContainer,
+  SearchInput,
+  PerPageSelect,
+  AddButton,
   ClientesTable,
   ClientesTableWrapper,
-  BotaoEspacamento,
-  IconWrapper
+  IconWrapper,
+  ActionButton,
+  PaginationContainer,
+  PaginationButton,
+  PaginationInfo
 } from './style';
 
 import ModalDetalhes from '../../components/Modais/Cliente/ModalDetalhes';
@@ -117,35 +124,36 @@ const Clientes = () => {
     <ClientesContainer>
       <ClientesTitle>Clientes</ClientesTitle>
 
-      <BotaoEspacamento>
-          <FontAwesomeIcon onClick={openNovoModal} icon={faPlusCircle} style={{ color: 'rgba(102, 243, 8, 1)', width: '2em', height: '2em' }} />
-      </BotaoEspacamento>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em', flexWrap: 'wrap', gap: '1em' }}>
-        <input
-          type="text"
-          placeholder="Buscar cliente por nome..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-          style={{ padding: '8px', width: '250px' }}
-        />
-        <select
-          value={itemsPerPage}
-          onChange={(e) => {
-            setItemsPerPage(Number(e.target.value));
-            setCurrentPage(1);
-          }}
-          style={{ padding: '8px' }}
-        >
-          <option value={25}>25 por página</option>
-          <option value={50}>50 por página</option>
-          <option value={75}>75 por página</option>
-          <option value={100}>100 por página</option>
-        </select>
-      </div>
+      <HeaderControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar cliente por nome..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+          <PerPageSelect
+            value={itemsPerPage}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={25}>25 por página</option>
+            <option value={50}>50 por página</option>
+            <option value={75}>75 por página</option>
+            <option value={100}>100 por página</option>
+          </PerPageSelect>
+        </SearchContainer>
+        
+        <AddButton onClick={openNovoModal}>
+          <FontAwesomeIcon icon={faPlus} />
+          Novo Cliente
+        </AddButton>
+      </HeaderControls>
 
       <ClientesTableWrapper>
         <ClientesTable>
@@ -167,9 +175,15 @@ const Clientes = () => {
                 <td>{new Date(cliente.dataCadastro).toLocaleDateString()}</td>
                 <td>
                   <IconWrapper>
-                    <FontAwesomeIcon icon={faEye} onClick={() => openDetalhesModal(cliente)} />
-                    <FontAwesomeIcon icon={faEdit} onClick={() => openEdicaoModal(cliente)} />
-                    <FontAwesomeIcon icon={faTrash} onClick={() => handleExcluir(cliente.id)} />
+                    <ActionButton className="view" onClick={() => openDetalhesModal(cliente)}>
+                      <FontAwesomeIcon icon={faEye} />
+                    </ActionButton>
+                    <ActionButton className="edit" onClick={() => openEdicaoModal(cliente)}>
+                      <FontAwesomeIcon icon={faEdit} />
+                    </ActionButton>
+                    <ActionButton className="delete" onClick={() => handleExcluir(cliente.id)}>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </ActionButton>
                   </IconWrapper>
                 </td>
               </tr>
@@ -178,15 +192,23 @@ const Clientes = () => {
         </ClientesTable>
       </ClientesTableWrapper>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1em', gap: '0.5em', flexWrap: 'wrap' }}>
-        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+      <PaginationContainer>
+        <PaginationButton 
+          disabled={currentPage === 1} 
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
           Anterior
-        </button>
-        <span>Página {currentPage} de {totalPages}</span>
-        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+        </PaginationButton>
+        <PaginationInfo>
+          Página {currentPage} de {totalPages}
+        </PaginationInfo>
+        <PaginationButton 
+          disabled={currentPage === totalPages} 
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
           Próxima
-        </button>
-      </div>
+        </PaginationButton>
+      </PaginationContainer>
 
       <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
       <ModalEdicao isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />

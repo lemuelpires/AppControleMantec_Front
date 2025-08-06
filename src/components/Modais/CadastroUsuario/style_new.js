@@ -1,5 +1,4 @@
 import styled, { keyframes } from 'styled-components';
-import Z_INDEX from '../../../styles/zIndex';
 
 const fadeInUp = keyframes`
   from {
@@ -30,7 +29,7 @@ const pulseGlow = keyframes`
 export const ModalContainer = styled.div`
   display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
   position: fixed;
-  z-index: ${Z_INDEX.MODAL_USER};
+  z-index: 15000;
   left: 0;
   top: 0;
   width: 100%;
@@ -151,8 +150,6 @@ export const Form = styled.form`
 export const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
 `;
 
 export const Label = styled.label`
@@ -164,8 +161,6 @@ export const Label = styled.label`
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
   letter-spacing: 0.5px;
-  width: 100%;
-  max-width: 350px;
 `;
 
 export const Input = styled.input`
@@ -180,12 +175,9 @@ export const Input = styled.input`
   backdrop-filter: blur(10px);
   font-weight: 500;
   width: 100%;
-  max-width: 350px;
-  text-align: center;
   
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
-    text-align: center;
   }
 
   &:focus {
@@ -217,9 +209,7 @@ export const Select = styled.select`
   backdrop-filter: blur(10px);
   font-weight: 500;
   width: 100%;
-  max-width: 350px;
   cursor: pointer;
-  text-align: center;
 
   &:focus {
     border-color: rgba(102, 170, 255, 0.8);
@@ -240,7 +230,6 @@ export const Select = styled.select`
     background: rgba(30, 30, 40, 0.95);
     color: #ffffff;
     padding: 8px;
-    text-align: center;
   }
 `;
 

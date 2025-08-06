@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Modal from 'react-modal';
 import FormularioServico from '../../../Forms/FormularioServico';
 import { Titulo } from './style';
@@ -10,15 +10,25 @@ const modalStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   content: {
-    backgroundColor: '#1f1e1e',
-    padding: '20px',
+    backgroundColor: 'transparent',
+    padding: '10px',
     borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
-    width: '100%',
+    border: 'none',
+    maxWidth: '650px',
+    width: '95%',
+    maxHeight: '90vh',
     inset: 'unset',
+    zIndex: 10000,
+    position: 'relative',
+    overflow: 'visible',
   },
 };
 
@@ -35,12 +45,17 @@ const ModalEdicaoServico = ({ isOpen, onClose, item, onSubmit }) => {
       )}
       style = {modalStyles}
     >
-      <Titulo>
-        <h2>Editar Serviço</h2>
-      </Titulo>
-      {item && <FormularioServico initialValues={item} onSubmit={onSubmit} onClose={onClose} />}
+      {item && (
+        <FormularioServico 
+          title="Editar Serviço"
+          initialValues={item} 
+          onSubmit={onSubmit} 
+          onClose={onClose} 
+        />
+      )}
     </Modal>
   );
 };
 
 export default ModalEdicaoServico;
+
