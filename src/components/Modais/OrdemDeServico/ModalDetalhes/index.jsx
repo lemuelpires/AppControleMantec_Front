@@ -128,10 +128,12 @@ const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
           <div style={{
             width: '100%',
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             padding: '0 1rem'
           }}>
+            {/* Renderizar relatório técnico */}
             <OrdemDeServicoReport ordemDeServico={item} onClose={onClose} />
           </div>
         ) : (

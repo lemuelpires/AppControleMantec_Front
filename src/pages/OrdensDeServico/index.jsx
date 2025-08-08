@@ -17,7 +17,7 @@ import {
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrash, faPrint } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
@@ -273,13 +273,6 @@ const OrdemDeServico = () => {
                         title="Excluir ordem"
                       >
                         <FontAwesomeIcon icon={faTrash} />
-                      </ActionButton>
-                      <ActionButton 
-                        className="print"
-                        onClick={() => console.log('Imprimir:', ordem.id)}
-                        title="Imprimir ordem"
-                      >
-                        <FontAwesomeIcon icon={faPrint} />
                       </ActionButton>
                     </IconWrapper>
                   </td>

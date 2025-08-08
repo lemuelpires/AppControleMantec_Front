@@ -5,6 +5,7 @@ import Clientes from './pages/Clientes';
 import Funcionarios from './pages/Funcionarios';
 import Estoque from './pages/Estoques';
 import OrdemDeServico from './pages/OrdensDeServico';
+import Vendas from './pages/Vendas';
 import Produtos from './pages/Produtos';
 import Servicos from './pages/Servicos';
 import Header from './components/Header';
@@ -72,6 +73,7 @@ function App() {
           <Route path="/funcionarios" element={<ProtectedRoute element={<Funcionarios />} />} />
           <Route path="/estoque" element={<ProtectedRoute element={<Estoque />} />} />
           <Route path="/ordem-de-servico" element={<ProtectedRoute element={<OrdemDeServico />} />} />
+          <Route path="/vendas" element={<ProtectedRoute element={<Vendas />} />} />
           <Route path="/produtos" element={<ProtectedRoute element={<Produtos />} />} />
           <Route path="/servicos" element={<ProtectedRoute element={<Servicos />} />} />
           <Route path="/cadastro-usuario" element={<ProtectedRoute element={<ModalCadastroUsuario />} />} />

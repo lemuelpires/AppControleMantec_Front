@@ -202,9 +202,9 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                       </SubMenuLink>
                     </SubMenuItem>
                     <SubMenuItem>
-                      <SubMenuLink to="/vendas-de-servico" onClick={toggleMenu}>
+                      <SubMenuLink to="/vendas" onClick={toggleMenu}>
                         <FaShoppingCart size="0.9em" />
-                        Vendas de Serviço
+                        Vendas
                       </SubMenuLink>
                     </SubMenuItem>
                   </SubMenu>

@@ -52,19 +52,24 @@ const ReportContainer = styled.div`
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: 15mm;
+    padding: 8mm;
     border-radius: 0;
     box-shadow: none;
     background: white !important;
     color: #000 !important;
-    font-size: 12px;
-    line-height: 1.4;
+    font-size: 10px;
+    line-height: 1.2;
     page-break-before: auto;
     page-break-after: auto;
     
     &::before {
       display: none;
     }
+  }
+
+  @page {
+    size: A4;
+    margin: 10mm;
   }
 
   @media (max-width: 768px) {
@@ -76,62 +81,69 @@ const ReportContainer = styled.div`
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 2.5rem;
-  padding: 1.5rem 0;
-  border-bottom: 3px solid #e9ecef;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid #e9ecef;
   position: relative;
   
   &::after {
     content: '';
     position: absolute;
-    bottom: -3px;
+    bottom: -2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 100px;
-    height: 3px;
+    width: 80px;
+    height: 2px;
     border: 1px solid #007bff;
     border-radius: 2px;
   }
 
   @media print {
+    margin-bottom: 0.8rem;
+    padding: 0.5rem 0;
+    
     &::after {
       border: 1px solid #000;
+      width: 60px;
+      height: 1px;
     }
   }
 `;
 
 const CompanyLogo = styled.div`
   color: #007bff;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  font-size: 28px;
   font-weight: bold;
-  margin: 0 auto 1rem;
-  border: 4px solid #007bff;
+  margin: 0 auto 0.8rem;
+  border: 3px solid #007bff;
 
   @media print {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
     border: 2px solid #000;
     color: #000;
+    margin: 0 auto 0.4rem;
   }
 `;
 
 const HeaderTitle = styled.h1`
-  margin: 0 0 0.5rem 0;
-  font-size: 2.2rem;
+  margin: 0 0 0.3rem 0;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #2c3e50;
   letter-spacing: -0.02em;
 
   @media print {
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     color: #000;
+    margin: 0 0 0.2rem 0;
   }
   
   @media (max-width: 768px) {
@@ -140,40 +152,42 @@ const HeaderTitle = styled.h1`
 `;
 
 const HeaderSubtitle = styled.h2`
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
   color: #6c757d;
   font-weight: 400;
 
   @media print {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     color: #000;
+    margin: 0 0 0.3rem 0;
   }
 `;
 
 const OSBadge = styled.div`
   display: inline-block;
   color: #28a745;
-  padding: 0.8rem 1.5rem;
-  border-radius: 25px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
   border: 2px solid #28a745;
   font-weight: 600;
-  font-size: 1.1rem;
-  margin-top: 1rem;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 
   @media print {
     border: 1px solid #000;
     color: #000;
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.8rem;
+    margin-top: 0.3rem;
   }
 `;
 
 const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -181,13 +195,14 @@ const ContentGrid = styled.div`
   }
 
   @media print {
-    gap: 1.5rem;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
   }
 `;
 
 const InfoSection = styled.div`
   border-radius: 12px;
-  padding: 1.8rem;
+  padding: 1.5rem;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(200, 200, 200, 0.5);
   transition: all 0.3s ease;
@@ -202,7 +217,7 @@ const InfoSection = styled.div`
     box-shadow: none;
     transform: none;
     border: 1px solid #000;
-    padding: 1.2rem;
+    padding: 0.8rem;
     break-inside: avoid;
     background: white;
   }
@@ -238,9 +253,9 @@ const SectionTitle = styled.h3`
 
 const InfoRow = styled.div`
   display: flex;
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
   align-items: flex-start;
-  padding-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid rgba(108, 117, 125, 0.15);
 
   &:last-child {
@@ -250,8 +265,8 @@ const InfoRow = styled.div`
   }
 
   @media print {
-    margin-bottom: 0.8rem;
-    padding-bottom: 0.6rem;
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.3rem;
   }
 `;
 
@@ -315,13 +330,13 @@ const InfoValue = styled.div`
 
 const FullWidthSection = styled(InfoSection)`
   grid-column: 1 / -1;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -329,16 +344,16 @@ const Table = styled.table`
   th {
     color: #333;
     border: 1px solid #333;
-    padding: 1rem 0.8rem;
+    padding: 0.6rem 0.5rem;
     text-align: left;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   td {
-    padding: 0.8rem;
+    padding: 0.5rem;
     border-bottom: 1px solid #e9ecef;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #495057;
   }
 
@@ -364,17 +379,18 @@ const Table = styled.table`
 
   @media print {
     box-shadow: none;
+    margin-top: 0.5rem;
     
     th {
-      font-size: 0.8rem;
-      padding: 0.8rem 0.6rem;
+      font-size: 0.7rem;
+      padding: 0.4rem 0.3rem;
       color: #000;
       border: 1px solid #000;
     }
     
     td {
-      font-size: 0.8rem;
-      padding: 0.6rem;
+      font-size: 0.7rem;
+      padding: 0.3rem;
       color: #000;
       border: 1px solid #000;
     }
@@ -395,22 +411,22 @@ const Table = styled.table`
 `;
 
 const CheckboxSection = styled.div`
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 10px;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
   border: 1px solid rgba(206, 212, 218, 0.5);
 `;
 
 const CheckboxItem = styled.label`
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
-  font-size: 0.9rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
   color: #495057;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
+  padding: 0.3rem;
+  border-radius: 4px;
   transition: background 0.2s ease;
 
   &:hover {
@@ -418,19 +434,22 @@ const CheckboxItem = styled.label`
   }
 
   input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     accent-color: #007bff;
   }
 
   @media print {
     border: none !important;
-    font-size: 0.8rem;
-    padding: 0.3rem;
+    font-size: 0.7rem;
+    padding: 0.2rem;
     color: #000;
+    margin-bottom: 0.3rem;
     
     input[type="checkbox"] {
       accent-color: #000;
+      width: 12px;
+      height: 12px;
     }
   }
 `;
@@ -438,8 +457,8 @@ const CheckboxItem = styled.label`
 const SignatureSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 2.5rem;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -447,17 +466,17 @@ const SignatureSection = styled.div`
   }
 
   @media print {
-    margin-top: 2rem;
-    gap: 1.5rem;
+    margin-top: 1rem;
+    gap: 1rem;
   }
 `;
 
 const SignatureBox = styled.div`
-  padding: 2rem;
+  padding: 1.5rem;
   border: 2px dashed #ced4da;
-  border-radius: 12px;
+  border-radius: 8px;
   text-align: center;
-  min-height: 120px;
+  min-height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -465,36 +484,40 @@ const SignatureBox = styled.div`
   .title {
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
   }
 
   .line {
     border-bottom: 1.5px solid #adb5bd;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.6rem;
     height: 1px;
   }
 
   .date {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #6c757d;
   }
 
   @media print {
     border: 1px solid #000;
-    padding: 1.5rem;
-    min-height: 80px;
+    padding: 1rem;
+    min-height: 60px;
     
     .title {
       color: #000;
+      font-size: 0.7rem;
+      margin-bottom: 0.5rem;
     }
     
     .date {
       color: #000;
+      font-size: 0.6rem;
     }
     
     .line {
       border-bottom: 1px solid #000;
+      margin-bottom: 0.4rem;
     }
   }
 `;
@@ -521,30 +544,40 @@ const Button = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   &.primary {
-    color: #007bff;
-    border: 2px solid #007bff;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
 
     &:hover {
       transform: translateY(-2px);
-      border-color: #0056b3;
-      color: #0056b3;
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+      background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
     }
   }
 
   &.secondary {
-    color: #495057;
-    border: 1px solid #dee2e6;
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    border: none;
 
     &:hover {
-      transform: translateY(-1px);
-      border-color: #adb5bd;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+      background: linear-gradient(135deg, #495057 0%, #343a40 100%);
     }
-  }
 
-  &:active {
-    transform: translateY(0);
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    }
   }
 `;
 
@@ -582,22 +615,24 @@ const StatusBadge = styled.span`
 `;
 
 const ObservationsBox = styled.div`
-  margin-top: 1.5rem;
-  padding: 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
   border-left: 4px solid #007bff;
-  border-radius: 0 10px 10px 0;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
   color: #495057;
   white-space: pre-wrap;
 
   @media print {
     border: 1px solid #000;
-    padding: 1rem;
-    font-size: 0.8rem;
+    padding: 0.6rem;
+    font-size: 0.7rem;
     color: #000;
     border-radius: 0;
-    border-left: 3px solid #000;
+    border-left: 2px solid #000;
+    margin-top: 0.5rem;
+    line-height: 1.2;
   }
 `;
 
@@ -759,129 +794,8 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
   };
 
   const printReport = () => {
-    const reportElement = document.getElementById('report-to-print');
-    
-    if (!reportElement) {
-      alert('Erro: Relatório não encontrado para impressão.');
-      return;
-    }
-
-    // Coletar todos os estilos da página atual
-    const allStyles = [];
-    
-    // Coletar estilos de folhas de estilo
-    Array.from(document.styleSheets).forEach(styleSheet => {
-      try {
-        Array.from(styleSheet.cssRules).forEach(rule => {
-          allStyles.push(rule.cssText);
-        });
-      } catch (e) {
-        // Ignorar erros de CORS
-      }
-    });
-
-    // Coletar estilos inline e styled-components
-    Array.from(document.querySelectorAll('style')).forEach(style => {
-      allStyles.push(style.innerHTML);
-    });
-
-    const printWindow = window.open('', '_blank');
-    
-    if (!printWindow) {
-      alert('Por favor, permita pop-ups para imprimir o relatório.');
-      return;
-    }
-
-    const reportHTML = reportElement.outerHTML;
-    
-    const printHTML = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Relatório OS - Mantec Informática</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            /* Reset básico */
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            
-            body {
-              font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-              background: white !important;
-              color: #000 !important;
-              line-height: 1.4;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-
-            /* Estilos copiados da página original */
-            ${allStyles.join('\n')}
-
-            /* Estilos específicos de impressão */
-            @page {
-              margin: 15mm;
-              size: A4;
-            }
-
-            @media print {
-              body, * {
-                background: white !important;
-                color: #000 !important;
-                box-shadow: none !important;
-                text-shadow: none !important;
-              }
-
-              .no-print {
-                display: none !important;
-              }
-
-              /* Forçar cores de impressão */
-              div, span, p, h1, h2, h3, h4, h5, h6, 
-              table, td, th, tr {
-                color: #000 !important;
-                background: white !important;
-              }
-
-              /* Manter bordas visíveis */
-              table, th, td {
-                border-color: #000 !important;
-              }
-            }
-
-            /* Garantir que styled-components funcionem */
-            #report-to-print {
-              width: 100% !important;
-              max-width: none !important;
-              margin: 0 !important;
-              padding: 20px !important;
-            }
-          </style>
-        </head>
-        <body>
-          ${reportHTML}
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(printHTML);
-    printWindow.document.close();
-    
-    // Aguardar carregamento completo antes de imprimir
-    printWindow.onload = () => {
-      setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        
-        // Fechar após um pequeno delay
-        setTimeout(() => {
-          printWindow.close();
-        }, 1000);
-      }, 1000);
-    };
+    // Impressão direta na mesma janela
+    window.print();
   };
 
   const parseObservations = (observacoes) => {
@@ -1155,8 +1069,8 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
         )}
 
         <CheckboxSection>
-          <strong style={{marginBottom: '1rem', display: 'block'}}>Status do Equipamento na Entrega:</strong>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '0.5rem'}}>
+          <strong style={{marginBottom: '0.5rem', display: 'block', fontSize: '0.9rem'}}>Status do Equipamento na Entrega:</strong>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.3rem'}}>
             <CheckboxItem>
               <input type="checkbox" />
               <span>Equipamento testado e funcionando</span>

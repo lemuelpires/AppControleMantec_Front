@@ -17,6 +17,9 @@ const ReportContainer = styled.div`
     box-shadow: none;
     border: none;
   }
+// Arquivo movido para centralizar arquivos de impressão.
+export { default } from '../../../Impressao/RelatorioImpressao';
+
 `;
 
 const OrdemDeServicoFormatada = ({ ordemDeServico }) => {
