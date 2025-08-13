@@ -44,6 +44,26 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     status: '',
     observacoes: '',
     ativo: true,
+    diagnostico: '',
+    laudoTecnico: '',
+    marca: '',
+    modelo: '',
+    imeIouSerial: '',
+    senhaAcesso: '',
+    emGarantia: '',
+    dataGarantia: '',
+    valorMaoDeObra: 0,
+    valorPecas: 0,
+    deslocamento: 0,
+    valorTotal: 0,
+    formaPagamento: '',
+    pago: false,
+    tipoAtendimento: '',
+    prioridade: '',
+    numeroOS: 0,
+    assinaturaClienteBase64: '',
+    assinaturaTecnicoBase64: '',
+    pecasUtilizadas: '',
   });
 
   const [clienteOptions, setClienteOptions] = useState([]);
@@ -59,11 +79,10 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         const produtos = await apiCliente.get('/Produto');
         const servicos = await apiCliente.get('/Servico');
 
-        // Filtrar apenas dados ativos
-        setClienteOptions(clientes.data.filter(cliente => cliente.ativo).map(cliente => ({ value: cliente.id, label: cliente.nome })));
-        setFuncionarioOptions(funcionarios.data.filter(funcionario => funcionario.ativo).map(funcionario => ({ value: funcionario.id, label: funcionario.nome })));
-        setProdutoOptions(produtos.data.filter(produto => produto.ativo).map(produto => ({ value: produto.id, label: produto.nome })));
-        setServicoOptions(servicos.data.filter(servico => servico.ativo).map(servico => ({ value: servico.id, label: servico.nome })));
+        setClienteOptions(clientes.data.filter(c => c.ativo).map(c => ({ value: c.id, label: c.nome })));
+        setFuncionarioOptions(funcionarios.data.filter(f => f.ativo).map(f => ({ value: f.id, label: f.nome })));
+        setProdutoOptions(produtos.data.filter(p => p.ativo).map(p => ({ value: p.id, label: p.nome })));
+        setServicoOptions(servicos.data.filter(s => s.ativo).map(s => ({ value: s.id, label: s.nome })));
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
@@ -74,51 +93,73 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 
   useEffect(() => {
     if (item) {
-      const formatDate = (dateStr) => {
-        return dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
-      };
-      
-      // Converter dados antigos (simples) para novo formato (arrays)
+      const formatDate = (dateStr) => dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
+
       let produtos = [{ produtoID: '', quantidade: 1 }];
       let servicos = [{ servicoID: '', quantidade: 1 }];
-      
-      // Se existir produtos/serviços salvos como array, usar eles
-      if (item.produtos && Array.isArray(item.produtos) && item.produtos.length > 0) {
-        produtos = item.produtos;
-      } else if (item.produtoID) {
-        // Conversão de formato antigo para novo
-        produtos = [{ produtoID: item.produtoID, quantidade: item.quantidadeProduto || 1 }];
+
+      // Produtos
+      if (item.pecasUtilizadas?.length > 0) {
+        produtos = item.pecasUtilizadas.map(p => ({
+          produtoID: p.produtoID,
+          quantidade: p.quantidade || 1
+        }));
+      } else if (item.produtoIDs?.length > 0) {
+        produtos = item.produtoIDs.map(id => ({
+          produtoID: id,
+          quantidade: 1
+        }));
       }
-      
-      if (item.servicos && Array.isArray(item.servicos) && item.servicos.length > 0) {
-        servicos = item.servicos;
-      } else if (item.servicoID) {
-        // Conversão de formato antigo para novo
-        servicos = [{ servicoID: item.servicoID, quantidade: item.quantidadeServico || 1 }];
+
+      // Serviços
+      if (item.servicoIDs?.length > 0) {
+        servicos = item.servicoIDs.map(id => ({
+          servicoID: id,
+          quantidade: 1
+        }));
       }
-      
+
       setFormData({
-        id: item.id,
-        clienteID: item.clienteID,
-        funcionarioID: item.funcionarioID,
-        produtos: produtos,
-        servicos: servicos,
+        id: item.id || '',
+        clienteID: item.clienteID || '',
+        funcionarioID: item.funcionarioID || '',
+        produtos,
+        servicos,
         dataEntrada: formatDate(item.dataEntrada),
         dataConclusao: formatDate(item.dataConclusao),
-        status: item.status,
-        observacoes: item.observacoes,
-        ativo: item.ativo,
+        status: item.status || '',
+        observacoes: item.observacoes || '',
+        ativo: item.ativo ?? true,
+        diagnostico: item.diagnostico || '',
+        laudoTecnico: item.laudoTecnico || '',
+        marca: item.marca || '',
+        modelo: item.modelo || '',
+        imeIouSerial: item.imeIouSerial || '',
+        senhaAcesso: item.senhaAcesso || '',
+        emGarantia: item.emGarantia || '',
+        dataGarantia: formatDate(item.dataGarantia),
+        valorMaoDeObra: item.valorMaoDeObra || 0,
+        valorPecas: item.valorPecas || 0,
+        deslocamento: item.deslocamento || 0,
+        valorTotal: item.valorTotal || 0,
+        formaPagamento: item.formaPagamento || '',
+        pago: item.pago || false,
+        tipoAtendimento: item.tipoAtendimento || '',
+        prioridade: item.prioridade || '',
+        numeroOS: item.numeroOS || 0,
+        assinaturaClienteBase64: item.assinaturaClienteBase64 || '',
+        assinaturaTecnicoBase64: item.assinaturaTecnicoBase64 || '',
+        pecasUtilizadas: item.pecasUtilizadas || '',
       });
     }
   }, [item, isOpen]);
-
   const handleSubmit = async (data) => {
     try {
       console.log('Dados do formulário de edição antes do envio:', data);
       await onSubmit(data);
       onClose();
     } catch (error) {
-      console.error('Erro ao salvar ordem de serviÃ§o:', error);
+      console.error('Erro ao salvar ordem de serviço:', error);
     }
   };
 
@@ -128,12 +169,8 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      overlayElement={(props, contentElement) => (
-        <div {...props}>{contentElement}</div>
-      )}
-      contentElement={(props, children) => (
-        <div {...props}>{children}</div>
-      )}
+      overlayElement={(props, contentElement) => <div {...props}>{contentElement}</div>}
+      contentElement={(props, children) => <div {...props}>{children}</div>}
       style={modalStyles}
     >
       <FormularioOrdemDeServico
@@ -151,4 +188,3 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 };
 
 export default ModalEdicaoOrdemDeServico;
-

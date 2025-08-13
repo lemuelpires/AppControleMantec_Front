@@ -209,10 +209,9 @@ const OrdemDeServico = () => {
         <OrdemDeServicoTable>
           <thead>
             <tr>
+              <th>Número OS</th>
               <th>Cliente</th>
               <th>Funcionário</th>
-              <th>Produtos</th>
-              <th>Serviços</th>
               <th>Entrada</th>
               <th>Conclusão</th>
               <th style={{ textAlign: 'center' }}>Ações</th>
@@ -245,10 +244,9 @@ const OrdemDeServico = () => {
               
               return (
                 <tr key={ordem.id}>
+                  <td>{ordem.numeroOS}</td>
                   <td>{clientes[ordem.clienteID]}</td>
                   <td>{funcionarios[ordem.funcionarioID]}</td>
-                  <td>{formatProdutos(ordem)}</td>
-                  <td>{formatServicos(ordem)}</td>
                   <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
                   <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
                   <td>
