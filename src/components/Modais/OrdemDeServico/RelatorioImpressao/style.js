@@ -310,3 +310,35 @@ export const ErrorContainer = styled.div`
   padding: 3rem 0;
 `;
 
+import { createGlobalStyle } from 'styled-components';
+
+export const PrintGlobalStyle = createGlobalStyle`
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+    #report-to-print, #report-to-print * {
+      visibility: visible !important;
+    }
+    #report-to-print {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100vw !important;
+      min-height: 100vh !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      background: white !important;
+      overflow: visible !important;
+      z-index: 9999 !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+`;
