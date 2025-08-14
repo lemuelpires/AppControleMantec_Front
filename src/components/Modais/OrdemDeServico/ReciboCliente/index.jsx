@@ -232,7 +232,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           {/* Renderizar serviços */}
           {servicos.map((servico, index) => (
             <tr key={`servico-${index}`}>
-              <td className="center">{ordemDeServico.id || '----'}</td>
+              <td className="center">{ordemDeServico.numeroOS || '----'}</td>
               <td>
                 {ordemDeServico.observacoes ?
                   ordemDeServico.observacoes.substring(0, 50) + '...' :

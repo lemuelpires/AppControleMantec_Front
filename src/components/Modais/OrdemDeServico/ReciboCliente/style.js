@@ -14,10 +14,14 @@ export const ReciboContainer = styled.div`
   @media print {
     box-shadow: none;
     margin: 0;
-    padding: 1rem;
+    padding: 0.5cm 0.5cm;
     max-width: 100%;
     color: #000;
+    background: #fff !important;
+    border-radius: 0;
+    font-size: 12pt;
     user-select: text;
+    page-break-after: always;
   }
 `;
 
@@ -28,6 +32,12 @@ export const Header = styled.header`
   margin-bottom: 2rem;
   border-bottom: 2px solid #e1e7f0;
   padding-bottom: 1rem;
+
+  @media print {
+    border-bottom: 1px solid #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
 `;
 
 export const CompanyInfo = styled.div`
@@ -39,6 +49,14 @@ export const CompanyInfo = styled.div`
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
+
+    @media print {
+      background: none;
+      -webkit-background-clip: initial;
+      -webkit-text-fill-color: initial;
+      color: #000;
+      font-size: 1.5rem;
+    }
   }
 
   .subtitle {
@@ -47,6 +65,11 @@ export const CompanyInfo = styled.div`
     font-weight: 500;
     color: #6c757d;
     max-width: 350px;
+
+    @media print {
+      color: #333;
+      font-size: 0.95rem;
+    }
   }
 `;
 
@@ -61,7 +84,16 @@ export const CompanyData = styled.div`
     strong {
       color: #2c3e50;
       font-weight: 600;
+
+      @media print {
+        color: #000;
+      }
     }
+  }
+
+  @media print {
+    color: #000;
+    font-size: 0.95rem;
   }
 `;
 
@@ -76,6 +108,13 @@ export const ClientSection = styled.section`
     border-left: 6px solid #007bff;
     padding-left: 1rem;
     user-select: none;
+
+    @media print {
+      color: #000;
+      border-left: 4px solid #333;
+      font-size: 1.1rem;
+      padding-left: 0.7rem;
+    }
   }
 `;
 
@@ -86,6 +125,10 @@ export const ClientInfo = styled.div`
 
   @media(max-width: 600px) {
     grid-template-columns: 1fr;
+  }
+
+  @media print {
+    gap: 0.7rem;
   }
 `;
 
@@ -100,12 +143,22 @@ export const InfoRow = styled.div`
     color: #495057;
     font-size: 0.95rem;
     user-select: text;
+
+    @media print {
+      color: #000;
+      font-size: 0.95rem;
+    }
   }
 
   span {
     color: #2c3e50;
     font-size: 0.95rem;
     word-break: break-word;
+
+    @media print {
+      color: #000;
+      font-size: 0.95rem;
+    }
   }
 `;
 
@@ -114,8 +167,18 @@ export const ServiceTable = styled.table`
   border-collapse: collapse;
   margin-bottom: 2rem;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+
+  @media print {
+    box-shadow: none;
+    border-radius: 0;
+    font-size: 1rem;
+    border: 1px solid #333;
+    margin-bottom: 1rem;
+    width: 100% !important;
+    table-layout: fixed;
+  }
 
   thead {
     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
@@ -128,6 +191,15 @@ export const ServiceTable = styled.table`
       text-align: center;
       letter-spacing: 0.03em;
       user-select: none;
+
+      @media print {
+        background: #fff;
+        color: #000;
+        border-bottom: 1px solid #333;
+        font-size: 1rem;
+        padding: 0.4rem 0.3rem;
+        word-break: break-word;
+      }
     }
   }
 
@@ -135,9 +207,15 @@ export const ServiceTable = styled.table`
     tr {
       &:nth-child(even) {
         background-color: #f8f9fa;
+        @media print {
+          background: #fff;
+        }
       }
       &:hover {
         background-color: #e9f0ff;
+        @media print {
+          background: #fff;
+        }
       }
     }
 
@@ -146,6 +224,7 @@ export const ServiceTable = styled.table`
       font-size: 0.9rem;
       color: #2c3e50;
       vertical-align: middle;
+      word-break: break-word;
 
       &.center {
         text-align: center;
@@ -154,11 +233,22 @@ export const ServiceTable = styled.table`
         text-align: right;
         font-weight: 600;
         color: #28a745;
+
+        @media print {
+          color: #000;
+        }
+      }
+
+      @media print {
+        color: #000;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #eee;
+        padding: 0.4rem 0.3rem;
+        word-break: break-word;
       }
     }
   }
 `;
-
 export const TotalSection = styled.div`
   text-align: right;
   padding: 1.5rem 2rem;
@@ -173,6 +263,11 @@ export const TotalSection = styled.div`
     color: #495057;
     margin-bottom: 0.25rem;
     user-select: none;
+
+    @media print {
+      color: #000;
+      font-size: 1rem;
+    }
   }
 
   .total-value {
@@ -181,6 +276,20 @@ export const TotalSection = styled.div`
     color: #28a745;
     user-select: text;
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+
+    @media print {
+      color: #000;
+      text-shadow: none;
+      font-size: 1.2rem;
+    }
+  }
+
+  @media print {
+    background: #fff;
+    border-radius: 0;
+    border-left: 3px solid #333;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -192,6 +301,11 @@ export const PaymentSection = styled.section`
 
   @media(max-width: 768px) {
     grid-template-columns: 1fr;
+  }
+
+  @media print {
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
   }
 `;
 
@@ -213,6 +327,11 @@ export const PaymentBox = styled.div`
     font-weight: 700;
     font-size: 1rem;
     user-select: none;
+
+    @media print {
+      color: #000;
+      font-size: 1rem;
+    }
   }
 
   .value {
@@ -221,6 +340,19 @@ export const PaymentBox = styled.div`
     color: #2c3e50;
     text-align: center;
     user-select: text;
+
+    @media print {
+      color: #000;
+      font-size: 1.1rem;
+    }
+  }
+
+  @media print {
+    background: #fff;
+    border: 1px solid #333;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.5rem 0.7rem;
   }
 `;
 
@@ -232,6 +364,11 @@ export const SignatureSection = styled.section`
 
   @media(max-width: 600px) {
     grid-template-columns: 1fr;
+  }
+
+  @media print {
+    gap: 1.5rem;
+    margin-top: 2rem;
   }
 `;
 
@@ -250,6 +387,14 @@ export const SignatureBox = styled.div`
     font-style: italic;
     color: #495057;
     user-select: text;
+
+    @media print {
+      border-bottom: 1px solid #333;
+      color: #000;
+      margin: 1.2rem 0 0.7rem 0;
+      height: 40px;
+      font-size: 1rem;
+    }
   }
 
   .label {
@@ -258,6 +403,18 @@ export const SignatureBox = styled.div`
     color: #495057;
     letter-spacing: 0.5px;
     user-select: none;
+
+    @media print {
+      color: #000;
+      font-size: 0.95rem;
+    }
+  }
+
+  @media print {
+    background: #fff;
+    border: 1px solid #333;
+    border-radius: 0;
+    padding: 0.7rem 0.5rem;
   }
 `;
 
@@ -268,7 +425,7 @@ export const ButtonContainer = styled.div`
   margin-top: 2rem;
 
   @media print {
-    display: none;
+    display: none !important;
   }
 `;
 
@@ -314,5 +471,9 @@ export const Button = styled.button`
       transform: translateY(0);
       box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
     }
+  }
+
+  @media print {
+    display: none !important;
   }
 `;
