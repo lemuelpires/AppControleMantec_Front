@@ -88,6 +88,7 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       const produtos = response.data.filter(produto => produto.ativo).map(produto => ({
         value: produto.id,
         label: produto.nome,
+        preco: produto.preco,
       }));
       setProdutoOptions(produtos);
     } catch (error) {

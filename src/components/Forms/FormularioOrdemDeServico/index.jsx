@@ -1,4 +1,3 @@
-// FormularioOrdemDeServico.jsx
 import React, { useState, useEffect } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 import {
@@ -17,7 +16,28 @@ import {
 import ReactSelect from 'react-select';
 import styled from 'styled-components';
 
-// ----- estilos locais (mantidos do seu código) -----
+// ===== DEBUG =====
+const DEBUG_CALC = true;
+const toNumber = (v, def = 0) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : def;
+};
+// =================
+
+// Função para formatar como moeda BRL
+const formatCurrency = (value) => {
+  const num = Number(value) || 0;
+  return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+// Função para extrair número do valor digitado
+const parseCurrency = (value) => {
+  // Remove tudo que não for número ou vírgula/ponto
+  const cleaned = String(value).replace(/[^\d,.-]/g, '').replace(',', '.');
+  return parseFloat(cleaned) || 0;
+};
+
+// ----- estilos locais -----
 const ItemSection = styled.div`
   margin-bottom: 1rem;
 `;
@@ -35,18 +55,18 @@ const SectionTitle = styled(Label)`
   gap: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   &:hover {
     color: #007bff;
   }
-  
+
   &::after {
     content: '➕';
     font-size: 0.8rem;
     opacity: 0.6;
     transition: all 0.3s ease;
   }
-  
+
   &:hover::after {
     opacity: 1;
     transform: scale(1.1);
@@ -65,7 +85,7 @@ const ItemRow = styled.div`
   background: rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   position: relative;
-  
+
   &:hover {
     border-color: rgba(0, 123, 255, 0.6);
     background: rgba(255, 255, 255, 0.2);
@@ -121,18 +141,139 @@ const RemoveButton = styled.button`
 
 const SectionHeader = styled.div`
   margin-top: 0.6rem;
+
 `;
 
 const CompactFormRow = styled(FormRow)`
-  margin-bottom: 0.8rem;
-  
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(108, 117, 125, 0.2);
+
   &.side-by-side {
     display: flex;
     gap: 1.5%;
     align-items: flex-start;
   }
 `;
-// ----------------------------------------------------
+// --------------------------
+
+// Mapeamento de cor para cada status
+const statusColors = {
+  'Não iniciado': '#6c757d',
+  'Em andamento': '#007bff',
+  'Concluída': '#28a745',
+  'Cancelado': '#dc3545'
+};
+
+// Customização do ReactSelect para status com cor
+const customStatusStyles = {
+  ...{
+    control: (provided, state) => ({
+      ...provided,
+      border: '2px solid rgba(108, 117, 125, 0.2)',
+      borderRadius: '6px',
+      minHeight: '28px',
+      fontSize: '0.7rem',
+      fontWeight: '500',
+      color: '#2c3e50',
+      background: 'rgba(255, 255, 255, 0.9)',
+      backdropFilter: 'blur(10px)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      boxSizing: 'border-box',
+      borderColor: state.isFocused ? '#007bff' : 'rgba(108, 117, 125, 0.2)',
+      boxShadow: state.isFocused
+        ? '0 0 0 2px rgba(0, 123, 255, 0.1), 0 2px 8px rgba(0, 123, 255, 0.1)'
+        : 'none',
+      transform: state.isFocused ? 'translateY(-1px)' : 'none'
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 10000,
+      borderRadius: '6px'
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: '#6c757d',
+      fontSize: '0.65rem',
+      fontWeight: '400'
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: '#6c757d',
+      transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'none'
+    }),
+    valueContainer: (provided) => ({ ...provided, padding: '0 4px' }),
+    indicatorsContainer: (provided) => ({ ...provided, height: '28px' })
+  },
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused
+      ? 'rgba(0, 123, 255, 0.08)'
+      : 'white',
+    color: statusColors[state.data.value] || '#2c3e50',
+    fontWeight: state.isSelected ? 'bold' : '500',
+    borderLeft: `6px solid ${statusColors[state.data.value] || 'transparent'}`,
+    paddingLeft: '12px'
+  }),
+  singleValue: (provided, state) => ({
+    ...provided,
+    color: statusColors[state.data.value] || '#2c3e50',
+    fontWeight: 'bold'
+  })
+};
+
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    border: '2px solid rgba(108, 117, 125, 0.2)',
+    borderRadius: '6px',
+    minHeight: '28px',
+    fontSize: '0.7rem',
+    fontWeight: '500',
+    color: '#2c3e50',
+    background: 'rgba(255, 255, 255, 0.9)',
+    backdropFilter: 'blur(10px)',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxSizing: 'border-box',
+    borderColor: state.isFocused ? '#007bff' : 'rgba(108, 117, 125, 0.2)',
+    boxShadow: state.isFocused
+      ? '0 0 0 2px rgba(0, 123, 255, 0.1), 0 2px 8px rgba(0, 123, 255, 0.1)'
+      : 'none',
+    transform: state.isFocused ? 'translateY(-1px)' : 'none'
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused ? 'rgba(0, 123, 255, 0.1)' : 'white',
+    color: '#2c3e50',
+    fontSize: '0.7rem',
+    fontWeight: '500',
+    padding: '4px 8px'
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 10000,
+    borderRadius: '6px'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#2c3e50',
+    fontSize: '0.7rem',
+    fontWeight: '500'
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: '#6c757d',
+    fontSize: '0.65rem',
+    fontWeight: '400'
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: '#6c757d',
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'none'
+  }),
+  valueContainer: (provided) => ({ ...provided, padding: '0 4px' }),
+  indicatorsContainer: (provided) => ({ ...provided, height: '28px' })
+};
 
 const FormularioOrdemDeServico = ({
   initialValues = {},
@@ -145,7 +286,6 @@ const FormularioOrdemDeServico = ({
   title = "Ordem de Serviço"
 }) => {
 
-  // util: formatar data ISO -> yyyy-mm-dd para input[type=date]
   const formatDateForInput = val => {
     if (!val) return '';
     try {
@@ -161,44 +301,53 @@ const FormularioOrdemDeServico = ({
     id: initialValues.id || '',
     clienteID: initialValues.clienteID || '',
     funcionarioID: initialValues.funcionarioID || '',
-    // produtos/servicos internos (produtoID/quantidade)
     produtos: [{ produtoID: '', quantidade: 1 }],
     servicos: [{ servicoID: '', quantidade: 1 }],
-    // datas
     dataEntrada: formatDateForInput(initialValues.dataEntrada) || '',
     dataConclusao: formatDateForInput(initialValues.dataConclusao) || '',
-    // básicos
     status: initialValues.status || '',
     observacoes: initialValues.observacoes || '',
     ativo: initialValues.ativo ?? true,
-    // técnicos
     defeitoRelatado: initialValues.defeitoRelatado || '',
     diagnostico: initialValues.diagnostico || '',
     laudoTecnico: initialValues.laudoTecnico || '',
-    // aparelho
     marca: initialValues.marca || '',
     modelo: initialValues.modelo || '',
     imeIouSerial: initialValues.imeIouSerial || '',
     senhaAcesso: initialValues.senhaAcesso || '',
-    // garantia
     emGarantia: initialValues.emGarantia ?? false,
     dataGarantia: formatDateForInput(initialValues.dataGarantia) || '',
-    // valores financeiros
     valorMaoDeObra: initialValues.valorMaoDeObra ?? (initialValues.valorServico ?? 0),
     valorPecas: initialValues.valorPecas ?? 0,
     valorTotal: initialValues.valorTotal ?? 0,
-    // pagamento/outros
     formaPagamento: initialValues.formaPagamento || '',
     pago: initialValues.pago ?? false,
     tipoAtendimento: initialValues.tipoAtendimento || '',
     prioridade: initialValues.prioridade || '',
     numeroOS: initialValues.numeroOS ?? '',
-    // assinaturas / base64
     assinaturaClienteBase64: initialValues.assinaturaClienteBase64 || '',
     assinaturaTecnicoBase64: initialValues.assinaturaTecnicoBase64 || '',
   });
 
-  // Preencher produtos/servicos a partir de initialValues (produtoIDs / pecasUtilizadas / servicoIDs)
+  // Depuração: quando produtoOptions mudar, listar preços e fornecedor
+  useEffect(() => {
+    if (!DEBUG_CALC) return;
+    console.groupCollapsed('[OS] produtoOptions recebidos');
+    try {
+      const rows = (produtoOptions || []).map(opt => ({
+        id: String(opt?.value ?? ''),
+        label: opt?.label ?? '',
+        preco: toNumber(opt?.preco ?? opt?.precoVenda ?? opt?.price, 0),
+        fornecedor: typeof opt?.fornecedor === 'object'
+          ? JSON.stringify(opt.fornecedor)
+          : String(opt?.fornecedor ?? 'N/A'),
+      }));
+      console.table(rows);
+    } finally {
+      console.groupEnd();
+    }
+  }, [produtoOptions]);
+
   useEffect(() => {
     const produtosFromInit = (() => {
       if (Array.isArray(initialValues.pecasUtilizadas) && initialValues.pecasUtilizadas.length > 0) {
@@ -218,7 +367,7 @@ const FormularioOrdemDeServico = ({
         return initialValues.servicoIDs.map(id => ({ servicoID: id, quantidade: 1 }));
       }
       if (Array.isArray(initialValues.servicos) && initialValues.servicos.length > 0) {
-        return initialValues.servicos.map(s => ({ servicoID: s.servicoID || '', quantidade: s.quantidade ?? 1 }));
+        return initialValues.servicos.map(s => ({ servicoID: s.servicoID || '', quantidade: 1 }));
       }
       return [{ servicoID: '', quantidade: 1 }];
     })();
@@ -258,16 +407,81 @@ const FormularioOrdemDeServico = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
 
-  // Atualizar valorTotal automaticamente (valorMaoDeObra + valorPecas)
+  // === CÁLCULO DE valorPecas com logs (usa pecasUtilizadas > produtos) ===
   useEffect(() => {
-    const soma = (Number(formData.valorMaoDeObra) || 0) + (Number(formData.valorPecas) || 0);
+    console.groupCollapsed('[OS] Cálculo valorPecas');
+
+    // Mapa rápido id -> {preco, fornecedor, label}
+    const produtoMap = {};
+    (produtoOptions || []).forEach(opt => {
+      const id = String(opt?.value ?? '');
+      if (!id) return;
+      produtoMap[id] = {
+        preco: toNumber(opt?.preco ?? opt?.precoVenda ?? opt?.price, 0),
+        fornecedor: opt?.fornecedor ?? 'N/A',
+        label: opt?.label ?? ''
+      };
+    });
+
+    if (DEBUG_CALC) {
+      console.log('produtoMap IDs disponíveis:', Object.keys(produtoMap));
+    }
+
+    // Fonte da lista: prioriza pecasUtilizadas
+    const lista = Array.isArray(formData.pecasUtilizadas) && formData.pecasUtilizadas.length > 0
+      ? formData.pecasUtilizadas
+      : (Array.isArray(formData.produtos) ? formData.produtos : []);
+
+    let soma = 0;
+
+    (lista || []).forEach((item, idx) => {
+      const id = String(item?.produtoID ?? '');
+      const qtd = toNumber(item?.quantidade, 0);
+
+      if (!id) {
+        console.warn(` Item #${idx + 1} possui produtoID vazio, valor do item:`, item);
+        return;
+      }
+
+      const prod = produtoMap[id];
+      const preco = prod ? prod.preco : 0;
+      const subtotal = preco * qtd;
+      soma += subtotal;
+
+      console.groupCollapsed(`Item #${idx + 1}`);
+      console.log('produtoID:', id);
+      console.log('Produto encontrado no mapa?', !!prod);
+      console.log('Label:', prod?.label ?? 'N/A');
+      console.log('Fornecedor:', typeof prod?.fornecedor === 'object' ? prod.fornecedor : (prod?.fornecedor ?? 'N/A'));
+      console.log('Preço:', preco);
+      console.log('Quantidade:', qtd);
+      console.log('Subtotal deste item:', subtotal);
+      if (!prod) console.warn('⚠️ Produto NÃO encontrado no produtoMap. Verifique se o ID bate com produtoOptions.value');
+      console.groupEnd();
+    });
+
+    const valorFormatado = parseFloat(soma.toFixed(2));
+    console.log('SOMA FINAL:', soma, '=> formatado:', valorFormatado);
+
+    if (valorFormatado !== Number(formData.valorPecas || 0)) {
+      setFormData(prev => ({ ...prev, valorPecas: valorFormatado }));
+    }
+
+    console.groupEnd();
+  }, [formData.pecasUtilizadas, formData.produtos, produtoOptions]);
+
+  // Cálculo valorTotal (mão de obra + peças)
+  useEffect(() => {
+    const soma = (Number(formData.valorMaoDeObra) || 0)
+      + (Number(formData.valorPecas) || 0);
+
     if (soma !== Number(formData.valorTotal || 0)) {
       setFormData(prev => ({ ...prev, valorTotal: soma }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.valorMaoDeObra, formData.valorPecas]);
 
-  // Handlers genéricos
+  // Atualiza campos do formulário
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     let newValue = value;
@@ -276,24 +490,59 @@ const FormularioOrdemDeServico = ({
     setFormData(prev => ({ ...prev, [name]: newValue }));
   };
 
+  // Atualiza campos de moeda com máscara
+  const handleCurrencyChange = (e, field) => {
+    const val = parseCurrency(e.target.value);
+    setFormData(prev => ({ ...prev, [field]: val }));
+  };
+
+  useEffect(() => {
+    if (formData.dataConclusao) {
+      const data = new Date(formData.dataConclusao);
+      data.setDate(data.getDate() + 90);
+      const garantiaFormatada = data.toISOString().slice(0, 10);
+      if (formData.dataGarantia !== garantiaFormatada) {
+        setFormData(prev => ({ ...prev, dataGarantia: garantiaFormatada }));
+      }
+      // Atualiza emGarantia automaticamente: se dataGarantia >= hoje, está em garantia
+      const hoje = new Date().toISOString().slice(0, 10);
+      const emGarantia = garantiaFormatada >= hoje;
+      if (formData.emGarantia !== emGarantia) {
+        setFormData(prev => ({ ...prev, emGarantia }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.dataConclusao]);
+
   const handleSelectChange = (selectedOption, fieldName) => {
     setFormData(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
   };
 
-  // Produtos (interno: produtos = [{produtoID, quantidade}])
+  // Produtos
   const handleProdutoChange = (index, selectedOption) => {
+    // garantir que salvamos o ID (string) no estado
+    const id = selectedOption ? String(selectedOption.value) : '';
+    if (DEBUG_CALC) {
+      console.log(`[Select Produto] index=${index}`, {
+        selectedOption,
+        idSalvo: id
+      });
+    }
     const newProdutos = [...formData.produtos];
-    newProdutos[index].produtoID = selectedOption ? selectedOption.value : '';
+    newProdutos[index].produtoID = id;
     setFormData(prev => ({ ...prev, produtos: newProdutos }));
   };
+
   const handleProdutoQuantityChange = (index, value) => {
     const newProdutos = [...formData.produtos];
-    newProdutos[index].quantidade = Math.max(1, parseInt(value) || 1);
+    newProdutos[index].quantidade = Math.max(1, parseInt(value, 10) || 1);
     setFormData(prev => ({ ...prev, produtos: newProdutos }));
   };
+
   const addProduto = () => {
     setFormData(prev => ({ ...prev, produtos: [...prev.produtos, { produtoID: '', quantidade: 1 }] }));
   };
+
   const removeProduto = (index) => {
     if (formData.produtos.length > 1) {
       const newProdutos = formData.produtos.filter((_, i) => i !== index);
@@ -301,20 +550,18 @@ const FormularioOrdemDeServico = ({
     }
   };
 
-  // Serviços (interno)
+  // Serviços (quantidade sempre 1)
   const handleServicoChange = (index, selectedOption) => {
     const newServicos = [...formData.servicos];
     newServicos[index].servicoID = selectedOption ? selectedOption.value : '';
+    newServicos[index].quantidade = 1; // fixa em 1
     setFormData(prev => ({ ...prev, servicos: newServicos }));
   };
-  const handleServicoQuantityChange = (index, value) => {
-    const newServicos = [...formData.servicos];
-    newServicos[index].quantidade = Math.max(1, parseInt(value) || 1);
-    setFormData(prev => ({ ...prev, servicos: newServicos }));
-  };
+
   const addServico = () => {
     setFormData(prev => ({ ...prev, servicos: [...prev.servicos, { servicoID: '', quantidade: 1 }] }));
   };
+
   const removeServico = (index) => {
     if (formData.servicos.length > 1) {
       const newServicos = formData.servicos.filter((_, i) => i !== index);
@@ -322,63 +569,9 @@ const FormularioOrdemDeServico = ({
     }
   };
 
-  const customSelectStyles = {
-    control: (provided, state) => ({
-      ...provided,
-      border: '2px solid rgba(108, 117, 125, 0.2)',
-      borderRadius: '6px',
-      minHeight: '28px',
-      fontSize: '0.7rem',
-      fontWeight: '500',
-      color: '#2c3e50',
-      background: 'rgba(255, 255, 255, 0.9)',
-      backdropFilter: 'blur(10px)',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      boxSizing: 'border-box',
-      borderColor: state.isFocused ? '#007bff' : 'rgba(108, 117, 125, 0.2)',
-      boxShadow: state.isFocused
-        ? '0 0 0 2px rgba(0, 123, 255, 0.1), 0 2px 8px rgba(0, 123, 255, 0.1)'
-        : 'none',
-      transform: state.isFocused ? 'translateY(-1px)' : 'none'
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused ? 'rgba(0, 123, 255, 0.1)' : 'white',
-      color: '#2c3e50',
-      fontSize: '0.7rem',
-      fontWeight: '500',
-      padding: '4px 8px'
-    }),
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 10000,
-      borderRadius: '6px'
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: '#2c3e50',
-      fontSize: '0.7rem',
-      fontWeight: '500'
-    }),
-    placeholder: (provided) => ({
-      ...provided,
-      color: '#6c757d',
-      fontSize: '0.65rem',
-      fontWeight: '400'
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: '#6c757d',
-      transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'none'
-    }),
-    valueContainer: (provided) => ({ ...provided, padding: '0 4px' }),
-    indicatorsContainer: (provided) => ({ ...provided, height: '28px' })
-  };
-
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
-    // montar objeto no formato do seu endpoint
     const finalData = {
       id: formData.id || undefined,
       clienteID: formData.clienteID || '',
@@ -406,7 +599,7 @@ const FormularioOrdemDeServico = ({
       pago: !!formData.pago,
       tipoAtendimento: formData.tipoAtendimento || '',
       prioridade: formData.prioridade || '',
-      //numeroOS: formData.numeroOS ? Number(formData.numeroOS) : 0,
+      numeroOS: formData.numeroOS !== '' ? Number(formData.numeroOS) : undefined,
       assinaturaClienteBase64: formData.assinaturaClienteBase64 || '',
       assinaturaTecnicoBase64: formData.assinaturaTecnicoBase64 || '',
       pecasUtilizadas: (formData.produtos || []).map(p => ({ produtoID: p.produtoID, quantidade: Number(p.quantidade) || 0 })),
@@ -449,7 +642,7 @@ const FormularioOrdemDeServico = ({
           </FormGroup>
         </CompactFormRow>
 
-        {/* Linha 2: Produtos e Serviços (mantém quantidade e cria pecasUtilizadas) */}
+        {/* Linha 2: Produtos e Serviços */}
         <CompactFormRow className="side-by-side">
           <FormGroup delay="0.3s" style={{ width: '49%' }}>
             <SectionHeader>
@@ -477,9 +670,9 @@ const FormularioOrdemDeServico = ({
                     placeholder="Qtd"
                   />
                   {formData.produtos.length > 1 && (
-                     <RemoveButton type="button" onClick={() => removeProduto(index)} title="Remover produto">
-    <FiTrash2 size={16} color="#fff" />
-  </RemoveButton>
+                    <RemoveButton type="button" onClick={() => removeProduto(index)} title="Remover produto">
+                      <FiTrash2 size={16} color="#fff" />
+                    </RemoveButton>
                   )}
                 </ItemRow>
               ))}
@@ -507,14 +700,14 @@ const FormularioOrdemDeServico = ({
                   <QuantityInput
                     type="number"
                     min="1"
-                    value={servico.quantidade}
-                    onChange={(e) => handleServicoQuantityChange(index, e.target.value)}
+                    value={1}
+                    disabled
                     placeholder="Qtd"
                   />
                   {formData.servicos.length > 1 && (
                     <RemoveButton type="button" onClick={() => removeServico(index)} title="Remover serviço">
-    <FiTrash2 size={16} color="#fff" />
-  </RemoveButton>
+                      <FiTrash2 size={16} color="#fff" />
+                    </RemoveButton>
                   )}
                 </ItemRow>
               ))}
@@ -535,7 +728,7 @@ const FormularioOrdemDeServico = ({
           />
         </FormGroup>
 
-        {/* Campos técnicos (defeito, diagnostico, laudo) */}
+        {/* Campos técnicos */}
         <CompactFormRow>
           <FormGroup delay="0.6s">
             <Label>Defeito Relatado</Label>
@@ -587,18 +780,24 @@ const FormularioOrdemDeServico = ({
             <Input type="date" name="dataConclusao" value={formData.dataConclusao || ''} onChange={handleChange} />
           </FormGroup>
         </CompactFormRow>
-
         <CompactFormRow>
           <FormGroup>
-            <Label>
-              <input type="checkbox" name="emGarantia" checked={!!formData.emGarantia} onChange={handleChange} style={{ marginRight: 8 }} />
-              Em garantia
-            </Label>
-            {formData.emGarantia && (
-              <Input type="date" name="dataGarantia" value={formData.dataGarantia || ''} onChange={handleChange} />
+            {/* Mensagem colorida de garantia */}
+            {formData.emGarantia ? (
+              <div style={{ color: 'green', fontWeight: 'bold', marginTop: 4 }}> ✔ Esta em Garantia</div>
+            ) : (
+              <div style={{ color: 'red', fontWeight: 'bold', marginTop: 4 }}> X Fora da Garantia</div>
             )}
+            {/* Campo dataGarantia sempre visível */}
+            <Input
+              type="date"
+              name="dataGarantia"
+              value={formData.dataGarantia || ''}
+              onChange={handleChange}
+              readOnly
+              style={{ background: '#f8f9fa', color: '#2c3e50', fontWeight: '500' }}
+            />
           </FormGroup>
-
           <FormGroup>
             <Label>Status</Label>
             <ReactSelect
@@ -612,7 +811,7 @@ const FormularioOrdemDeServico = ({
               value={formData.status ? { value: formData.status, label: formData.status } : null}
               onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
               placeholder="Selecione o status"
-              styles={customSelectStyles}
+              styles={customStatusStyles}
             />
           </FormGroup>
         </CompactFormRow>
@@ -621,30 +820,51 @@ const FormularioOrdemDeServico = ({
         <CompactFormRow>
           <FormGroup>
             <Label>Valor - Mão de Obra</Label>
-            <Input type="number" step="0.01" name="valorMaoDeObra" value={formData.valorMaoDeObra} onChange={handleChange} />
+            <Input
+              type="text"
+              name="valorMaoDeObra"
+              value={formatCurrency(formData.valorMaoDeObra)}
+              onChange={e => handleCurrencyChange(e, 'valorMaoDeObra')}
+              inputMode="decimal"
+              // pattern="[\d,.]+" // Remover esta linha!
+              placeholder="R$ 0,00"
+            />
           </FormGroup>
 
           <FormGroup>
             <Label>Valor - Peças</Label>
-            <Input type="number" step="0.01" name="valorPecas" value={formData.valorPecas} onChange={handleChange} />
+            <Input
+              type="text"
+              name="valorPecas"
+              value={formatCurrency(formData.valorPecas)}
+              readOnly
+              inputMode="decimal"
+              // pattern="[\d,.]+" // Remover esta linha!
+              placeholder="R$ 0,00"
+              style={{ background: '#f8f9fa', color: '#2c3e50', fontWeight: '500' }}
+            />
           </FormGroup>
         </CompactFormRow>
 
         <CompactFormRow>
           <FormGroup>
             <Label>Valor Total</Label>
-            <Input type="number" step="0.01" name="valorTotal" value={formData.valorTotal} onChange={handleChange} />
+            <Input
+              type="text"
+              name="valorTotal"
+              value={formatCurrency(formData.valorTotal)}
+              onChange={e => handleCurrencyChange(e, 'valorTotal')}
+              inputMode="decimal"
+              // pattern="[\d,.]+" // Remover esta linha!
+              placeholder="R$ 0,00"
+            />
           </FormGroup>
-        </CompactFormRow>
-
-        <CompactFormRow>
           <FormGroup>
             <Label>Forma de Pagamento</Label>
             <Input name="formaPagamento" value={formData.formaPagamento} onChange={handleChange} placeholder="Ex: Dinheiro, Cartão..." />
           </FormGroup>
-
           <FormGroup>
-            <Label>
+            <Label style={{ display: 'flex', alignSelf: 'left' }}>
               <input type="checkbox" name="pago" checked={!!formData.pago} onChange={handleChange} style={{ marginRight: 8 }} />
               Pago
             </Label>
@@ -669,7 +889,7 @@ const FormularioOrdemDeServico = ({
           </FormGroup>
         </CompactFormRow>
 
-        {/* Assinaturas (base64) */}
+        {/* Assinaturas */}
         <FormGroup>
           <Label>Assinatura Cliente (base64)</Label>
           <TextArea name="assinaturaClienteBase64" value={formData.assinaturaClienteBase64} onChange={handleChange} rows={2} placeholder="Cole base64 aqui (opcional)" />

@@ -1,5 +1,16 @@
 import styled, { keyframes } from 'styled-components';
 
+export const SectionHeader = styled.h3`
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+`;
+
+
 const fadeIn = keyframes`
   from {
     opacity: 0;

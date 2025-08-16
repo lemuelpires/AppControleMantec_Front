@@ -61,7 +61,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
             quantidade: p.quantidade || 1
           })).filter(p => p.id);
 
-        // Caso tenha "produtoIDs" simples
+          // Caso tenha "produtoIDs" simples
         } else if (Array.isArray(ordemDeServico.produtoIDs) && ordemDeServico.produtoIDs.length > 0) {
           produtosToFetch = ordemDeServico.produtoIDs.map(id => ({
             id,
@@ -96,7 +96,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
             quantidade: 1
           }));
 
-        // Caso tenha "servicos" com quantidade
+          // Caso tenha "servicos" com quantidade
         } else if (Array.isArray(ordemDeServico.servicos) && ordemDeServico.servicos.length > 0) {
           servicosToFetch = ordemDeServico.servicos.map(s => ({
             id: s.servicoID || s._id || s.id,
@@ -202,10 +202,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
     );
   }
 
-  const valorTotal = [
-    ...servicos.map(servico => (parseFloat(servico.preco) || 0) * (servico.quantidade || 1)),
-    ...produtos.map(produto => (parseFloat(produto.preco) || 0) * (produto.quantidade || 1))
-  ].reduce((total, valor) => total + valor, 0);
+  const valorTotal = ordemDeServico.valorTotal || 0;
 
   return (
     <>
@@ -326,7 +323,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
             <tbody>
               {servicos.map((servico, index) => (
                 <tr key={`servico-${index}`}>
-                  <td>{servico.nome || 'Serviço não especificado'}</td>
+                  <td>{servico.nome || 'Serviço não especificado'} <span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Serviço||</span></td>
                   <td>-</td>
                   <td>{servico.quantidade || 1}</td>
                   <td className="currency">{formatCurrency(servico.preco)}</td>
@@ -335,13 +332,20 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
               ))}
               {produtos.map((produto, index) => (
                 <tr key={`produto-${index}`}>
-                  <td>{produto.nome || 'Peça/Produto'}</td>
+                  <td>{produto.nome || 'Peça/Produto'}<span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Produto||</span></td>
                   <td>{produto.fornecedor || '-'}</td>
                   <td>{produto.quantidade || 1}</td>
                   <td className="currency">{formatCurrency(produto.preco)}</td>
                   <td className="currency">{formatCurrency((produto.preco || 0) * (produto.quantidade || 1))}</td>
                 </tr>
               ))}
+              <tr>
+                <td><span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Mão de Obra||</span></td>
+                <td>-</td>
+                <td>1</td>
+                <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra || 0)}</td>
+                <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra || 0)}</td>
+              </tr>
               <tr className="total-row">
                 <td colSpan="4"><strong>Total Geral</strong></td>
                 <td className="currency"><strong>{formatCurrency(valorTotal)}</strong></td>

@@ -21,7 +21,6 @@ import {
   Button
 } from './style'; // ajuste o caminho conforme a localização do seu style.js
 
-
 const ReciboCliente = ({ ordemDeServico, onClose }) => {
   const [cliente, setCliente] = useState(null);
   const [funcionario, setFuncionario] = useState(null);
@@ -42,23 +41,33 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
         setCliente(clienteData.data);
         setFuncionario(funcionarioData.data);
 
-        // Buscar produtos (usando produtoIDs e pecasUtilizadas)
-        let produtosToFetch = [];
+        // Buscar produtos (usando produtoIDs e pecasUtilizadas) sem duplicidade
+        let produtoQuantidadeMap = {};
+
+        // Adiciona produtoIDs
         if (Array.isArray(ordemDeServico.produtoIDs)) {
-          produtosToFetch = ordemDeServico.produtoIDs.map(id => ({ produtoID: id, quantidade: 1 }));
+          ordemDeServico.produtoIDs.forEach(id => {
+            produtoQuantidadeMap[id] = (produtoQuantidadeMap[id] || 0) + 1;
+          });
         }
-        // Pecas utilizadas (com quantidade)
+        // Adiciona pecasUtilizadas
         if (Array.isArray(ordemDeServico.pecasUtilizadas)) {
           ordemDeServico.pecasUtilizadas.forEach(p => {
             if (p.produtoID) {
-              produtosToFetch.push({ produtoID: p.produtoID, quantidade: p.quantidade || 1 });
+              produtoQuantidadeMap[p.produtoID] = (produtoQuantidadeMap[p.produtoID] || 0) + (p.quantidade || 1);
             }
           });
         }
         // Compatibilidade com formato antigo
         if (ordemDeServico.produtoID) {
-          produtosToFetch.push({ produtoID: ordemDeServico.produtoID, quantidade: 1 });
+          produtoQuantidadeMap[ordemDeServico.produtoID] = (produtoQuantidadeMap[ordemDeServico.produtoID] || 0) + 1;
         }
+
+        // Monta array sem duplicados
+        const produtosToFetch = Object.entries(produtoQuantidadeMap).map(([produtoID, quantidade]) => ({
+          produtoID,
+          quantidade
+        }));
 
         const produtosData = await Promise.all(
           produtosToFetch.map(async (produto) => {
@@ -224,6 +233,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
             <th style={{ width: '70px' }}>Código</th>
             <th style={{ width: '200px' }}>Descrição</th>
             <th>Produto/Serviço</th>
+            <th>Valor Unitário</th>
             <th style={{ width: '80px' }}>Qtd</th>
             <th style={{ width: '120px' }}>Valor</th>
           </tr>
@@ -240,6 +250,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
                 }
               </td>
               <td>{servico.nome}</td>
+              <td className="right">{formatCurrency(parseFloat(servico.preco) || 0)}</td>
               <td className="center">{servico.quantidade || 1}</td>
               <td className="right">{formatCurrency((parseFloat(servico.preco) || 0) * (servico.quantidade || 1))}</td>
             </tr>
@@ -251,6 +262,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
               <td className="center">{ordemDeServico.numeroOS || '----'}</td>
               <td>Venda de produto</td>
               <td>{produto.nome}</td>
+              <td className="right">{formatCurrency(parseFloat(produto.preco) || 0)}</td>
               <td className="center">{produto.quantidade || 1}</td>
               <td className="right">{formatCurrency((parseFloat(produto.preco) || 0) * (produto.quantidade || 1))}</td>
             </tr>

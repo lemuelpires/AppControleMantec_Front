@@ -54,7 +54,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     dataGarantia: '',
     valorMaoDeObra: 0,
     valorPecas: 0,
-    deslocamento: 0,
+    defeitoRelatado: '',
     valorTotal: 0,
     formaPagamento: '',
     pago: false,
@@ -81,7 +81,15 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
 
         setClienteOptions(clientes.data.filter(c => c.ativo).map(c => ({ value: c.id, label: c.nome })));
         setFuncionarioOptions(funcionarios.data.filter(f => f.ativo).map(f => ({ value: f.id, label: f.nome })));
-        setProdutoOptions(produtos.data.filter(p => p.ativo).map(p => ({ value: p.id, label: p.nome })));
+        setProdutoOptions(
+          produtos.data
+            .filter(p => p.ativo)
+            .map(p => ({
+              value: p.id,
+              label: p.nome,
+              preco: p.preco,    
+            }))
+        );
         setServicoOptions(servicos.data.filter(s => s.ativo).map(s => ({ value: s.id, label: s.nome })));
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
@@ -140,7 +148,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         dataGarantia: formatDate(item.dataGarantia),
         valorMaoDeObra: item.valorMaoDeObra || 0,
         valorPecas: item.valorPecas || 0,
-        deslocamento: item.deslocamento || 0,
+        defeitoRelatado: item.defeitoRelatado || '',
         valorTotal: item.valorTotal || 0,
         formaPagamento: item.formaPagamento || '',
         pago: item.pago || false,
