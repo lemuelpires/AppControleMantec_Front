@@ -1,4 +1,3 @@
-// src/components/Forms/FormularioCliente/index.jsx
 import React, { useState, useEffect } from 'react';
 import { 
   FormContainer, 
@@ -16,7 +15,6 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
   const [formValues, setFormValues] = useState(initialValues);
 
   useEffect(() => {
-    // Atualiza os valores do formulário quando initialValues mudar
     setFormValues(initialValues);
   }, [initialValues]);
 
@@ -27,8 +25,14 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formValues);
-    setFormValues({}); // Limpa o formulário após enviar
+
+    const clienteComData = {
+      ...formValues,
+      dataCadastro: formValues.dataCadastro || new Date().toISOString()
+    };
+
+    onSubmit(clienteComData);
+    setFormValues({});
   };
 
   return (
@@ -75,14 +79,20 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
           </Campo>
 
           <Campo delay="0.4s">
-            <Label>CPF</Label>
+            <Label>Data de Cadastro</Label>
             <Input
               type="text"
-              name="cpf"
-              placeholder="000.000.000-00"
-              value={formValues.cpf || ''}
-              onChange={handleChange}
-              required
+              name="dataCadastro"
+              value={
+                formValues.dataCadastro
+                  ? new Date(formValues.dataCadastro).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })
+                  : new Date().toLocaleDateString('pt-BR')
+              }
+              readOnly
             />
           </Campo>
         </FormRow>

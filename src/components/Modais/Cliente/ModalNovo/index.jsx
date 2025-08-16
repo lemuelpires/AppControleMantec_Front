@@ -1,10 +1,8 @@
-// src/components/Modais/ModalNovo.js
 import React from 'react';
 import Modal from 'react-modal';
 import FormularioCliente from '../../../Forms/FormularioCliente';
 import { Titulo } from './style';
 
-// Definir as classes do Modal
 const modalStyles = {
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -39,7 +37,8 @@ const ModalNovo = ({ isOpen, onClose, onSubmit }) => {
     nome: '',
     endereco: '',
     telefone: '',
-    email: ''
+    email: '',
+    dataCadastro: '', // será preenchido automaticamente
   };
 
   return (
