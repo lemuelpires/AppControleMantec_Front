@@ -110,9 +110,13 @@ const Clientes = () => {
     }
   };
 
-  const filteredClientes = clientes.filter((cliente) =>
+  // Filtra clientes pelo nome E apenas os ativos
+const filteredClientes = clientes.filter(
+  (cliente) =>
+    cliente.ativo === true &&
     cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+);
+
 
   const totalPages = Math.ceil(filteredClientes.length / itemsPerPage);
   const paginatedClientes = filteredClientes.slice(
