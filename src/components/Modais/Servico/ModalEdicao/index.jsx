@@ -43,16 +43,18 @@ const ModalEdicaoServico = ({ isOpen, onClose, item, onSubmit }) => {
       contentElement={(props, children) => (
         <div {...props}>{children}</div>
       )}
-      style = {modalStyles}
+      style={modalStyles}
     >
-      {item && (
-        <FormularioServico 
-          title="Editar Serviço"
-          initialValues={item} 
-          onSubmit={onSubmit} 
-          onClose={onClose} 
-        />
-      )}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        {item && (
+          <FormularioServico
+            title="Editar Serviço"
+            initialValues={item}
+            onSubmit={onSubmit}
+            onClose={onClose}
+          />
+        )}
+      </div>
     </Modal>
   );
 };

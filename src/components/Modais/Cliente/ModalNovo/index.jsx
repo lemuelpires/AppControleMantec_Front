@@ -47,7 +47,7 @@ const ModalNovo = ({ isOpen, onClose, onSubmit }) => {
       onRequestClose={onClose}
       style={modalStyles}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
         <FormularioCliente title="Novo Cliente" initialValues={initialValues} onSubmit={onSubmit} onClose={onClose} />
       </div>
     </Modal>

@@ -112,7 +112,7 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
   const handleSubmit = async (formData) => {
     try {
       console.log('Dados do formulário antes do envio:', formData);
-      
+
       const dataEntrada = formData.dataEntrada ? new Date(formData.dataEntrada).toISOString() : null;
       const dataConclusao = formData.dataConclusao ? new Date(formData.dataConclusao).toISOString() : null;
 
@@ -153,16 +153,18 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       )}
       style={modalStyles}
     >
-      <FormularioOrdemDeServico
-        title="Nova Ordem de Serviço"
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        onClose={onClose}
-        clienteOptions={clienteOptions}
-        funcionarioOptions={funcionarioOptions}
-        produtoOptions={produtoOptions}
-        servicoOptions={servicoOptions}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        <FormularioOrdemDeServico
+          title="Nova Ordem de Serviço"
+          initialValues={formData}
+          onSubmit={handleSubmit}
+          onClose={onClose}
+          clienteOptions={clienteOptions}
+          funcionarioOptions={funcionarioOptions}
+          produtoOptions={produtoOptions}
+          servicoOptions={servicoOptions}
+        />
+      </div>
     </Modal>
   );
 };

@@ -87,7 +87,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
             .map(p => ({
               value: p.id,
               label: p.nome,
-              preco: p.preco,    
+              preco: p.preco,
             }))
         );
         setServicoOptions(servicos.data.filter(s => s.ativo).map(s => ({ value: s.id, label: s.nome })));
@@ -181,16 +181,18 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
       contentElement={(props, children) => <div {...props}>{children}</div>}
       style={modalStyles}
     >
-      <FormularioOrdemDeServico
-        title="Editar Ordem de Serviço"
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        onClose={onClose}
-        clienteOptions={clienteOptions}
-        funcionarioOptions={funcionarioOptions}
-        produtoOptions={produtoOptions}
-        servicoOptions={servicoOptions}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        <FormularioOrdemDeServico
+          title="Editar Ordem de Serviço"
+          initialValues={formData}
+          onSubmit={handleSubmit}
+          onClose={onClose}
+          clienteOptions={clienteOptions}
+          funcionarioOptions={funcionarioOptions}
+          produtoOptions={produtoOptions}
+          servicoOptions={servicoOptions}
+        />
+      </div>
     </Modal>
   );
 };

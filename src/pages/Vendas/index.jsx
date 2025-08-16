@@ -667,7 +667,6 @@ const Vendas = () => {
     boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
     background: '#fff',
     padding: '0.5rem',
-    minWidth: '350px'
   }}>
     <Table
       columns={columns}

@@ -78,13 +78,16 @@ const ModalNovoEstoque = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose} style={modalStyles}>
-      <FormularioEstoque 
-        title="Novo Item de Estoque"
-        initialValues={formData} 
-        produtos={produtos}
-        onSubmit={handleSubmit} 
-        onClose={onClose} 
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        <FormularioEstoque
+          title="Novo Item de Estoque"
+          initialValues={formData}
+          produtos={produtos}
+          onSubmit={handleSubmit}
+          onClose={onClose}
+        />
+      </div>
+
     </Modal>
   );
 };

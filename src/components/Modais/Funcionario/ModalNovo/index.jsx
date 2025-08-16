@@ -52,14 +52,16 @@ const ModalNovoFuncionario = ({ isOpen, onClose, onSubmit }) => {
       contentElement={(props, children) => (
         <div {...props}>{children}</div>
       )}
-      style = {modalStyles}
+      style={modalStyles}
     >
-      <FormularioFuncionario 
-        title="Nova Funcionário"
-        initialValues={initialValues} 
-        onSubmit={onSubmit} 
-        onClose={onClose} 
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        <FormularioFuncionario
+          title="Nova Funcionário"
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          onClose={onClose}
+        />
+      </div>
     </Modal>
   );
 };

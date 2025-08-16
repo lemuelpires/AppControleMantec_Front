@@ -58,12 +58,14 @@ const ModalEdicaoProduto = ({ isOpen, onClose, item, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      <FormularioProduto 
-        initialValues={initialValues} 
-        onSubmit={onSubmit} 
-        onClose={onClose}
-        modalTitle="Editar Produto"
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        {item && <FormularioProduto
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          onClose={onClose}
+          modalTitle="Editar Produto"
+        />}
+      </div>
     </Modal>
   );
 };

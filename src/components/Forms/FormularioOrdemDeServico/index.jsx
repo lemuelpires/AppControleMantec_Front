@@ -39,7 +39,7 @@ const parseCurrency = (value) => {
 
 // ----- estilos locais -----
 const ItemSection = styled.div`
-  margin-bottom: 1rem;
+  
 `;
 
 const SectionTitle = styled(Label)`
@@ -78,7 +78,6 @@ const ItemRow = styled.div`
   grid-template-columns: 28px 1fr 80px;
   gap: 0.5rem;
   align-items: center;
-  margin-bottom: 0.6rem;
   padding: 0.4rem;
   border: 1px dashed rgba(108, 117, 125, 0.4);
   border-radius: 6px;
@@ -144,6 +143,13 @@ const SectionHeader = styled.div`
 
 `;
 
+const ResponsiveFormGroup = styled(FormGroup)`
+  width: 49%;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
 const CompactFormRow = styled(FormRow)`
   padding-bottom: 0.6rem;
   margin-bottom: 1.5rem;
@@ -153,6 +159,12 @@ const CompactFormRow = styled(FormRow)`
     display: flex;
     gap: 1.5%;
     align-items: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    &.side-by-side {
+      flex-direction: column;
+    }
   }
 `;
 // --------------------------
@@ -627,7 +639,6 @@ const FormularioOrdemDeServico = ({
               isSearchable
             />
           </FormGroup>
-
           <FormGroup delay="0.2s">
             <Label>Funcionário</Label>
             <ReactSelect
@@ -643,8 +654,9 @@ const FormularioOrdemDeServico = ({
         </CompactFormRow>
 
         {/* Linha 2: Produtos e Serviços */}
+        {/* Linha 2: Produtos e Serviços */}
         <CompactFormRow className="side-by-side">
-          <FormGroup delay="0.3s" style={{ width: '49%' }}>
+          <ResponsiveFormGroup delay="0.3s">
             <SectionHeader>
               <SectionTitle onClick={addProduto} title="Clique para adicionar produto">Produtos</SectionTitle>
             </SectionHeader>
@@ -677,9 +689,9 @@ const FormularioOrdemDeServico = ({
                 </ItemRow>
               ))}
             </ItemSection>
-          </FormGroup>
+          </ResponsiveFormGroup>
 
-          <FormGroup delay="0.4s" style={{ width: '49%' }}>
+          <ResponsiveFormGroup delay="0.4s">
             <SectionHeader>
               <SectionTitle onClick={addServico} title="Clique para adicionar serviço">Serviços</SectionTitle>
             </SectionHeader>
@@ -712,7 +724,7 @@ const FormularioOrdemDeServico = ({
                 </ItemRow>
               ))}
             </ItemSection>
-          </FormGroup>
+          </ResponsiveFormGroup>
         </CompactFormRow>
 
         {/* Linha 3: Observações / Diagnóstico */}
@@ -784,9 +796,9 @@ const FormularioOrdemDeServico = ({
           <FormGroup>
             {/* Mensagem colorida de garantia */}
             {formData.emGarantia ? (
-              <div style={{ color: 'green', fontWeight: 'bold', marginTop: 4 }}> ✔ Esta em Garantia</div>
+              <div style={{ color: 'green', fontSize: '11px' }}> ✔ Esta em Garantia</div>
             ) : (
-              <div style={{ color: 'red', fontWeight: 'bold', marginTop: 4 }}> X Fora da Garantia</div>
+              <div style={{ color: 'red', fontSize: '11px' }}> |--Fora da Garantia--|</div>
             )}
             {/* Campo dataGarantia sempre visível */}
             <Input

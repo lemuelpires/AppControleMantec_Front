@@ -116,7 +116,6 @@ export const SearchInput = styled.input`
 
   @media (max-width: 640px) {
     min-width: unset;
-    width: 100%;
   }
 `;
 

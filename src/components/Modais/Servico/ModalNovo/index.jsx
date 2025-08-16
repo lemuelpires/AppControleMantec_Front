@@ -53,12 +53,14 @@ const ModalNovoServico = ({ isOpen, onClose, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      <FormularioServico 
-        title="Novo Serviço"
-        initialValues={initialValues} 
-        onSubmit={onSubmit} 
-        onClose={onClose} 
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        <FormularioServico
+          title="Novo Serviço"
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          onClose={onClose}
+        />
+      </div>
     </Modal>
   );
 };

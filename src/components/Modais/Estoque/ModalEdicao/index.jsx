@@ -45,10 +45,10 @@ const ModalEdicaoEstoque = ({ isOpen, onClose, item, onSubmit }) => {
   useEffect(() => {
     if (item) {
       // Formatar a data para datetime-local se necessário
-      const dataFormatada = item.dataAtualizacao ? 
-        new Date(item.dataAtualizacao).toISOString().slice(0, 16) : 
+      const dataFormatada = item.dataAtualizacao ?
+        new Date(item.dataAtualizacao).toISOString().slice(0, 16) :
         new Date().toISOString().slice(0, 16);
-      
+
       setFormData({
         ...item,
         dataAtualizacao: dataFormatada
@@ -88,15 +88,17 @@ const ModalEdicaoEstoque = ({ isOpen, onClose, item, onSubmit }) => {
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose} style={modalStyles}>
-      {item && (
-        <FormularioEstoque 
-          title="Editar Item de Estoque"
-          initialValues={formData} 
-          produtos={produtos}
-          onSubmit={handleSubmit} 
-          onClose={onClose} 
-        />
-      )}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        {item && (
+          <FormularioEstoque
+            title="Editar Item de Estoque"
+            initialValues={formData}
+            produtos={produtos}
+            onSubmit={handleSubmit}
+            onClose={onClose}
+          />
+        )}
+      </div>
     </Modal>
   );
 };

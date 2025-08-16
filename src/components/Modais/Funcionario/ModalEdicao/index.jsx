@@ -35,11 +35,11 @@ const modalStyles = {
 const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
   // Garante que dataAtualizacao tenha valor
   const dadosCompletos = {
-  ...item,
-  dataContratacao: item?.dataContratacao
-    ? new Date(item.dataContratacao).toISOString().slice(0, 10)
-    : new Date().toISOString().slice(0, 10),
-};
+    ...item,
+    dataContratacao: item?.dataContratacao
+      ? new Date(item.dataContratacao).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10),
+  };
 
 
   return (
@@ -54,14 +54,17 @@ const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      {item && (
-        <FormularioFuncionario
-          title="Editar Funcionário"
-          initialValues={dadosCompletos} // <== agora sim estÃ¡ usando os dados ajustados
-          onSubmit={onSubmit}
-          onClose={onClose}
-        />
-      )}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+        {item && (
+          <FormularioFuncionario
+            title="Editar Funcionário"
+            initialValues={dadosCompletos} // <== agora sim estÃ¡ usando os dados ajustados
+            onSubmit={onSubmit}
+            onClose={onClose}
+          />
+        )}
+      </div>
+
     </Modal>
   );
 };

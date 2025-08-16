@@ -47,7 +47,7 @@ const ModalEdicao = ({ isOpen, onClose, item, onSubmit }) => {
       )}
       style={modalStyles}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
         {item && <FormularioCliente title="Editar Cliente" initialValues={item} onSubmit={onSubmit} onClose={onClose} />}
       </div>
     </Modal>
