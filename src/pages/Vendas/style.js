@@ -69,6 +69,7 @@ export const TableContainer = styled.div`
   padding: 2rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 2rem;
   
   /* Forçar cores escuras na tabela */
   table {
@@ -114,6 +115,16 @@ export const TableContainer = styled.div`
     color: #495057 !important;
     background: white !important;
   }
+
+  @media (max-width: 900px) {
+    padding: 0;
+    .table-wrapper {
+      padding: 0.2rem;
+      min-width: 350px;
+      overflow-x: auto;
+    }
+  }
+
 `;
 
 export const ActionButton = styled.button`

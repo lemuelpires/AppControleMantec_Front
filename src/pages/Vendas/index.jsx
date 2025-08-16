@@ -641,32 +641,41 @@ const Vendas = () => {
       </FiltersContainer>
 
       <TableContainer>
-        <div style={{
-          color: '#2c3e50',
-          fontSize: '1.1rem',
-          fontWeight: '600',
-          marginBottom: '1rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          📋 Lista de Vendas Concluídas
-          <span style={{
-            fontSize: '0.9rem',
-            color: '#6c757d',
-            fontWeight: '500'
-          }}>
-            {ordensConcluidas.length} vendas concluídas encontradas
-          </span>
-        </div>
-        <div style={{ color: '#2c3e50' }}>
-          <Table
-            columns={columns}
-            data={ordensConcluidas}
-            initialPageSize={10}
-          />
-        </div>
-      </TableContainer>
+  <div style={{
+    color: '#2c3e50',
+    fontSize: '1.1rem',
+    fontWeight: '600',
+    marginBottom: '1rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }}>
+    📋 Lista de Vendas Concluídas
+    <span style={{
+      fontSize: '0.9rem',
+      color: '#6c757d',
+      fontWeight: '500'
+    }}>
+      {ordensConcluidas.length} vendas concluídas encontradas
+    </span>
+  </div>
+  {/* Wrapper responsivo para tabela */}
+  <div style={{
+    overflowX: 'auto',
+    minHeight: '1px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    background: '#fff',
+    padding: '0.5rem',
+    minWidth: '350px'
+  }}>
+    <Table
+      columns={columns}
+      data={ordensConcluidas}
+      initialPageSize={10}
+    />
+  </div>
+</TableContainer>
 
       {/* Modal de Recibo */}
       {reciboModalOpen && ordemSelecionada && (
