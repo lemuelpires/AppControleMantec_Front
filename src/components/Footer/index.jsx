@@ -1,7 +1,5 @@
 import React from 'react';
 import { FaMapMarkerAlt, FaInstagram } from 'react-icons/fa'; // Adicione o ícone do Instagram
-import instagramQR from '../../assets/instagram_qr.png';
-import { InstagramQRContainer } from './style';
 import {
     FooterContainer,
     ContactContainer,
