@@ -158,6 +158,13 @@ export const DefaultInfoText = styled.p`
     justify-content: center;
 `;
 
+export const DefaultInfoText1 = styled.p`
+   span{
+       font-weight: 500;
+       padding: 0.2em .5em;
+   }
+`;
+
 export const Mapa = styled.a`
     text-decoration: none;
     color: #93e593;

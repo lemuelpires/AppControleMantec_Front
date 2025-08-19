@@ -10,6 +10,7 @@ import {
     DefaultInfoContainer,
     DefaultInfoTitle,
     DefaultInfoText,
+    DefaultInfoText1,
     Mapa,
 } from './style';
 
@@ -55,12 +56,9 @@ const Footer = () => {
                         <FaMapMarkerAlt style={{ marginLeft: '8px' }} /> Ver no mapa
                     </Mapa>
                 </DefaultInfoText>
-                <DefaultInfoText>
-                    <span style={{ fontWeight: 500 }}>E-mail:</span> mantec10design@gmail.com
-                </DefaultInfoText>
-                <DefaultInfoText>
-                    <span style={{ fontWeight: 500 }}>Telefone:</span> (16) 9926-14410
-                </DefaultInfoText>
+                <DefaultInfoText1>
+                    <span style={{ fontWeight: 500 }}>Telefone:  </span> (16) 9926-14410
+                </DefaultInfoText1>
             </DefaultInfoContainer>
         </FooterContainer>
     );
