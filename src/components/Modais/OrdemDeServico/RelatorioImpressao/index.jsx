@@ -110,7 +110,8 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
               const response = await apiCliente.get(`/servico/${servico.id}`);
               return {
                 ...response.data,
-                quantidade: servico.quantidade
+                quantidade: servico.quantidade,
+                preco: response.data.preco || 0
               };
             } catch (err) {
               console.error(`Erro ao buscar serviço ${servico.id}:`, err);
@@ -202,7 +203,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
     );
   }
 
-  const valorTotal = ordemDeServico.valorTotal || 0;
+  const valorTotal = (ordemDeServico.valorTotal || 0);
 
   return (
     <>
@@ -339,13 +340,6 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
                   <td className="currency">{formatCurrency((produto.preco || 0) * (produto.quantidade || 1))}</td>
                 </tr>
               ))}
-              <tr>
-                <td><span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Mão de Obra||</span></td>
-                <td>-</td>
-                <td>1</td>
-                <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra || 0)}</td>
-                <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra || 0)}</td>
-              </tr>
               <tr className="total-row">
                 <td colSpan="4"><strong>Total Geral</strong></td>
                 <td className="currency"><strong>{formatCurrency(valorTotal)}</strong></td>

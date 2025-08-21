@@ -143,7 +143,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
   };
 
   const calcularTotalGeral = () => {
-    return calcularTotalServicos() + calcularTotalProdutos();
+    return calcularTotalServicos() + calcularTotalProdutos() + (ordemDeServico.valorMaoDeObra || 0);
   };
 
   const printRecibo = () => {
