@@ -15,6 +15,7 @@ import {
 } from './style';
 import ReactSelect from 'react-select';
 import styled from 'styled-components';
+import apiCliente from '../../../services/apiCliente'; 
 
 // ===== DEBUG =====
 const DEBUG_CALC = true;
@@ -341,6 +342,8 @@ const FormularioOrdemDeServico = ({
     assinaturaTecnicoBase64: initialValues.assinaturaTecnicoBase64 || '',
   });
 
+  const [errors, setErrors] = useState({});
+
   // Depuração: quando produtoOptions mudar, listar preços e fornecedor
   useEffect(() => {
     if (!DEBUG_CALC) return;
@@ -459,21 +462,9 @@ const FormularioOrdemDeServico = ({
       const preco = prod ? prod.preco : 0;
       const subtotal = preco * qtd;
       soma += subtotal;
-
-      console.groupCollapsed(`Item #${idx + 1}`);
-      console.log('produtoID:', id);
-      console.log('Produto encontrado no mapa?', !!prod);
-      console.log('Label:', prod?.label ?? 'N/A');
-      console.log('Fornecedor:', typeof prod?.fornecedor === 'object' ? prod.fornecedor : (prod?.fornecedor ?? 'N/A'));
-      console.log('Preço:', preco);
-      console.log('Quantidade:', qtd);
-      console.log('Subtotal deste item:', subtotal);
-      if (!prod) console.warn('⚠️ Produto NÃO encontrado no produtoMap. Verifique se o ID bate com produtoOptions.value');
-      console.groupEnd();
     });
 
     const valorFormatado = parseFloat(soma.toFixed(2));
-    console.log('SOMA FINAL:', soma, '=> formatado:', valorFormatado);
 
     if (valorFormatado !== Number(formData.valorPecas || 0)) {
       setFormData(prev => ({ ...prev, valorPecas: valorFormatado }));
@@ -485,7 +476,7 @@ const FormularioOrdemDeServico = ({
   // Cálculo valorTotal (mão de obra + peças)
   useEffect(() => {
     const soma = (Number(formData.valorMaoDeObra) || 0)
-      + (Number(formData.valorPecas) || 0);
+      + (Number(formData.valorPecas) || 0) + (Number(formData.valorServico) || 0);
 
     if (soma !== Number(formData.valorTotal || 0)) {
       setFormData(prev => ({ ...prev, valorTotal: soma }));
@@ -581,8 +572,21 @@ const FormularioOrdemDeServico = ({
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.clienteID) newErrors.clienteID = 'Selecione o cliente.';
+    if (!formData.funcionarioID) newErrors.funcionarioID = 'Selecione o funcionário.';
+    if (!formData.produtos || !formData.produtos.some(p => p.produtoID)) newErrors.produtos = 'Adicione ao menos um produto.';
+    if (!formData.servicos || !formData.servicos.some(s => s.servicoID)) newErrors.servicos = 'Adicione ao menos um serviço.';
+    if (!formData.dataEntrada) newErrors.dataEntrada = 'Informe a data de entrada.';
+    if (!formData.status) newErrors.status = 'Selecione o status.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
 
     const finalData = {
       id: formData.id || undefined,
@@ -617,9 +621,67 @@ const FormularioOrdemDeServico = ({
       pecasUtilizadas: (formData.produtos || []).map(p => ({ produtoID: p.produtoID, quantidade: Number(p.quantidade) || 0 })),
     };
 
+    // Se status for "Concluída", atualiza estoque dos produtos
+    if (finalData.status === 'Concluída') {
+      for (const produto of formData.produtos) {
+        if (produto.produtoID && produto.quantidade) {
+          try {
+            await apiCliente.patch(`/Produto/${produto.produtoID}/baixa-estoque`, {
+              quantidade: produto.quantidade
+            });
+          } catch (err) {
+            console.error(`Erro ao baixar estoque do produto ${produto.produtoID}:`, err);
+          }
+        }
+      }
+    }
+
     console.log('finalData enviado:', finalData);
     if (onSubmit) onSubmit(finalData);
   };
+
+  // Cálculo automático de valorMaoDeObra com base nos serviços selecionados
+  useEffect(() => {
+    // Mapa rápido id -> preco (apenas serviços ativos)
+    const servicoMap = {};
+    (servicoOptions || []).forEach(opt => {
+      const id = String(opt?.value ?? '');
+      if (!id) return;
+      // Considere apenas serviços ativos
+      if (opt?.ativo === false) return;
+      servicoMap[id] = toNumber(opt?.preco ?? opt?.precoVenda ?? opt?.price, 0);
+    });
+
+    // Fonte da lista: formData.servicos
+    const lista = Array.isArray(formData.servicos) ? formData.servicos : [];
+    let soma = 0;
+
+    (lista || []).forEach((item, idx) => {
+      const id = String(item?.servicoID ?? '');
+      const qtd = toNumber(item?.quantidade, 0);
+      if (!id) return;
+      const preco = servicoMap[id] || 0;
+      soma += preco * qtd;
+    });
+
+    const valorFormatado = parseFloat(soma.toFixed(2));
+    if (valorFormatado !== Number(formData.valorMaoDeObra || 0)) {
+      setFormData(prev => ({ ...prev, valorMaoDeObra: valorFormatado }));
+    }
+  }, [formData.servicos, servicoOptions]);
+
+  // Filtro e label customizado para produtos
+  const filteredProdutoOptions = (produtoOptions || []).filter(opt => Number(opt.quantidade) >= 1).map(opt => ({
+    ...opt,
+    label: (
+      <span>
+        {opt.label}
+        <span style={{ color: 'green', marginLeft: 8, fontWeight: 600 }}>
+          ({opt.quantidade})
+        </span>
+      </span>
+    )
+  }));
 
   return (
     <FormContainer>
@@ -628,7 +690,7 @@ const FormularioOrdemDeServico = ({
         {/* Linha 1: Cliente e Funcionário */}
         <CompactFormRow>
           <FormGroup delay="0.1s">
-            <Label>Cliente</Label>
+            <Label>Cliente <span style={{color:'red'}}>*</span></Label>
             <ReactSelect
               name="clienteID"
               options={clienteOptions}
@@ -638,9 +700,10 @@ const FormularioOrdemDeServico = ({
               styles={customSelectStyles}
               isSearchable
             />
+            {errors.clienteID && <div style={{color:'red',fontSize:'12px'}}>{errors.clienteID}</div>}
           </FormGroup>
           <FormGroup delay="0.2s">
-            <Label>Funcionário</Label>
+            <Label>Funcionário <span style={{color:'red'}}>*</span></Label>
             <ReactSelect
               name="funcionarioID"
               options={funcionarioOptions}
@@ -650,6 +713,7 @@ const FormularioOrdemDeServico = ({
               styles={customSelectStyles}
               isSearchable
             />
+            {errors.funcionarioID && <div style={{color:'red',fontSize:'12px'}}>{errors.funcionarioID}</div>}
           </FormGroup>
         </CompactFormRow>
 
@@ -658,7 +722,9 @@ const FormularioOrdemDeServico = ({
         <CompactFormRow className="side-by-side">
           <ResponsiveFormGroup delay="0.3s">
             <SectionHeader>
-              <SectionTitle onClick={addProduto} title="Clique para adicionar produto">Produtos</SectionTitle>
+              <SectionTitle onClick={addProduto} title="Clique para adicionar produto">
+                Produtos <span style={{color:'red'}}>*</span>
+              </SectionTitle>
             </SectionHeader>
             <ItemSection>
               {formData.produtos.map((produto, index) => (
@@ -667,8 +733,9 @@ const FormularioOrdemDeServico = ({
                     #{index + 1}
                   </div>
                   <ReactSelect
-                    options={produtoOptions}
-                    value={produtoOptions.find(option => option.value === produto.produtoID) || null}
+                    name="produtoID"
+                    options={filteredProdutoOptions}
+                    value={filteredProdutoOptions.find(option => option.value === produto.produtoID) || null}
                     onChange={(selectedOption) => handleProdutoChange(index, selectedOption)}
                     placeholder="Selecione um produto"
                     styles={customSelectStyles}
@@ -689,11 +756,14 @@ const FormularioOrdemDeServico = ({
                 </ItemRow>
               ))}
             </ItemSection>
+            {errors.produtos && <div style={{color:'red',fontSize:'12px'}}>{errors.produtos}</div>}
           </ResponsiveFormGroup>
 
           <ResponsiveFormGroup delay="0.4s">
             <SectionHeader>
-              <SectionTitle onClick={addServico} title="Clique para adicionar serviço">Serviços</SectionTitle>
+              <SectionTitle onClick={addServico} title="Clique para adicionar serviço">
+                Serviços <span style={{color:'red'}}>*</span>
+              </SectionTitle>
             </SectionHeader>
             <ItemSection>
               {formData.servicos.map((servico, index) => (
@@ -724,6 +794,7 @@ const FormularioOrdemDeServico = ({
                 </ItemRow>
               ))}
             </ItemSection>
+            {errors.servicos && <div style={{color:'red',fontSize:'12px'}}>{errors.servicos}</div>}
           </ResponsiveFormGroup>
         </CompactFormRow>
 
@@ -784,8 +855,9 @@ const FormularioOrdemDeServico = ({
         {/* Datas e garantia */}
         <CompactFormRow>
           <FormGroup>
-            <Label>Data de Entrada</Label>
+            <Label>Data de Entrada <span style={{color:'red'}}>*</span></Label>
             <Input type="date" name="dataEntrada" value={formData.dataEntrada || ''} onChange={handleChange} />
+            {errors.dataEntrada && <div style={{color:'red',fontSize:'12px'}}>{errors.dataEntrada}</div>}
           </FormGroup>
           <FormGroup>
             <Label>Data de Conclusão</Label>
@@ -811,7 +883,7 @@ const FormularioOrdemDeServico = ({
             />
           </FormGroup>
           <FormGroup>
-            <Label>Status</Label>
+            <Label>Status <span style={{color:'red'}}>*</span></Label>
             <ReactSelect
               name="status"
               options={[
@@ -825,6 +897,7 @@ const FormularioOrdemDeServico = ({
               placeholder="Selecione o status"
               styles={customStatusStyles}
             />
+            {errors.status && <div style={{color:'red',fontSize:'12px'}}>{errors.status}</div>}
           </FormGroup>
         </CompactFormRow>
 
@@ -836,10 +909,10 @@ const FormularioOrdemDeServico = ({
               type="text"
               name="valorMaoDeObra"
               value={formatCurrency(formData.valorMaoDeObra)}
-              onChange={e => handleCurrencyChange(e, 'valorMaoDeObra')}
+              readOnly
               inputMode="decimal"
-              // pattern="[\d,.]+" // Remover esta linha!
               placeholder="R$ 0,00"
+              style={{ background: '#f8f9fa', color: '#2c3e50', fontWeight: '500' }}
             />
           </FormGroup>
 
@@ -889,7 +962,6 @@ const FormularioOrdemDeServico = ({
             <Label>Tipo de Atendimento</Label>
             <Input name="tipoAtendimento" value={formData.tipoAtendimento} onChange={handleChange} placeholder="Loja, Externo..." />
           </FormGroup>
-
           <FormGroup>
             <Label>Prioridade</Label>
             <Select name="prioridade" value={formData.prioridade} onChange={handleChange}>

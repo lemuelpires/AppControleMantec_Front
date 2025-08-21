@@ -8,6 +8,7 @@ const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClos
     preco: '',
     ...initialValues
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     // Atualiza o estado do formulário quando initialValues mudar
@@ -24,8 +25,18 @@ const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClos
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formValues.nome) newErrors.nome = 'Informe o nome.';
+    if (!formValues.preco) newErrors.preco = 'Informe o preço.';
+    if (!formValues.descricao) newErrors.descricao = 'Informe a descrição.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return;
     onSubmit({ ...formValues, ativo: true });
   };
 
@@ -37,7 +48,7 @@ const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClos
       <Form onSubmit={handleSubmit}>
         <FormRow>
           <FormGroup delay="0.1s">
-            <Label htmlFor="nome">Nome do Serviço</Label>
+            <Label htmlFor="nome">Nome do Serviço <span style={{color:'red'}}>*</span></Label>
             <Input 
               type="text" 
               id="nome" 
@@ -47,9 +58,10 @@ const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClos
               placeholder="Ex: Troca de tela"
               required 
             />
+            {errors.nome && <div style={{color:'red',fontSize:'12px'}}>{errors.nome}</div>}
           </FormGroup>
           <FormGroup delay="0.2s">
-            <Label htmlFor="preco">Preço</Label>
+            <Label htmlFor="preco">Preço <span style={{color:'red'}}>*</span></Label>
             <Input 
               type="number" 
               id="preco" 
@@ -61,11 +73,12 @@ const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClos
               min="0"
               required 
             />
+            {errors.preco && <div style={{color:'red',fontSize:'12px'}}>{errors.preco}</div>}
           </FormGroup>
         </FormRow>
         
         <FormGroup delay="0.3s">
-          <Label htmlFor="descricao">Descrição</Label>
+          <Label htmlFor="descricao">Descrição <span style={{color:'red'}}>*</span></Label>
           <Input 
             type="text" 
             id="descricao" 
@@ -75,6 +88,7 @@ const FormularioServico = ({ title = "Serviço", initialValues, onSubmit, onClos
             placeholder="Descreva o serviço oferecido"
             required 
           />
+          {errors.descricao && <div style={{color:'red',fontSize:'12px'}}>{errors.descricao}</div>}
         </FormGroup>
         
         <EspacamentoButton>

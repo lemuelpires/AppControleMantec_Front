@@ -85,11 +85,15 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
   const fetchProdutos = async () => {
     try {
       const response = await apiCliente.get('/Produto');
-      const produtos = response.data.filter(produto => produto.ativo).map(produto => ({
-        value: produto.id,
-        label: produto.nome,
-        preco: produto.preco,
-      }));
+      // Filtra apenas produtos ativos e com quantidade > 1
+      const produtos = response.data
+        .filter(produto => produto.ativo && produto.quantidade > 1)
+        .map(produto => ({
+          value: produto.id,
+          label: produto.nome,
+          preco: produto.preco,
+          quantidade: produto.quantidade // Adiciona quantidade para exibir no select
+        }));
       setProdutoOptions(produtos);
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);

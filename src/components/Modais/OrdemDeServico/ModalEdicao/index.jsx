@@ -88,9 +88,15 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
               value: p.id,
               label: p.nome,
               preco: p.preco,
+              quantidade: p.quantidade
             }))
         );
-        setServicoOptions(servicos.data.filter(s => s.ativo).map(s => ({ value: s.id, label: s.nome })));
+        setServicoOptions(servicos.data.map(s => ({
+          value: s.id,
+          label: s.nome,
+          preco: s.preco,
+          ativo: s.ativo
+        })));
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
