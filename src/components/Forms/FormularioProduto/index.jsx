@@ -10,9 +10,11 @@ import {
   EspacamentoButton,
   Button
 } from './style';
+import ReactSelect from 'react-select';
 
-const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => {
+const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle, produtoOptions }) => {
   const [formData, setFormData] = useState({ ...initialValues });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     // Atualiza o estado do formulário quando initialValues mudar
@@ -24,10 +26,37 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleSelectChange = (selectedOption, name) => {
+    setFormData({ ...formData, [name]: selectedOption ? selectedOption.value : '' });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.nome) newErrors.nome = 'Informe o nome.';
+    if (!formData.preco) newErrors.preco = 'Informe o preço.';
+    if (!formData.fornecedor) newErrors.fornecedor = 'Informe o fornecedor.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return;
     onSubmit({ ...formData, ativo: true }); // Garante que 'ativo' seja sempre 'true' ao enviar o formulário
   };
+
+  // Supondo que produtoOptions seja passado como prop e cada produto tem { value, label, quantidade, ... }
+  const filteredProdutoOptions = (produtoOptions || []).filter(opt => Number(opt.quantidade) > 1).map(opt => ({
+    ...opt,
+    label: (
+      <span>
+        {opt.label}
+        <span style={{ color: 'green', marginLeft: 8, fontWeight: 600 }}>
+          ({opt.quantidade} em estoque)
+        </span>
+      </span>
+    )
+  }));
 
   if (!initialValues) return null; // Adiciona um fallback para evitar renderização sem initialValues
 
@@ -49,7 +78,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
           </FormGroup>
           
           <FormGroup delay="0.2s">
-            <Label htmlFor="nome">Nome do Produto</Label>
+            <Label htmlFor="nome">Nome do Produto <span style={{color:'red'}}>*</span></Label>
             <Input 
               type="text" 
               id="nome" 
@@ -59,12 +88,13 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
               placeholder="Digite o nome do produto"
               required 
             />
+            {errors.nome && <div style={{color:'red',fontSize:'12px'}}>{errors.nome}</div>}
           </FormGroup>
         </FormRow>
 
         <FormRow>
           <FormGroup delay="0.3s">
-            <Label htmlFor="preco">Preço (R$)</Label>
+            <Label htmlFor="preco">Preço (R$) <span style={{color:'red'}}>*</span></Label>
             <Input 
               type="number" 
               step="0.01"
@@ -76,6 +106,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
               placeholder="0,00"
               required 
             />
+            {errors.preco && <div style={{color:'red',fontSize:'12px'}}>{errors.preco}</div>}
           </FormGroup>
 
           <FormGroup delay="0.4s">
@@ -95,7 +126,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
 
         <FormRow>
           <FormGroup delay="0.5s">
-            <Label htmlFor="fornecedor">Fornecedor</Label>
+            <Label htmlFor="fornecedor">Fornecedor <span style={{color:'red'}}>*</span></Label>
             <Input 
               type="text" 
               id="fornecedor" 
@@ -105,6 +136,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
               placeholder="Digite o fornecedor"
               required 
             />
+            {errors.fornecedor && <div style={{color:'red',fontSize:'12px'}}>{errors.fornecedor}</div>}
           </FormGroup>
 
           <FormGroup delay="0.6s">
@@ -134,7 +166,6 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle }) => 
             required 
           />
         </FormGroup>
-
         <EspacamentoButton>
           <Button type="submit" className="save">
             Salvar

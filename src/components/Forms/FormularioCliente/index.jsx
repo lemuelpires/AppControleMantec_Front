@@ -13,6 +13,7 @@ import {
 
 const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dados do Cliente" }) => {
   const [formValues, setFormValues] = useState(initialValues);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setFormValues(initialValues);
@@ -23,8 +24,18 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formValues.nome) newErrors.nome = 'Informe o nome.';
+    if (!formValues.telefone) newErrors.telefone = 'Informe o telefone.';
+    if (!formValues.email) newErrors.email = 'Informe o e-mail.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return;
 
     const clienteComData = {
       ...formValues,
@@ -41,7 +52,7 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
       <Form onSubmit={handleSubmit}>
         <FormRow>
           <Campo delay="0.1s">
-            <Label>Nome Completo</Label>
+            <Label>Nome Completo <span style={{color:'red'}}>*</span></Label>
             <Input
               type="text"
               name="nome"
@@ -50,10 +61,11 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
               onChange={handleChange}
               required
             />
+            {errors.nome && <div style={{color:'red',fontSize:'12px'}}>{errors.nome}</div>}
           </Campo>
           
           <Campo delay="0.2s">
-            <Label>Telefone</Label>
+            <Label>Telefone <span style={{color:'red'}}>*</span></Label>
             <Input
               type="tel"
               name="telefone"
@@ -62,12 +74,13 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
               onChange={handleChange}
               required
             />
+            {errors.telefone && <div style={{color:'red',fontSize:'12px'}}>{errors.telefone}</div>}
           </Campo>
         </FormRow>
 
         <FormRow>
           <Campo delay="0.3s">
-            <Label>Email</Label>
+            <Label>Email <span style={{color:'red'}}>*</span></Label>
             <Input
               type="email"
               name="email"
@@ -76,6 +89,7 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
               onChange={handleChange}
               required
             />
+            {errors.email && <div style={{color:'red',fontSize:'12px'}}>{errors.email}</div>}
           </Campo>
 
           <Campo delay="0.4s">

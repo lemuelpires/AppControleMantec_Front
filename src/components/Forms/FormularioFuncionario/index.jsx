@@ -13,6 +13,7 @@ import {
 
 const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = "Dados do Funcionário" }) => {
   const [formValues, setFormValues] = useState(initialValues);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     // Atualiza os valores do formulário quando initialValues mudar
@@ -24,8 +25,18 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formValues.nome) newErrors.nome = 'Informe o nome.';
+    if (!formValues.cargo) newErrors.cargo = 'Informe o cargo.';
+    if (!formValues.email) newErrors.email = 'Informe o e-mail.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return;
     onSubmit({ ...formValues, ativo: true });
     setFormValues({}); // Limpa o formulário após enviar
   };
@@ -36,7 +47,7 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
       <Form onSubmit={handleSubmit}>
         <FormRow>
           <FormGroup delay="0.1s">
-            <Label>Nome Completo</Label>
+            <Label>Nome <span style={{color:'red'}}>*</span></Label>
             <Input
               type="text"
               name="nome"
@@ -45,10 +56,11 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
               onChange={handleChange}
               required
             />
+            {errors.nome && <div style={{color:'red',fontSize:'12px'}}>{errors.nome}</div>}
           </FormGroup>
           
           <FormGroup delay="0.2s">
-            <Label>Cargo</Label>
+            <Label>Cargo <span style={{color:'red'}}>*</span></Label>
             <Input
               type="text"
               name="cargo"
@@ -57,6 +69,7 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
               onChange={handleChange}
               required
             />
+            {errors.cargo && <div style={{color:'red',fontSize:'12px'}}>{errors.cargo}</div>}
           </FormGroup>
         </FormRow>
 
@@ -74,7 +87,7 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
           </FormGroup>
 
           <FormGroup delay="0.4s">
-            <Label>Email</Label>
+            <Label>Email <span style={{color:'red'}}>*</span></Label>
             <Input
               type="email"
               name="email"
@@ -83,6 +96,7 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
               onChange={handleChange}
               required
             />
+            {errors.email && <div style={{color:'red',fontSize:'12px'}}>{errors.email}</div>}
           </FormGroup>
         </FormRow>
 

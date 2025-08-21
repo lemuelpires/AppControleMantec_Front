@@ -11,6 +11,7 @@ const FormularioEstoque = ({ title = "Estoque", initialValues, onSubmit, onClose
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedProductName, setSelectedProductName] = useState('');
+  const [errors, setErrors] = useState({});
 
   // Filtrar produtos baseado no termo de busca
   const filteredProdutos = produtos.filter(produto =>
@@ -67,12 +68,22 @@ const FormularioEstoque = ({ title = "Estoque", initialValues, onSubmit, onClose
     setTimeout(() => setIsDropdownOpen(false), 200);
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formValues.produtoID) newErrors.produtoID = 'Selecione o produto.';
+    if (!formValues.quantidade || formValues.quantidade <= 0) newErrors.quantidade = 'Informe a quantidade.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Formatar a data para ISO string se necessário
     const dataFormatada = formValues.dataAtualizacao ? 
       new Date(formValues.dataAtualizacao).toISOString() : 
       new Date().toISOString();
+    
+    if (!validate()) return;
     
     onSubmit({ 
       ...formValues, 
@@ -88,7 +99,7 @@ const FormularioEstoque = ({ title = "Estoque", initialValues, onSubmit, onClose
       <FormTitle>{title}</FormTitle>
       <Form onSubmit={handleSubmit}>
         <FormGroup delay="0.1s">
-          <Label htmlFor="produtoID">Produto</Label>
+          <Label htmlFor="produtoID">Produto <span style={{color:'red'}}>*</span></Label>
           <SelectContainer>
             <SelectInput
               type="text"
@@ -116,11 +127,12 @@ const FormularioEstoque = ({ title = "Estoque", initialValues, onSubmit, onClose
               </SelectDropdown>
             )}
           </SelectContainer>
+          {errors.produtoID && <div style={{color:'red',fontSize:'12px'}}>{errors.produtoID}</div>}
         </FormGroup>
         
         <FormRow>
           <FormGroup delay="0.2s">
-            <Label htmlFor="quantidade">Quantidade</Label>
+            <Label htmlFor="quantidade">Quantidade <span style={{color:'red'}}>*</span></Label>
             <Input 
               type="number" 
               id="quantidade" 
@@ -131,6 +143,7 @@ const FormularioEstoque = ({ title = "Estoque", initialValues, onSubmit, onClose
               min="0"
               required 
             />
+            {errors.quantidade && <div style={{color:'red',fontSize:'12px'}}>{errors.quantidade}</div>}
           </FormGroup>
           <FormGroup delay="0.3s">
             <Label htmlFor="dataAtualizacao">Data de Atualização</Label>
