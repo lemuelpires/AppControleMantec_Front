@@ -56,6 +56,7 @@ export const CompanyInfo = styled.div`
       -webkit-text-fill-color: initial;
       color: #000;
       font-size: 1.5rem;
+
     }
   }
 

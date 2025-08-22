@@ -292,7 +292,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           {produtos.map((produto, index) => (
             <tr key={`produto-${index}`}>
               <td className="center">{ordemDeServico.numeroOS || '----'}</td>
-              <td>Peça instalada</td>
+              <td>Peça instalada - modelo: {ordemDeServico.modelo || 'Não informado'}</td>
               <td>{produto.nome}</td>
               <td className="right">{formatCurrency(parseFloat(produto.preco) || 0)}</td>
               <td className="center">{produto.quantidade || 1}</td>
@@ -303,6 +303,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           {/* Linhas vazias se necessário */}
           {[...Array(Math.max(0, 5 - servicos.length - produtos.length))].map((_, index) => (
             <tr key={`empty-${index}`}>
+              <td >&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
@@ -314,7 +315,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
       </ServiceTable>
 
       <TotalSection className="total-section">
-        <div className="total-label">Total pagamento à vista (custos de importação incluídos):</div>
+        <div className="total-label">Total pagamento à vista:</div>
         <div className="total-value">{formatCurrency(calcularTotalGeral())}</div>
       </TotalSection>
 
@@ -345,6 +346,31 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           <div className="label"> Assinatura do Responsável</div>
         </SignatureBox>
       </SignatureSection>
+
+      {/* Termos de Garantia */}
+      <div
+        style={{
+          marginTop: '2rem',
+          padding: '1rem 1.5rem',
+          background: '#f8f9fa',
+          borderRadius: '8px',
+          fontSize: '0.95rem',
+          color: '#333',
+          border: '1px solid #e1e7f0'
+        }}
+      >
+        <strong>Termos de Garantia:</strong>
+        <div style={{ marginTop: '0.7rem', marginBottom: '0.7rem', paddingLeft: '1.2rem' }}>
+          <div>A garantia cobre apenas defeitos de fabricação das peças instaladas e serviços realizados.</div>
+          <div>Não cobre danos causados por mau uso, quedas, líquidos, surtos elétricos, vírus, software, ou intervenção de terceiros.</div>
+          <div>Produtos com sinais de violação, remoção de lacres, ou reparos não autorizados terão a garantia anulada.</div>
+          <div>O prazo de garantia é de 90 dias a partir da retirada do aparelho</div>
+          <div>Para acionamento da garantia, é obrigatória a apresentação deste recibo.</div>
+        </div>
+        <span style={{ fontSize: '0.9rem', color: '#666' }}>
+          Em caso de dúvidas, entre em contato com a Mantec Informática.
+        </span>
+      </div>
 
       <ButtonContainer>
         <Button className="print" onClick={printRecibo}>
