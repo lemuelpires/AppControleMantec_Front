@@ -23,7 +23,7 @@ const fadeIn = keyframes`
 `;
 
 export const FormContainer = styled.div`
-  padding: 0.8rem;
+  padding: 2rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
   backdrop-filter: blur(20px);
   border-radius: 12px;
