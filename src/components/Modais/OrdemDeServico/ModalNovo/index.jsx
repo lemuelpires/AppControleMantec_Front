@@ -125,14 +125,26 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
         ...formData,
         dataEntrada,
         dataConclusao,
-        // Manter compatibilidade - pegar o primeiro item se existir
         produtoID: formData.produtos?.[0]?.produtoID || null,
         servicoID: formData.servicos?.[0]?.servicoID || null,
         quantidadeProduto: formData.produtos?.[0]?.quantidade || 1,
         quantidadeServico: formData.servicos?.[0]?.quantidade || 1,
-        // Manter arrays para futuro uso
         produtos: formData.produtos || [],
-        servicos: formData.servicos || []
+        servicos: formData.servicos || [],
+        // Ajuste de tipos para o backend
+        valorMaoDeObra: formData.valorMaoDeObra ? parseFloat(formData.valorMaoDeObra) : 0,
+        valorPecas: formData.valorPecas ? parseFloat(formData.valorPecas) : 0,
+        valorTotal: formData.valorTotal ? parseFloat(formData.valorTotal) : 0,
+        pago: !!formData.pago,
+        ativo: !!formData.ativo,
+        numeroOS: formData.numeroOS ? parseInt(formData.numeroOS) : 0,
+        emGarantia: !!formData.emGarantia,
+        pecasUtilizadas: Array.isArray(formData.produtos)
+          ? formData.produtos.map(p => ({
+              ProdutoID: p.produtoID,
+              Quantidade: parseInt(p.quantidade) || 1
+            }))
+          : []
       };
 
       console.log('DTO a ser enviado:', ordemDeServicoDto);
