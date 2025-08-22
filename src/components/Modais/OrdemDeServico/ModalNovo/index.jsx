@@ -87,7 +87,7 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       const response = await apiCliente.get('/Produto');
       // Filtra apenas produtos ativos e com quantidade > 1
       const produtos = response.data
-        .filter(produto => produto.ativo && produto.quantidade > 1)
+        .filter(produto => produto.ativo)
         .map(produto => ({
           value: produto.id,
           label: produto.nome,
