@@ -330,7 +330,7 @@ const FormularioOrdemDeServico = ({
     senhaAcesso: initialValues.senhaAcesso || '',
     emGarantia: initialValues.emGarantia ?? false,
     dataGarantia: formatDateForInput(initialValues.dataGarantia) || '',
-    valorMaoDeObra: initialValues.valorMaoDeObra ?? (initialValues.valorServico ?? 0),
+    valorMaoDeObra: initialValues.valorMaoDeObra ?? 0,
     valorPecas: initialValues.valorPecas ?? 0,
     valorTotal: initialValues.valorTotal ?? 0,
     formaPagamento: initialValues.formaPagamento || '',
@@ -343,11 +343,13 @@ const FormularioOrdemDeServico = ({
   });
 
   const [errors, setErrors] = useState({});
+  const [valorServicos, setvalorServicos] = useState(0);
 
   // Depuração: quando produtoOptions mudar, listar preços e fornecedor
   useEffect(() => {
     if (!DEBUG_CALC) return;
-    console.groupCollapsed('[OS] produtoOptions recebidos');
+    // Remova ou comente os console.groupCollapsed, console.table, console.groupEnd
+    // console.groupCollapsed('[OS] produtoOptions recebidos');
     try {
       const rows = (produtoOptions || []).map(opt => ({
         id: String(opt?.value ?? ''),
@@ -357,9 +359,9 @@ const FormularioOrdemDeServico = ({
           ? JSON.stringify(opt.fornecedor)
           : String(opt?.fornecedor ?? 'N/A'),
       }));
-      console.table(rows);
+      // console.table(rows);
     } finally {
-      console.groupEnd();
+      // console.groupEnd();
     }
   }, [produtoOptions]);
 
@@ -425,7 +427,7 @@ const FormularioOrdemDeServico = ({
   // === CÁLCULO DE valorPecas com logs (usa pecasUtilizadas > produtos) ===
   useEffect(() => {
     console.groupCollapsed('[OS] Cálculo valorPecas');
-
+    // Remova ou comente os console.groupCollapsed, console.groupEnd, console.log, console.warn
     // Mapa rápido id -> {preco, fornecedor, label}
     const produtoMap = {};
     (produtoOptions || []).forEach(opt => {
@@ -439,7 +441,7 @@ const FormularioOrdemDeServico = ({
     });
 
     if (DEBUG_CALC) {
-      console.log('produtoMap IDs disponíveis:', Object.keys(produtoMap));
+      // console.log('produtoMap IDs disponíveis:', Object.keys(produtoMap));
     }
 
     // Fonte da lista: prioriza pecasUtilizadas
@@ -454,7 +456,7 @@ const FormularioOrdemDeServico = ({
       const qtd = toNumber(item?.quantidade, 0);
 
       if (!id) {
-        console.warn(` Item #${idx + 1} possui produtoID vazio, valor do item:`, item);
+        // console.warn(` Item #${idx + 1} possui produtoID vazio, valor do item:`, item);
         return;
       }
 
@@ -473,16 +475,42 @@ const FormularioOrdemDeServico = ({
     console.groupEnd();
   }, [formData.pecasUtilizadas, formData.produtos, produtoOptions]);
 
-  // Cálculo valorTotal (mão de obra + peças)
+  // Cálculo automático de valorServicos com base nos serviços selecionados
+  useEffect(() => {
+    // Mapa rápido id -> preco (apenas serviços ativos)
+    const servicoMap = {};
+    (servicoOptions || []).forEach(opt => {
+      const id = String(opt?.value ?? '');
+      if (!id) return;
+      if (opt?.ativo === false) return;
+      servicoMap[id] = toNumber(opt?.preco ?? opt?.precoVenda ?? opt?.price, 0);
+    });
+
+    const lista = Array.isArray(formData.servicos) ? formData.servicos : [];
+    let soma = 0;
+
+    (lista || []).forEach((item) => {
+      const id = String(item?.servicoID ?? '');
+      const qtd = toNumber(item?.quantidade, 0);
+      if (!id) return;
+      const preco = servicoMap[id] || 0;
+      soma += preco * qtd;
+    });
+
+    const valorFormatado = parseFloat(soma.toFixed(2));
+    setvalorServicos(valorFormatado);
+  }, [formData.servicos, servicoOptions]);
+
+  // Cálculo valorTotal (mão de obra digitada + mão de obra calculada + peças)
   useEffect(() => {
     const soma = (Number(formData.valorMaoDeObra) || 0)
-      + (Number(formData.valorPecas) || 0) + (Number(formData.valorServico) || 0);
+      + (Number(formData.valorPecas) || 0)
+      + (Number(formData.valorServico) || 0);
 
     if (soma !== Number(formData.valorTotal || 0)) {
       setFormData(prev => ({ ...prev, valorTotal: soma }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.valorMaoDeObra, formData.valorPecas]);
+  }, [formData.valorMaoDeObra, valorServicos, formData.valorPecas]);
 
   // Atualiza campos do formulário
   const handleChange = (e) => {
@@ -523,14 +551,9 @@ const FormularioOrdemDeServico = ({
 
   // Produtos
   const handleProdutoChange = (index, selectedOption) => {
-    // garantir que salvamos o ID (string) no estado
+
     const id = selectedOption ? String(selectedOption.value) : '';
-    if (DEBUG_CALC) {
-      console.log(`[Select Produto] index=${index}`, {
-        selectedOption,
-        idSalvo: id
-      });
-    }
+    
     const newProdutos = [...formData.produtos];
     newProdutos[index].produtoID = id;
     setFormData(prev => ({ ...prev, produtos: newProdutos }));
@@ -639,36 +662,6 @@ const FormularioOrdemDeServico = ({
     console.log('finalData enviado:', finalData);
     if (onSubmit) onSubmit(finalData);
   };
-
-  // Cálculo automático de valorMaoDeObra com base nos serviços selecionados
-  useEffect(() => {
-    // Mapa rápido id -> preco (apenas serviços ativos)
-    const servicoMap = {};
-    (servicoOptions || []).forEach(opt => {
-      const id = String(opt?.value ?? '');
-      if (!id) return;
-      // Considere apenas serviços ativos
-      if (opt?.ativo === false) return;
-      servicoMap[id] = toNumber(opt?.preco ?? opt?.precoVenda ?? opt?.price, 0);
-    });
-
-    // Fonte da lista: formData.servicos
-    const lista = Array.isArray(formData.servicos) ? formData.servicos : [];
-    let soma = 0;
-
-    (lista || []).forEach((item, idx) => {
-      const id = String(item?.servicoID ?? '');
-      const qtd = toNumber(item?.quantidade, 0);
-      if (!id) return;
-      const preco = servicoMap[id] || 0;
-      soma += preco * qtd;
-    });
-
-    const valorFormatado = parseFloat(soma.toFixed(2));
-    if (valorFormatado !== Number(formData.valorMaoDeObra || 0)) {
-      setFormData(prev => ({ ...prev, valorMaoDeObra: valorFormatado }));
-    }
-  }, [formData.servicos, servicoOptions]);
 
   // Filtro e label customizado para produtos
   const filteredProdutoOptions = (produtoOptions || []).filter(opt => Number(opt.quantidade) >= 1).map(opt => ({
@@ -904,11 +897,23 @@ const FormularioOrdemDeServico = ({
         {/* Financeiro */}
         <CompactFormRow>
           <FormGroup>
-            <Label>Valor - Mão de Obra</Label>
+            <Label>Valor Mão de Obra</Label>
+            <Input
+              type="number"
+              name="valorMaoDeObra"
+              value={formData.valorMaoDeObra}
+              onChange={handleChange}
+              inputMode="decimal"
+              placeholder="R$ 0,00"
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Valor Serviços</Label>
             <Input
               type="text"
-              name="valorMaoDeObra"
-              value={formatCurrency(formData.valorMaoDeObra)}
+              name="valorServicos"
+              value={formatCurrency(valorServicos)}
               readOnly
               inputMode="decimal"
               placeholder="R$ 0,00"

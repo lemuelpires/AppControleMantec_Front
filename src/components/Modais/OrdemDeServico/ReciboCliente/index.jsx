@@ -47,7 +47,13 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
         // Adiciona produtoIDs
         if (Array.isArray(ordemDeServico.produtoIDs)) {
           ordemDeServico.produtoIDs.forEach(id => {
-            produtoQuantidadeMap[id] = (produtoQuantidadeMap[id] || 0) + 1;
+            // Adiciona apenas se não estiver em pecasUtilizadas
+            const jaUtilizada = Array.isArray(ordemDeServico.pecasUtilizadas)
+              ? ordemDeServico.pecasUtilizadas.some(p => String(p.produtoID) === String(id))
+              : false;
+            if (!jaUtilizada) {
+              produtoQuantidadeMap[id] = (produtoQuantidadeMap[id] || 0) + 1;
+            }
           });
         }
         // Adiciona pecasUtilizadas
@@ -130,20 +136,46 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
     }).format(value);
   };
 
+  // Calcular total de produtos sem duplicidade com pecasUtilizadas
+  const calcularTotalProdutos = () => {
+    // Exclui IDs que já estão em pecasUtilizadas
+    const pecasIDs = Array.isArray(ordemDeServico.pecasUtilizadas)
+      ? ordemDeServico.pecasUtilizadas.map(p => String(p.produtoID))
+      : [];
+    return produtos
+      .filter(produto => !pecasIDs.includes(String(produto.id || produto._id || produto.produtoID)))
+      .reduce((total, produto) => {
+        return total + ((parseFloat(produto.preco) || 0) * (produto.quantidade || 1));
+      }, 0);
+  };
+
+  // Calcular total das peças utilizadas
+  const calcularTotalPecasUtilizadas = () => {
+    if (!Array.isArray(ordemDeServico.pecasUtilizadas)) return 0;
+    return ordemDeServico.pecasUtilizadas.reduce((sum, p) => {
+      const prod = produtos.find(produto =>
+        String(produto.id || produto._id || produto.produtoID) === String(p.produtoID)
+      );
+      const preco = prod ? parseFloat(prod.preco) || 0 : 0;
+      return sum + (preco * (Number(p.quantidade) || 1));
+    }, 0);
+  };
+
+  // Calcular total dos serviços
   const calcularTotalServicos = () => {
     return servicos.reduce((total, servico) => {
       return total + ((parseFloat(servico.preco) || 0) * (servico.quantidade || 1));
     }, 0);
   };
 
-  const calcularTotalProdutos = () => {
-    return produtos.reduce((total, produto) => {
-      return total + ((parseFloat(produto.preco) || 0) * (produto.quantidade || 1));
-    }, 0);
-  };
-
+  // Calcular total geral (serviços + produtos sem duplicidade + peças utilizadas + mão de obra manual)
   const calcularTotalGeral = () => {
-    return calcularTotalServicos() + calcularTotalProdutos() + (ordemDeServico.valorMaoDeObra || 0);
+    return (
+      calcularTotalServicos() +
+      calcularTotalProdutos() +
+      calcularTotalPecasUtilizadas() +
+      (Number(ordemDeServico.valorMaoDeObra) || 0)
+    );
   };
 
   const printRecibo = () => {
@@ -260,11 +292,11 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           {produtos.map((produto, index) => (
             <tr key={`produto-${index}`}>
               <td className="center">{ordemDeServico.numeroOS || '----'}</td>
-              <td>Venda de produto</td>
+              <td>Peça instalada</td>
               <td>{produto.nome}</td>
               <td className="right">{formatCurrency(parseFloat(produto.preco) || 0)}</td>
               <td className="center">{produto.quantidade || 1}</td>
-              <td className="right">{formatCurrency((parseFloat(produto.preco) || 0) * (produto.quantidade || 1))}</td>
+              <td className="right">{formatCurrency((parseFloat(produto.preco) || 0) * (produto.quantidade) + ordemDeServico.valorMaoDeObra)}</td>
             </tr>
           ))}
 

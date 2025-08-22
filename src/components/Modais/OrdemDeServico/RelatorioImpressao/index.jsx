@@ -79,7 +79,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
                 quantidade: produto.quantidade
               };
             } catch (err) {
-              console.error(`Erro ao buscar produto ${produto.id}:`, err);
+              // console.error(`Erro ao buscar produto ${produto.id}:`, err); // Remova se não quiser log de erro
               return null;
             }
           })
@@ -114,7 +114,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
                 preco: response.data.preco || 0
               };
             } catch (err) {
-              console.error(`Erro ao buscar serviço ${servico.id}:`, err);
+              // console.error(`Erro ao buscar serviço ${servico.id}:`, err); // Remova se não quiser log de erro
               return null;
             }
           })
@@ -122,7 +122,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
         setServicos(servicosData.filter(Boolean));
 
       } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+        console.error("Erro ao carregar dados:", error); // Remova se não quiser log de erro
         setError('Erro ao carregar dados. Tente novamente.');
       } finally {
         setLoading(false);
@@ -203,7 +203,21 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
     );
   }
 
-  const valorTotal = (ordemDeServico.valorTotal || 0);
+  // Calcular valorServico (soma dos serviços)
+  const valorServico = servicos.reduce(
+    (sum, servico) => sum + ((servico.preco || 0) * (servico.quantidade || 1)),
+    0
+  );
+
+  // Calcular valorProdutosServicos (soma dos serviços e produtos listados na tabela)
+  const valorProdutosServicos =
+    servicos.reduce((sum, servico) => sum + ((servico.preco || 0) * (servico.quantidade || 1)), 0) +
+    produtos.reduce((sum, produto) => sum + ((produto.preco || 0) * (produto.quantidade || 1)), 0);
+
+  // Calcular valorTotal (todas linhas da tabela: serviços, produtos, mão de obra manual)
+  const valorTotal =
+    valorProdutosServicos +
+    (Number(ordemDeServico.valorMaoDeObra) || 0);
 
   return (
     <>
@@ -283,8 +297,14 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
             <InfoValue>{ordemDeServico.dataGarantia ? formatDate(ordemDeServico.dataGarantia) : 'Não informado'}</InfoValue>
           </InfoRow>
           <InfoRow>
-            <InfoLabel>Valor Mão de Obra</InfoLabel>
+            <InfoLabel>Valor Mão de Obra ||Produto||</InfoLabel>
             <InfoValue>{ordemDeServico.valorMaoDeObra ? formatCurrency(ordemDeServico.valorMaoDeObra) : 'R$ 0,00'}</InfoValue>
+          </InfoRow>
+          <InfoRow>
+            <InfoLabel>Valor Serviço</InfoLabel>
+            <InfoValue>
+              {formatCurrency(valorServico)}
+            </InfoValue>
           </InfoRow>
           <InfoRow>
             <InfoLabel>Valor Peças</InfoLabel>
@@ -292,7 +312,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
           </InfoRow>
           <InfoRow>
             <InfoLabel>Valor Total</InfoLabel>
-            <InfoValue>{ordemDeServico.valorTotal ? formatCurrency(ordemDeServico.valorTotal) : 'R$ 0,00'}</InfoValue>
+            <InfoValue>{formatCurrency(valorTotal)}</InfoValue>
           </InfoRow>
           <InfoRow>
             <InfoLabel>Forma de Pagamento</InfoLabel>
@@ -322,6 +342,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
               </tr>
             </thead>
             <tbody>
+              {/* Serviços */}
               {servicos.map((servico, index) => (
                 <tr key={`servico-${index}`}>
                   <td>{servico.nome || 'Serviço não especificado'} <span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Serviço||</span></td>
@@ -331,6 +352,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
                   <td className="currency">{formatCurrency((servico.preco || 0) * (servico.quantidade || 1))}</td>
                 </tr>
               ))}
+              {/* Produtos */}
               {produtos.map((produto, index) => (
                 <tr key={`produto-${index}`}>
                   <td>{produto.nome || 'Peça/Produto'}<span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Produto||</span></td>
@@ -340,6 +362,16 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
                   <td className="currency">{formatCurrency((produto.preco || 0) * (produto.quantidade || 1))}</td>
                 </tr>
               ))}
+              {/* Valor Mão de Obra digitado */}
+              {(ordemDeServico.valorMaoDeObra && ordemDeServico.valorMaoDeObra > 0) && (
+                <tr>
+                  <td><span style={{ color: 'gray', fontSize: '0.8rem' }}>|| Mão de Obra (manual) ||</span></td>
+                  <td>-</td>
+                  <td>1</td>
+                  <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra)}</td>
+                  <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra)}</td>
+                </tr>
+              )}
               <tr className="total-row">
                 <td colSpan="4"><strong>Total Geral</strong></td>
                 <td className="currency"><strong>{formatCurrency(valorTotal)}</strong></td>
