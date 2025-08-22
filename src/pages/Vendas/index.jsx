@@ -232,52 +232,37 @@ const Vendas = () => {
     return ordem.servicoID ? servicos[ordem.servicoID] : 'Nenhum serviço';
   };
 
+  // Novo cálculo de preço total, igual ao relatório de impressão
   const calcularPrecoTotal = (ordem) => {
-    let total = 0;
-
+    // Soma dos serviços
+    let valorServico = 0;
     if (Array.isArray(ordem.servicoIDs)) {
-      ordem.servicoIDs.forEach(id => {
-        if (servicosPreco[id]) {
-          total += servicosPreco[id];
-        }
-      });
+      valorServico = ordem.servicoIDs.reduce((sum, id) => sum + (Number(servicosPreco[id]) || 0), 0);
     }
+    // Soma dos produtos (evita duplicidade com pecasUtilizadas)
+    let valorProdutos = 0;
     if (Array.isArray(ordem.produtoIDs)) {
-      ordem.produtoIDs.forEach(id => {
-        if (produtosPreco[id]) {
-          total += produtosPreco[id];
-        }
-      });
+      // Exclui IDs que já estão em pecasUtilizadas
+      const pecasIDs = Array.isArray(ordem.pecasUtilizadas)
+        ? ordem.pecasUtilizadas.map(p => String(p.produtoID))
+        : [];
+      valorProdutos = ordem.produtoIDs
+        .filter(id => !pecasIDs.includes(String(id)))
+        .reduce((sum, id) => sum + (Number(produtosPreco[id]) || 0), 0);
     }
+    // Soma das peças utilizadas (considera quantidade correta)
+    let valorPecasUtilizadas = 0;
     if (Array.isArray(ordem.pecasUtilizadas)) {
-      ordem.pecasUtilizadas.forEach(p => {
-        if (p.produtoID && produtosPreco[p.produtoID]) {
-          total += produtosPreco[p.produtoID] * (p.quantidade || 1);
-        }
-      });
+      valorPecasUtilizadas = ordem.pecasUtilizadas.reduce(
+        (sum, p) => sum + ((Number(produtosPreco[p.produtoID]) || 0) * (Number(p.quantidade) || 1)),
+        0
+      );
     }
-    if (ordem.servicoID && servicosPreco[ordem.servicoID]) {
-      total += servicosPreco[ordem.servicoID];
-    }
-    if (ordem.produtoID && produtosPreco[ordem.produtoID]) {
-      total += produtosPreco[ordem.produtoID];
-    }
-    if (ordem.precoServicos && typeof ordem.precoServicos === 'number') {
-      total += ordem.precoServicos;
-    }
-    if (ordem.precoProdutos && typeof ordem.precoProdutos === 'number') {
-      total += ordem.precoProdutos;
-    }
-    if (total === 0 && ordem.valorTotal && typeof ordem.valorTotal === 'number') {
-      total = ordem.valorTotal;
-    }
-    if (total === 0 && ordem.precoTotal && typeof ordem.precoTotal === 'number') {
-      total = ordem.precoTotal;
-    }
-    if (total === 0 && ordem.preco && typeof ordem.preco === 'number') {
-      total = ordem.preco;
-    }
-    return total;
+    // Mão de obra manual
+    const valorMaoDeObra = Number(ordem.valorMaoDeObra) || 0;
+
+    // Preço total = serviços + produtos (sem duplicidade) + peças utilizadas + mão de obra manual
+    return valorServico + valorProdutos + valorPecasUtilizadas + valorMaoDeObra;
   };
 
   const aplicarFiltros = () => {
