@@ -52,7 +52,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     senhaAcesso: '',
     emGarantia: '',
     dataGarantia: '',
-    valorMaoDeObra: 0,
+    valorMaoDeObra: 0, // Inicializa como 0 para garantir tipo consistente
     valorPecas: 0,
     defeitoRelatado: '',
     valorTotal: 0,
@@ -152,7 +152,9 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         senhaAcesso: item.senhaAcesso || '',
         emGarantia: item.emGarantia || '',
         dataGarantia: formatDate(item.dataGarantia),
-        valorMaoDeObra: item.valorMaoDeObra || 0,
+        valorMaoDeObra: item.valorMaoDeObra !== undefined && item.valorMaoDeObra !== null
+          ? String(item.valorMaoDeObra)
+          : '0', // Garante que seja string para o input
         valorPecas: item.valorPecas || 0,
         defeitoRelatado: item.defeitoRelatado || '',
         valorTotal: item.valorTotal || 0,
@@ -190,7 +192,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
         <FormularioOrdemDeServico
           title="Editar Ordem de Serviço"
-          initialValues={formData}
+          initialValues={formData} // Todos os campos, inclusive valorMaoDeObra, são passados corretamente
           onSubmit={handleSubmit}
           onClose={onClose}
           clienteOptions={clienteOptions}
