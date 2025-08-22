@@ -173,7 +173,7 @@ export const ServiceTable = styled.table`
   @media print {
     box-shadow: none;
     border-radius: 0;
-    font-size: 1rem;
+    font-size: 0.8rem !important; // diminui fonte da tabela impressa
     border: 1px solid #333;
     margin-bottom: 1rem;
     width: 100% !important;
@@ -196,7 +196,7 @@ export const ServiceTable = styled.table`
         background: #fff;
         color: #000;
         border-bottom: 1px solid #333;
-        font-size: 1rem;
+        font-size: 0.8rem !important; // diminui fonte do cabeçalho
         padding: 0.4rem 0.3rem;
         word-break: break-word;
       }
@@ -241,7 +241,7 @@ export const ServiceTable = styled.table`
 
       @media print {
         color: #000;
-        font-size: 0.95rem;
+        font-size: 0.8rem !important; // diminui fonte das células
         border-bottom: 1px solid #eee;
         padding: 0.4rem 0.3rem;
         word-break: break-word;
@@ -475,5 +475,14 @@ export const Button = styled.button`
 
   @media print {
     display: none !important;
+  }
+`;
+
+// Força o tamanho da fonte na impressão para todos elementos da tabela
+export const PrintTableFontFix = styled.div`
+  @media print {
+    table, th, td {
+      font-size: 0.8rem !important;
+    }
   }
 `;
