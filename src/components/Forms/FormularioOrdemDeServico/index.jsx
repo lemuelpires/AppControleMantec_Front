@@ -727,8 +727,15 @@ const FormularioOrdemDeServico = ({
                   </div>
                   <ReactSelect
                     name="produtoID"
-                    options={filteredProdutoOptions}
-                    value={filteredProdutoOptions.find(option => option.value === produto.produtoID) || null}
+                    options={[
+                      { value: '', label: 'Selecione o produto' }, // opção padrão
+                      ...filteredProdutoOptions
+                    ]}
+                    value={
+                      produto.produtoID
+                        ? filteredProdutoOptions.find(option => option.value === produto.produtoID) || { value: '', label: 'Selecione o produto' }
+                        : { value: '', label: 'Selecione o produto' }
+                    }
                     onChange={(selectedOption) => handleProdutoChange(index, selectedOption)}
                     placeholder="Selecione um produto"
                     styles={customSelectStyles}
@@ -765,8 +772,15 @@ const FormularioOrdemDeServico = ({
                     #{index + 1}
                   </div>
                   <ReactSelect
-                    options={servicoOptions}
-                    value={servicoOptions.find(option => option.value === servico.servicoID) || null}
+                    options={[
+                      { value: '', label: 'Selecione o serviço' }, // opção padrão
+                      ...servicoOptions
+                    ]}
+                    value={
+                      servico.servicoID
+                        ? servicoOptions.find(option => option.value === servico.servicoID) || { value: '', label: 'Selecione o serviço' }
+                        : { value: '', label: 'Selecione o serviço' }
+                    }
                     onChange={(selectedOption) => handleServicoChange(index, selectedOption)}
                     placeholder="Selecione um serviço"
                     styles={customSelectStyles}
@@ -951,7 +965,19 @@ const FormularioOrdemDeServico = ({
           </FormGroup>
           <FormGroup>
             <Label>Forma de Pagamento</Label>
-            <Input name="formaPagamento" value={formData.formaPagamento} onChange={handleChange} placeholder="Ex: Dinheiro, Cartão..." />
+            <Input
+              as="select"
+              name="formaPagamento"
+              value={formData.formaPagamento}
+              onChange={handleChange}
+              style={{ fontSize: '0.9rem', padding: '0.3rem', background: '#fff', color: '#2c3e50', border: '2px solid #e1e7f0', borderRadius: '6px' }}
+            >
+              <option value="">Selecione</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Pix">Pix</option>
+              <option value="Débito">Débito</option>
+              <option value="Crédito">Crédito</option>
+            </Input>
           </FormGroup>
           <FormGroup>
             <Label style={{ display: 'flex', alignSelf: 'left' }}>
@@ -965,11 +991,26 @@ const FormularioOrdemDeServico = ({
         <CompactFormRow>
           <FormGroup>
             <Label>Tipo de Atendimento</Label>
-            <Input name="tipoAtendimento" value={formData.tipoAtendimento} onChange={handleChange} placeholder="Loja, Externo..." />
+            <Input
+              as="select"
+              name="tipoAtendimento"
+              value={formData.tipoAtendimento}
+              onChange={handleChange}
+              style={{ fontSize: '0.9rem', padding: '0.3rem', background: '#fff', color: '#2c3e50', border: '2px solid #e1e7f0', borderRadius: '6px' }}
+            >
+              <option value="">Selecione</option>
+              <option value="Loja">Loja</option>
+              <option value="Exterior">Exterior</option>
+            </Input>
           </FormGroup>
           <FormGroup>
             <Label>Prioridade</Label>
-            <Select name="prioridade" value={formData.prioridade} onChange={handleChange}>
+            <Select 
+              name="prioridade" 
+              value={formData.prioridade} 
+              style={{ fontSize: '0.9rem', padding: '0.3rem', background: '#fff', color: '#2c3e50', border: '2px solid #e1e7f0', borderRadius: '6px' }}
+              onChange={handleChange}
+            >
               <option value="">Selecione</option>
               <option value="Alta">Alta</option>
               <option value="Média">Média</option>
