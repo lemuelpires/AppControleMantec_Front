@@ -32,7 +32,7 @@ const formatDate = (dateStr) => {
 // Função para calcular prazo restante
 const prazoRestante = (dataConclusao, status) => {
     if (!dataConclusao) return 'Sem prazo';
-    if (status === 'Concluída') return '';
+    if (status === 'Concluido') return '';
     const hoje = new Date();
     const prazo = new Date(dataConclusao);
     const diff = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
@@ -177,6 +177,10 @@ const StatusOS = () => {
                                     <StatusInfoValue>{os.numeroOS || '--'}</StatusInfoValue>
                                 </StatusInfoRow>
                                 <StatusInfoRow>
+                                    <StatusInfoLabel>Data de Entrada:</StatusInfoLabel>
+                                    <StatusInfoValue>{formatDate(os.dataEntrada)}</StatusInfoValue>
+                                </StatusInfoRow>
+                                <StatusInfoRow>
                                     <StatusInfoLabel>Prazo de entrega:</StatusInfoLabel>
                                     <StatusInfoValue>
                                         {formatDate(os.dataConclusao)}
@@ -221,7 +225,7 @@ const StatusOS = () => {
                                 </StatusInfoRow>
                                 <StatusInfoRow>
                                     <StatusInfoLabel>Pago:</StatusInfoLabel>
-                                    <StatusInfoValue status={os.pago ? 'Concluída' : 'Não iniciado'}>
+                                    <StatusInfoValue status={os.pago ? 'Concluido' : 'Não iniciado'}>
                                         {os.pago ? 'Sim' : 'Não'}
                                     </StatusInfoValue>
                                 </StatusInfoRow>
