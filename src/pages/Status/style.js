@@ -20,6 +20,9 @@ export const StatusContainer = styled.div`
     align-items: center;
     padding: 2rem 0 0 0;
     font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    @media (max-width: 600px) {
+        padding: 2rem 1.2rem 0 1.2rem;
+    }
 `;
 
 export const StatusCard = styled.div`
@@ -41,8 +44,10 @@ export const StatusCard = styled.div`
         transform: translateY(-2px) scale(1.012);
     }
     @media (max-width: 600px) {
-        padding: 1.2rem 0.5rem;
-        max-width: 98vw;
+        padding: 1.5rem 1.2rem;
+        max-width: 100vw;
+        margin-left: 0;
+        margin-right: 0;
     }
 `;
 
@@ -136,7 +141,7 @@ export const InfoSectionCard = styled.div`
         transform: scale(1.012);
     }
     @media (max-width: 600px) {
-        padding: 0.8rem 0.4rem;
+        padding: 1.1rem 0.7rem;
     }
 `;
 
