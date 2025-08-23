@@ -3,205 +3,238 @@ import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
 import { FaShareAlt } from 'react-icons/fa';
 import {
-  StatusContainer,
-  StatusCard,
-  StatusHeader,
-  StatusTitle,
-  StatusShareButton,
-  StatusInfoRow,
-  StatusInfoGrid,
-  StatusInfoLabel,
-  StatusInfoValue,
-  StatusFooter,
-  StatusShareGroup,
-  StatusStatusBadge,
-  InfoSectionCard
+    StatusContainer,
+    StatusCard,
+    StatusHeader,
+    StatusTitle,
+    StatusShareGroup,
+    StatusShareButton,
+    OSSection,
+    StatusStatusBadge,
+    InfoSectionCard,
+    ClienteNome,
+    StatusInfoRow,
+    StatusInfoLabel,
+    StatusInfoValue,
+    PrazoRestante,
+    StatusFooter,
+    Label,
+    StatusLabelSection
 } from './style';
 
 // Função para formatar datas
 const formatDate = (dateStr) => {
-  if (!dateStr) return '--/--/----';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-BR');
+    if (!dateStr) return '--/--/----';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('pt-BR');
 };
 
 // Função para calcular prazo restante
-const prazoRestante = (dataConclusao) => {
-  if (!dataConclusao) return 'Sem prazo';
-  const hoje = new Date();
-  const prazo = new Date(dataConclusao);
-  const diff = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
-  if (diff < 0) return 'Prazo vencido';
-  if (diff === 0) return 'Entrega hoje';
-  return `${diff} dia(s)`;
-};
-
-const statusColors = {
-  'Concluída': '#28a745',
-  'Em andamento': '#007bff',
-  'Não iniciado': '#dc3545',
-  '': '#888'
+const prazoRestante = (dataConclusao, status) => {
+    if (!dataConclusao) return 'Sem prazo';
+    if (status === 'Concluída') return '';
+    const hoje = new Date();
+    const prazo = new Date(dataConclusao);
+    const diff = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
+    if (diff < 0) return 'Prazo vencido';
+    if (diff === 0) return 'Entrega hoje';
+    return `${diff} dia(s)`;
 };
 
 const StatusOS = () => {
-  const { id } = useParams();
-  const [ordens, setOrdens] = useState([]);
-  const [produtosMap, setProdutosMap] = useState({});
-  const [servicosMap, setServicosMap] = useState({});
-  const [loading, setLoading] = useState(true);
+    const { id } = useParams();
+    const [ordens, setOrdens] = useState([]);
+    const [produtosMap, setProdutosMap] = useState({});
+    const [servicosMap, setServicosMap] = useState({});
+    const [clienteNome, setClienteNome] = useState('');
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchOrdens = async () => {
-      setLoading(true);
-      try {
-        const response = await apiCliente.get('/OrdemDeServico');
-        setOrdens(response.data || []);
-
-        // Coleta IDs de produtos e serviços usados
-        const produtosIds = new Set();
-        const servicosIds = new Set();
-        (response.data || []).forEach(os => {
-          if (os.pecasUtilizadas && Array.isArray(os.pecasUtilizadas)) {
-            os.pecasUtilizadas.forEach(p => {
-              if (p.produtoID) produtosIds.add(p.produtoID);
-            });
-          }
-          if (os.servicoIDs && Array.isArray(os.servicoIDs)) {
-            os.servicoIDs.forEach(sid => {
-              if (sid) servicosIds.add(sid);
-            });
-          }
-        });
-
-        // Busca nomes dos produtos
-        const produtosMapTemp = {};
-        await Promise.all(Array.from(produtosIds).map(async pid => {
-          if (pid) {
+    useEffect(() => {
+        const fetchOrdens = async () => {
+            setLoading(true);
             try {
-              const prodRes = await apiCliente.get(`/Produto/${pid}`);
-              produtosMapTemp[pid] = prodRes.data.nome;
-            } catch {}
-          }
-        }));
-        setProdutosMap(produtosMapTemp);
+                const response = await apiCliente.get('/OrdemDeServico');
+                setOrdens(response.data || []);
 
-        // Busca nomes dos serviços
-        const servicosMapTemp = {};
-        await Promise.all(Array.from(servicosIds).map(async sid => {
-          if (sid) {
-            try {
-              const servRes = await apiCliente.get(`/Servico/${sid}`);
-              servicosMapTemp[sid] = servRes.data.nome;
-            } catch {}
-          }
-        }));
-        setServicosMap(servicosMapTemp);
+                // Busca nome do cliente da primeira ordem (ou da ordem filtrada)
+                let ordem = null;
+                if (id) {
+                    ordem = (response.data || []).find(os => String(os.id) === String(id));
+                } else if (response.data && response.data.length > 0) {
+                    ordem = response.data[0];
+                }
+                if (ordem && ordem.clienteID) {
+                    try {
+                        const clienteRes = await apiCliente.get(`/Cliente/${ordem.clienteID}`);
+                        setClienteNome(clienteRes.data.nome);
+                    } catch {
+                        setClienteNome('');
+                    }
+                } else {
+                    setClienteNome('');
+                }
 
-      } catch (err) {
-        setOrdens([]);
-      } finally {
-        setLoading(false);
-      }
+                // Coleta IDs de produtos e serviços usados
+                const produtosIds = new Set();
+                const servicosIds = new Set();
+                (response.data || []).forEach(os => {
+                    if (os.pecasUtilizadas && Array.isArray(os.pecasUtilizadas)) {
+                        os.pecasUtilizadas.forEach(p => {
+                            if (p.produtoID) produtosIds.add(p.produtoID);
+                        });
+                    }
+                    if (os.servicoIDs && Array.isArray(os.servicoIDs)) {
+                        os.servicoIDs.forEach(sid => {
+                            if (sid) servicosIds.add(sid);
+                        });
+                    }
+                });
+
+                // Busca nomes dos produtos
+                const produtosMapTemp = {};
+                await Promise.all(Array.from(produtosIds).map(async pid => {
+                    if (pid) {
+                        try {
+                            const prodRes = await apiCliente.get(`/Produto/${pid}`);
+                            produtosMapTemp[pid] = prodRes.data.nome;
+                        } catch { }
+                    }
+                }));
+                setProdutosMap(produtosMapTemp);
+
+                // Busca nomes dos serviços
+                const servicosMapTemp = {};
+                await Promise.all(Array.from(servicosIds).map(async sid => {
+                    if (sid) {
+                        try {
+                            const servRes = await apiCliente.get(`/Servico/${sid}`);
+                            servicosMapTemp[sid] = servRes.data.nome;
+                        } catch { }
+                    }
+                }));
+                setServicosMap(servicosMapTemp);
+
+            } catch (err) {
+                setOrdens([]);
+                setClienteNome('');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrdens();
+    }, [id]);
+
+    const ordensParaExibir = id
+        ? ordens.filter(os => String(os.id).toLowerCase() === String(id).toLowerCase())
+        : ordens;
+
+    // Função para compartilhar o link
+    const handleShare = () => {
+        const url = window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Acompanhe o status da sua ordem de serviço',
+                url
+            });
+        } else {
+            navigator.clipboard.writeText(url);
+            alert('Link copiado para área de transferência!');
+        }
     };
-    fetchOrdens();
-  }, []);
 
-  const ordensParaExibir = id
-    ? ordens.filter(os => String(os.id).toLowerCase() === String(id).toLowerCase())
-    : ordens;
-
-  // Função para compartilhar o link
-  const handleShare = () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      navigator.share({
-        title: 'Acompanhe o status da sua ordem de serviço',
-        url
-      });
-    } else {
-      navigator.clipboard.writeText(url);
-      alert('Link copiado para área de transferência!');
-    }
-  };
-
-  return (
-    <StatusContainer>
-      <StatusCard>
-        <StatusHeader>
-          <StatusTitle>
-            Status da Ordem de Serviço
-          </StatusTitle>
-          <StatusShareGroup>
-            <StatusShareButton onClick={handleShare} title="Compartilhar link">
-              <FaShareAlt size={22} color="#fff" />
-            </StatusShareButton>
-          </StatusShareGroup>
-        </StatusHeader>
-        {loading ? (
-          <StatusInfoValue style={{ textAlign: 'center', margin: '2rem 0' }}>
-            Carregando...
-          </StatusInfoValue>
-        ) : ordensParaExibir.length === 0 ? (
-          <StatusInfoValue style={{ textAlign: 'center', margin: '2rem 0' }}>
-            Nenhuma ordem encontrada.
-          </StatusInfoValue>
-        ) : (
-          ordensParaExibir.map(os => (
-            <div key={os.id} style={{ width: '100%', position: 'relative', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-              <StatusStatusBadge status={os.status}>
-                Status: {os.status || 'Não informado'}
-              </StatusStatusBadge>
-              <InfoSectionCard>
-                <StatusInfoRow>
-                  <StatusInfoLabel>OS Nº:</StatusInfoLabel>
-                  <StatusInfoValue>{os.numeroOS || '--'}</StatusInfoValue>
-                </StatusInfoRow>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Prazo de entrega:</StatusInfoLabel>
-                  <StatusInfoValue>
-                    {formatDate(os.dataConclusao)} <span style={{ color: '#dc3545', fontWeight: 700 }}>({prazoRestante(os.dataConclusao)})</span>
-                  </StatusInfoValue>
-                </StatusInfoRow>
-              </InfoSectionCard>
-              <InfoSectionCard>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Equipamento:</StatusInfoLabel>
-                  <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
-                </StatusInfoRow>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
-                  <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
-                </StatusInfoRow>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
-                  <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
-                </StatusInfoRow>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Observações:</StatusInfoLabel>
-                  <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
-                </StatusInfoRow>
-              </InfoSectionCard>
-              <InfoSectionCard>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Valor Total:</StatusInfoLabel>
-                  <StatusInfoValue>{os.valorTotal ? `R$ ${os.valorTotal}` : '---'}</StatusInfoValue>
-                </StatusInfoRow>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Pago:</StatusInfoLabel>
-                  <StatusInfoValue status={os.pago ? 'Concluída' : 'Não iniciado'}>
-                    {os.pago ? 'Sim' : 'Não'}
-                  </StatusInfoValue>
-                </StatusInfoRow>
-              </InfoSectionCard>
-            </div>
-          ))
-        )}
-      </StatusCard>
-      <StatusFooter>
-        © {new Date().getFullYear()} Mantec Informática - Status de Ordem de Serviço
-      </StatusFooter>
-    </StatusContainer>
-  );
+    return (
+        <StatusContainer>
+            <StatusCard>
+                <StatusHeader>
+                    <StatusTitle>
+                        Status da Ordem de Serviço
+                    </StatusTitle>
+                    <StatusShareGroup>
+                        <StatusShareButton onClick={handleShare} title="Compartilhar link">
+                            <FaShareAlt size={22} color="#fff" />
+                        </StatusShareButton>
+                    </StatusShareGroup>
+                </StatusHeader>
+                {loading ? (
+                    <StatusInfoValue className="center">
+                        Carregando...
+                    </StatusInfoValue>
+                ) : ordensParaExibir.length === 0 ? (
+                    <StatusInfoValue className="center">
+                        Nenhuma ordem encontrada.
+                    </StatusInfoValue>
+                ) : (
+                    ordensParaExibir.map(os => (
+                        <OSSection key={os.id}>
+                            <InfoSectionCard>
+                                {clienteNome && (
+                                    <ClienteNome>
+                                        Nome: {clienteNome}
+                                    </ClienteNome>
+                                )}
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Nº da Ordem de Serviço:</StatusInfoLabel>
+                                    <StatusInfoValue>{os.numeroOS || '--'}</StatusInfoValue>
+                                </StatusInfoRow>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Prazo de entrega:</StatusInfoLabel>
+                                    <StatusInfoValue>
+                                        {formatDate(os.dataConclusao)}
+                                        {prazoRestante(os.dataConclusao, os.status) && (
+                                            <PrazoRestante>
+                                                ({prazoRestante(os.dataConclusao, os.status)})
+                                            </PrazoRestante>
+                                        )}
+                                    </StatusInfoValue>
+                                </StatusInfoRow>
+                            </InfoSectionCard>
+                            <InfoSectionCard>
+                                <StatusLabelSection>
+                                    <Label>O reparo do seu produto está:</Label>
+                                    <StatusStatusBadge status={os.status}>
+                                        {os.status || 'Não informado'}
+                                    </StatusStatusBadge>
+                                </StatusLabelSection>
+                            </InfoSectionCard>
+                            <InfoSectionCard>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Equipamento:</StatusInfoLabel>
+                                    <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
+                                </StatusInfoRow>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
+                                    <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
+                                </StatusInfoRow>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
+                                    <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
+                                </StatusInfoRow>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Observações:</StatusInfoLabel>
+                                    <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
+                                </StatusInfoRow>
+                            </InfoSectionCard>
+                            <InfoSectionCard>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Valor Total:</StatusInfoLabel>
+                                    <StatusInfoValue>{os.valorTotal ? `R$ ${os.valorTotal}` : '---'}</StatusInfoValue>
+                                </StatusInfoRow>
+                                <StatusInfoRow>
+                                    <StatusInfoLabel>Pago:</StatusInfoLabel>
+                                    <StatusInfoValue status={os.pago ? 'Concluída' : 'Não iniciado'}>
+                                        {os.pago ? 'Sim' : 'Não'}
+                                    </StatusInfoValue>
+                                </StatusInfoRow>
+                            </InfoSectionCard>
+                        </OSSection>
+                    ))
+                )}
+            </StatusCard>
+            <StatusFooter>
+                © {new Date().getFullYear()} Mantec Informática - Status de Ordem de Serviço
+            </StatusFooter>
+        </StatusContainer>
+    );
 };
 
 export default StatusOS;

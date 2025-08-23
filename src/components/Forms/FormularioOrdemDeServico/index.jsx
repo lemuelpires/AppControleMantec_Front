@@ -174,7 +174,7 @@ const CompactFormRow = styled(FormRow)`
 const statusColors = {
   'Não iniciado': '#6c757d',
   'Em andamento': '#007bff',
-  'Concluída': '#28a745',
+  'Concluido': '#28a745',
   'Cancelado': '#dc3545'
 };
 
@@ -649,8 +649,8 @@ const FormularioOrdemDeServico = ({
       pecasUtilizadas: (formData.produtos || []).map(p => ({ produtoID: p.produtoID, quantidade: Number(p.quantidade) || 0 })),
     };
 
-    // Se status for "Concluída", atualiza estoque dos produtos
-    if (finalData.status === 'Concluída') {
+    // Se status for "Concluido", atualiza estoque dos produtos
+    if (finalData.status === 'Concluido') {
       for (const produto of formData.produtos) {
         if (produto.produtoID && produto.quantidade) {
           try {
@@ -901,7 +901,7 @@ const FormularioOrdemDeServico = ({
               options={[
                 { value: 'Não iniciado', label: 'Não iniciado' },
                 { value: 'Em andamento', label: 'Em andamento' },
-                { value: 'Concluída', label: 'Concluída' },
+                { value: 'Concluido', label: 'Concluido' },
                 { value: 'Cancelado', label: 'Cancelado' },
               ]}
               value={formData.status ? { value: formData.status, label: formData.status } : null}
