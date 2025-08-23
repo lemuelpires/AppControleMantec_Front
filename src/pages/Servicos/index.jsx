@@ -13,7 +13,9 @@ import {
   ActionButton,
   PaginationContainer,
   PaginationButton,
-  PaginationInfo
+  PaginationInfo,
+  HideMobile,
+  HideMobileTh
 } from './style';
 import ModalDetalhesServico from '../../components/Modais/Servico/ModalDetalhes';
 import ModalEdicaoServico from '../../components/Modais/Servico/ModalEdicao';
@@ -139,7 +141,7 @@ const Servico = () => {
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Descrição</th>
+              <HideMobileTh>Descrição</HideMobileTh>
               <th>Preço</th>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
@@ -148,7 +150,7 @@ const Servico = () => {
             {paginatedServicos.map(servico => (
               <tr key={servico.id}>
                 <td>{servico.nome}</td>
-                <td>{servico.descricao}</td>
+                <HideMobile>{servico.descricao}</HideMobile>
                 <td>R${servico.preco},00</td>
                 <td>
                   <IconWrapper>

@@ -13,7 +13,9 @@ import {
   ActionButton,
   PaginationContainer,
   PaginationButton,
-  PaginationInfo
+  PaginationInfo,
+  HideMobile,
+  HideMobileTh
 } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faEye, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -142,7 +144,7 @@ const Funcionarios = () => {
               <th>Nome</th>
               <th>Cargo</th>
               <th>Telefone</th>
-              <th>E-mail</th>
+              <HideMobileTh>E-mail</HideMobileTh>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
@@ -152,7 +154,7 @@ const Funcionarios = () => {
                 <td>{funcionario.nome}</td>
                 <td>{funcionario.cargo}</td>
                 <td>{funcionario.telefone}</td>
-                <td>{funcionario.email}</td>
+                <HideMobile>{funcionario.email}</HideMobile>
                 <td>
                   <IconWrapper>
                     <ActionButton 

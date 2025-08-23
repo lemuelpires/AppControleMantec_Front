@@ -16,7 +16,9 @@ import {
   ActionButton,
   PaginationContainer,
   PaginationButton,
-  PaginationInfo
+  PaginationInfo,
+  HideMobile,
+  HideMobileTh
 } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faPlusCircle, faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
@@ -152,26 +154,26 @@ const Produto = () => {
         <ProdutosTable>
           <thead>
             <tr>
-              <th>Imagem</th>
+              <HideMobileTh>Imagem</HideMobileTh>
               <th>Nome</th>
-              <th>Descrição</th>
+              <HideMobileTh>Descrição</HideMobileTh>
               <th>Qtde</th>
               <th>Preço</th>
-              <th>Fornecedor</th>
-              <th>Data de Entrada</th>
+              <HideMobileTh>Fornecedor</HideMobileTh>
+              <HideMobileTh>Data de Entrada</HideMobileTh>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
             {paginatedProdutos.map(produto => (
               <tr key={produto.id}>
-                <td><img src={produto.imagemURL} alt={produto.nome} width="50" /></td>
+                <HideMobile><img src={produto.imagemURL} alt={produto.nome} width="50" /></HideMobile>
                 <td>{produto.nome}</td>
-                <td>{produto.descricao}</td>
+                <HideMobile>{produto.descricao}</HideMobile>
                 <td>{produto.quantidade}</td>
                 <td>{`R$ ${produto.preco.toFixed(2)}`}</td>
-                <td>{produto.fornecedor}</td>
-                <td>{new Date(produto.dataEntrada).toLocaleDateString()}</td>
+                <HideMobile>{produto.fornecedor}</HideMobile>
+                <HideMobile>{new Date(produto.dataEntrada).toLocaleDateString()}</HideMobile>
                 <td>
                   <IconWrapper>
                     <ActionButton 

@@ -442,3 +442,15 @@ export const BotaoEspacamento = styled.div`
     width: 100%;
   }
 `;
+
+export const HideMobile = styled.td`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;
+
+export const HideMobileTh = styled.th`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;

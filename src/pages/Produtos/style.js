@@ -424,3 +424,15 @@ export const ProdutoButton = styled.button`
 export const ProdutoContainer = ProdutosContainer;
 export const ProdutoTitle = ProdutosTitle;
 export const ProdutoTable = ProdutosTable;
+
+export const HideMobile = styled.td`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;
+
+export const HideMobileTh = styled.th`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;

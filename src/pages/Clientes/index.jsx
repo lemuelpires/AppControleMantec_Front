@@ -13,7 +13,9 @@ import {
   ActionButton,
   PaginationContainer,
   PaginationButton,
-  PaginationInfo
+  PaginationInfo,
+  HideMobile,
+  HideMobileTh
 } from './style';
 
 import ModalDetalhes from '../../components/Modais/Cliente/ModalDetalhes';
@@ -165,8 +167,8 @@ const filteredClientes = clientes.filter(
             <tr>
               <th>Nome</th>
               <th>Telefone</th>
-              <th>Email</th>
-              <th>Data de Cadastro</th>
+              <HideMobileTh>Email</HideMobileTh>
+              <HideMobileTh>Data de Cadastro</HideMobileTh>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
@@ -175,8 +177,8 @@ const filteredClientes = clientes.filter(
               <tr key={cliente.id}>
                 <td>{cliente.nome}</td>
                 <td>{cliente.telefone}</td>
-                <td>{cliente.email}</td>
-                <td>{new Date(cliente.dataCadastro).toLocaleDateString()}</td>
+                <HideMobile>{cliente.email}</HideMobile>
+                <HideMobile>{new Date(cliente.dataCadastro).toLocaleDateString()}</HideMobile>
                 <td>
                   <IconWrapper>
                     <ActionButton className="view" onClick={() => openDetalhesModal(cliente)}>

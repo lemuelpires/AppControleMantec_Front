@@ -418,3 +418,14 @@ export const FuncionariosButton = styled.button`
     padding: 12px;
   }
 `;
+export const HideMobile = styled.td`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;
+
+export const HideMobileTh = styled.th`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;

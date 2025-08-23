@@ -59,7 +59,7 @@ const Vendas = () => {
 
   useEffect(() => {
     // Sempre calcula stats e exibe apenas ordens concluídas
-    const ordensConcluidas = ordensFiltered.filter(o => o.status === 'Concluída');
+    const ordensConcluidas = ordensFiltered.filter(o => o.status === 'Concluido');
     if (
       ordensConcluidas.length > 0 &&
       (Object.keys(produtosPreco).length > 0 || Object.keys(servicosPreco).length > 0)
@@ -328,7 +328,7 @@ const Vendas = () => {
   const exportarDados = () => {
     // Só exporta ordens concluídas
     const dadosParaExportar = ordensFiltered
-      .filter(ordem => ordem.status === 'Concluída')
+      .filter(ordem => ordem.status === 'Concluido')
       .map(ordem => ({
         'Cliente': getClienteNome(ordem.clienteID),
         'Produtos': getProdutoNome(ordem),
@@ -485,7 +485,7 @@ const Vendas = () => {
   }
 
   // Só exibe stats e tabela de ordens concluídas
-  const ordensConcluidas = ordensFiltered.filter(o => o.status === 'Concluída');
+  const ordensConcluidas = ordensFiltered.filter(o => o.status === 'Concluido');
 
   return (
     <Container>

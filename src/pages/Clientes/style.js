@@ -382,3 +382,15 @@ export const PaginationInfo = styled.span`
   backdrop-filter: blur(10px);
   border: 1px solid rgba(108, 117, 125, 0.1);
 `;
+
+export const HideMobile = styled.td`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;
+
+export const HideMobileTh = styled.th`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;

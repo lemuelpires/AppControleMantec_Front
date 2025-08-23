@@ -432,3 +432,15 @@ export const ServicoButton = styled.button`
 export const ServicoContainer = ServicosContainer;
 export const ServicoTitle = ServicosTitle;
 export const ServicoTable = ServicosTable;
+
+export const HideMobile = styled.td`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;
+
+export const HideMobileTh = styled.th`
+    @media (max-width: 700px) {
+        display: none !important;
+    }
+`;

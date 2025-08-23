@@ -14,7 +14,9 @@ import {
   ActionButton, 
   PaginationContainer, 
   PaginationButton,
-  PaginationInfo
+  PaginationInfo,
+  HideMobile,
+  HideMobileTh
 } from './style';
 import ModalDetalhesEstoque from '../../components/Modais/Estoque/ModalDetalhes';
 import ModalEdicaoEstoque from '../../components/Modais/Estoque/ModalEdicao';
@@ -199,7 +201,7 @@ const Estoque = () => {
             <tr>
               <th>Nome do Produto</th>
               <th>Quantidade</th>
-              <th>Data de Atualização</th>
+              <HideMobileTh>Data de Atualização</HideMobileTh>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
@@ -208,7 +210,7 @@ const Estoque = () => {
               <tr key={item.produtoID}>
                 <td>{item.produtoNome}</td>
                 <td>{item.quantidade}</td>
-                <td>{new Date(item.dataAtualizacao).toLocaleDateString()}</td>
+                <HideMobile>{new Date(item.dataAtualizacao).toLocaleDateString()}</HideMobile>
                 <td>
                   <IconWrapper>
                     <ActionButton className="view" onClick={() => openDetalhesModal(item)}>
