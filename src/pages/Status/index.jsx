@@ -14,7 +14,8 @@ import {
   StatusInfoValue,
   StatusFooter,
   StatusShareGroup,
-  StatusStatusBadge
+  StatusStatusBadge,
+  InfoSectionCard
 } from './style';
 
 // Função para formatar datas
@@ -146,57 +147,58 @@ const StatusOS = () => {
           </StatusInfoValue>
         ) : (
           ordensParaExibir.map(os => (
-            <div key={os.id} style={{ width: '100%', position: 'relative' }}>
-              <StatusStatusBadge status={os.status}> Status: 
-                {os.status || 'Não informado'}
+            <div key={os.id} style={{ width: '100%', position: 'relative', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <StatusStatusBadge status={os.status}>
+                Status: {os.status || 'Não informado'}
               </StatusStatusBadge>
-              <StatusInfoRow>
-                <StatusInfoLabel>OS Nº:</StatusInfoLabel>
-                <StatusInfoValue>{os.numeroOS || '--'}</StatusInfoValue>
-                <StatusInfoLabel>Prazo de entrega:</StatusInfoLabel>
-                <StatusInfoValue>
-                  {formatDate(os.dataConclusao)} <span style={{ color: '#dc3545', fontWeight: 700 }}>({prazoRestante(os.dataConclusao)})</span>
-                </StatusInfoValue>
-              </StatusInfoRow>
-              <StatusInfoGrid>
-                <div>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Equipamento:</StatusInfoLabel>
-                    <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
-                  </StatusInfoRow>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
-                    <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
-                  </StatusInfoRow>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
-                    <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
-                  </StatusInfoRow>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Observações:</StatusInfoLabel>
-                    <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
-                  </StatusInfoRow>
-                </div>
-                <div>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Valor Total:</StatusInfoLabel>
-                    <StatusInfoValue>{os.valorTotal ? `R$ ${os.valorTotal}` : '---'}</StatusInfoValue>
-                  </StatusInfoRow>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Pago:</StatusInfoLabel>
-                    <StatusInfoValue status={os.pago ? 'Concluída' : 'Não iniciado'}>
-                      {os.pago ? 'Sim' : 'Não'}
-                    </StatusInfoValue>
-                  </StatusInfoRow>
-                  <StatusInfoRow>
-                    <StatusInfoLabel>Garantia:</StatusInfoLabel>
-                    <StatusInfoValue status={os.emGarantia ? 'Concluída' : 'Não iniciado'}>
-                      {os.emGarantia ? 'Sim' : 'Não'} {os.dataGarantia ? `(até ${formatDate(os.dataGarantia)})` : ''}
-                    </StatusInfoValue>
-                  </StatusInfoRow>
-                </div>
-              </StatusInfoGrid>
-              {/* Removido: Peças utilizadas e Serviços */}
+              <InfoSectionCard>
+                <StatusInfoRow>
+                  <StatusInfoLabel>OS Nº:</StatusInfoLabel>
+                  <StatusInfoValue>{os.numeroOS || '--'}</StatusInfoValue>
+                </StatusInfoRow>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Prazo de entrega:</StatusInfoLabel>
+                  <StatusInfoValue>
+                    {formatDate(os.dataConclusao)} <span style={{ color: '#dc3545', fontWeight: 700 }}>({prazoRestante(os.dataConclusao)})</span>
+                  </StatusInfoValue>
+                </StatusInfoRow>
+              </InfoSectionCard>
+              <InfoSectionCard>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Equipamento:</StatusInfoLabel>
+                  <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
+                </StatusInfoRow>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
+                  <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
+                </StatusInfoRow>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
+                  <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
+                </StatusInfoRow>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Observações:</StatusInfoLabel>
+                  <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
+                </StatusInfoRow>
+              </InfoSectionCard>
+              <InfoSectionCard>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Valor Total:</StatusInfoLabel>
+                  <StatusInfoValue>{os.valorTotal ? `R$ ${os.valorTotal}` : '---'}</StatusInfoValue>
+                </StatusInfoRow>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Pago:</StatusInfoLabel>
+                  <StatusInfoValue status={os.pago ? 'Concluída' : 'Não iniciado'}>
+                    {os.pago ? 'Sim' : 'Não'}
+                  </StatusInfoValue>
+                </StatusInfoRow>
+                <StatusInfoRow>
+                  <StatusInfoLabel>Garantia:</StatusInfoLabel>
+                  <StatusInfoValue status={os.emGarantia ? 'Concluída' : 'Não iniciado'}>
+                    {os.emGarantia ? 'Sim' : 'Não'} {os.dataGarantia ? `(até ${formatDate(os.dataGarantia)})` : ''}
+                  </StatusInfoValue>
+                </StatusInfoRow>
+              </InfoSectionCard>
             </div>
           ))
         )}
