@@ -23,6 +23,7 @@ import { AuthProvider } from './context/authContext';
 import ProtectedRoute from './routes/protectedRoute';
 import ModalCadastroUsuario from './components/Modais/CadastroUsuario';
 import ResetPasswordModal from './components/Modais/RedefinicaoSenha';
+import StatusOS from './pages/Status';
 
 Modal.setAppElement('#root');
 
@@ -81,7 +82,9 @@ function App() {
           <Route path="/computador" element={<Computador />} />
           <Route path="/tablet" element={<Tablet />} />
           <Route path="/notebook" element={<Notebook />} />
-          <Route path="/esqueci-senha" element={<ResetPasswordModal/>} />
+          <Route path="/esqueci-senha" element={<ResetPasswordModal />} />
+          <Route path="/status-os" element={<StatusOS />} />
+          <Route path="/ordem-os/:id" element={<StatusOS />} />
         </Routes>
         <Footer />
         <ModalLogin isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
