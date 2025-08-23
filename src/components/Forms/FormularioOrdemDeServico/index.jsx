@@ -599,8 +599,13 @@ const FormularioOrdemDeServico = ({
     const newErrors = {};
     if (!formData.clienteID) newErrors.clienteID = 'Selecione o cliente.';
     if (!formData.funcionarioID) newErrors.funcionarioID = 'Selecione o funcionário.';
-    if (!formData.produtos || !formData.produtos.some(p => p.produtoID)) newErrors.produtos = 'Adicione ao menos um produto.';
-    if (!formData.servicos || !formData.servicos.some(s => s.servicoID)) newErrors.servicos = 'Adicione ao menos um serviço.';
+    // Nova lógica: exige ao menos um produto OU um serviço selecionado
+    const hasProduto = Array.isArray(formData.produtos) && formData.produtos.some(p => p.produtoID);
+    const hasServico = Array.isArray(formData.servicos) && formData.servicos.some(s => s.servicoID);
+    if (!hasProduto && !hasServico) {
+      newErrors.produtos = 'Selecione ao menos um produto ou serviço.';
+      newErrors.servicos = 'Selecione ao menos um produto ou serviço.';
+    }
     if (!formData.dataEntrada) newErrors.dataEntrada = 'Informe a data de entrada.';
     if (!formData.status) newErrors.status = 'Selecione o status.';
     setErrors(newErrors);

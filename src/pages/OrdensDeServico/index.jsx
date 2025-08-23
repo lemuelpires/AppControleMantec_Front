@@ -17,7 +17,7 @@ import {
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash, faStar } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
@@ -52,23 +52,23 @@ const OrdemDeServico = () => {
 
       const clientesIds = new Set(ordensAtivas.map(o => o.clienteID));
       const funcionariosIds = new Set(ordensAtivas.map(o => o.funcionarioID));
-      
+
       // Coleta IDs de produtos e serviços, considerando tanto formato antigo quanto arrays
       const produtosIds = new Set();
       const servicosIds = new Set();
-      
+
       ordensAtivas.forEach(ordem => {
         // Formato antigo (compatibilidade)
         if (ordem.produtoID) produtosIds.add(ordem.produtoID);
         if (ordem.servicoID) servicosIds.add(ordem.servicoID);
-        
+
         // Formato novo (arrays)
         if (ordem.produtos && Array.isArray(ordem.produtos)) {
           ordem.produtos.forEach(produto => {
             if (produto.produtoID) produtosIds.add(produto.produtoID);
           });
         }
-        
+
         if (ordem.servicos && Array.isArray(ordem.servicos)) {
           ordem.servicos.forEach(servico => {
             if (servico.servicoID) servicosIds.add(servico.servicoID);
@@ -137,7 +137,7 @@ const OrdemDeServico = () => {
       console.log('handleSave - Dados recebidos:', formData);
       console.log('handleSave - Produtos:', formData.produtos);
       console.log('handleSave - Serviços:', formData.servicos);
-      
+
       // Preparar dados mantendo compatibilidade com backend atual
       const dataToSend = {
         ...formData,
@@ -150,9 +150,9 @@ const OrdemDeServico = () => {
         produtos: formData.produtos || [],
         servicos: formData.servicos || []
       };
-      
+
       console.log('Dados preparados para envio:', dataToSend);
-      
+
       if (formData.id) {
         console.log('Editando ordem existente...');
         await apiCliente.put(`/OrdemDeServico/${formData.id}`, dataToSend);
@@ -180,7 +180,7 @@ const OrdemDeServico = () => {
   return (
     <OrdemDeServicoContainer>
       <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
-      
+
       <HeaderControls>
         <SearchContainer>
           <SearchInput
@@ -189,8 +189,8 @@ const OrdemDeServico = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-          <PerPageSelect 
-            value={itemsPerPage} 
+          <PerPageSelect
+            value={itemsPerPage}
             onChange={e => setItemsPerPage(Number(e.target.value))}
           >
             <option value={25}>25 por página</option>
@@ -198,7 +198,7 @@ const OrdemDeServico = () => {
             <option value={100}>100 por página</option>
           </PerPageSelect>
         </SearchContainer>
-        
+
         <AddButton onClick={openNovoModal}>
           <FontAwesomeIcon icon={faPlusCircle} />
           Nova Ordem
@@ -230,7 +230,7 @@ const OrdemDeServico = () => {
                 // Compatibilidade com formato antigo
                 return ordem.produtoID ? produtos[ordem.produtoID] : '-';
               };
-              
+
               const formatServicos = (ordem) => {
                 if (ordem.servicos && Array.isArray(ordem.servicos) && ordem.servicos.length > 0) {
                   return ordem.servicos
@@ -241,7 +241,7 @@ const OrdemDeServico = () => {
                 // Compatibilidade com formato antigo
                 return ordem.servicoID ? servicos[ordem.servicoID] : '-';
               };
-              
+
               return (
                 <tr key={ordem.id}>
                   <td>{ordem.numeroOS}</td>
@@ -251,26 +251,34 @@ const OrdemDeServico = () => {
                   <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
                   <td>
                     <IconWrapper>
-                      <ActionButton 
+                      <ActionButton
                         className="view"
                         onClick={() => openDetalhesModal(ordem)}
                         title="Visualizar detalhes"
                       >
                         <FontAwesomeIcon icon={faEye} />
                       </ActionButton>
-                      <ActionButton 
+                      <ActionButton
                         className="edit"
                         onClick={() => openEdicaoModal(ordem)}
                         title="Editar ordem"
                       >
                         <FontAwesomeIcon icon={faEdit} />
                       </ActionButton>
-                      <ActionButton 
+                      <ActionButton
                         className="delete"
                         onClick={() => handleExcluir(ordem.id)}
                         title="Excluir ordem"
                       >
                         <FontAwesomeIcon icon={faTrash} />
+                      </ActionButton>
+                      <ActionButton
+                        className="status"
+                        onClick={() => window.open(`/ordem-os/${ordem.id}`, '_blank')}
+                        title="Ver status da ordem"
+                        style={{ color: '#ff9800' }}
+                      >
+                        <FontAwesomeIcon icon={faStar} />
                       </ActionButton>
                     </IconWrapper>
                   </td>
@@ -288,11 +296,11 @@ const OrdemDeServico = () => {
         >
           Anterior
         </PaginationButton>
-        
+
         <PaginationInfo>
           Página {currentPage} de {totalPages} ({filteredOrdens.length} ordens)
         </PaginationInfo>
-        
+
         <PaginationButton
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
