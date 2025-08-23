@@ -13,7 +13,9 @@ import {
   ActionButton,
   PaginationContainer,
   PaginationButton,
-  PaginationInfo
+  PaginationInfo,
+  HideMobile,
+  HideMobileTh
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -211,9 +213,9 @@ const OrdemDeServico = () => {
             <tr>
               <th>Número OS</th>
               <th>Cliente</th>
-              <th>Funcionário</th>
-              <th>Entrada</th>
-              <th>Conclusão</th>
+              <HideMobileTh>Funcionário</HideMobileTh>
+              <HideMobileTh>Entrada</HideMobileTh>
+              <HideMobileTh>Conclusão</HideMobileTh>
               <th style={{ textAlign: 'center' }}>Ações</th>
             </tr>
           </thead>
@@ -246,9 +248,9 @@ const OrdemDeServico = () => {
                 <tr key={ordem.id}>
                   <td>{ordem.numeroOS}</td>
                   <td>{clientes[ordem.clienteID]}</td>
-                  <td>{funcionarios[ordem.funcionarioID]}</td>
-                  <td>{new Date(ordem.dataEntrada).toLocaleDateString()}</td>
-                  <td>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</td>
+                  <HideMobile>{funcionarios[ordem.funcionarioID]}</HideMobile>
+                  <HideMobile>{new Date(ordem.dataEntrada).toLocaleDateString()}</HideMobile>
+                  <HideMobile>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</HideMobile>
                   <td>
                     <IconWrapper>
                       <ActionButton
