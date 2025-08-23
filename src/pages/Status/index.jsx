@@ -192,12 +192,6 @@ const StatusOS = () => {
                     {os.pago ? 'Sim' : 'Não'}
                   </StatusInfoValue>
                 </StatusInfoRow>
-                <StatusInfoRow>
-                  <StatusInfoLabel>Garantia:</StatusInfoLabel>
-                  <StatusInfoValue status={os.emGarantia ? 'Concluída' : 'Não iniciado'}>
-                    {os.emGarantia ? 'Sim' : 'Não'} {os.dataGarantia ? `(até ${formatDate(os.dataGarantia)})` : ''}
-                  </StatusInfoValue>
-                </StatusInfoRow>
               </InfoSectionCard>
             </div>
           ))
