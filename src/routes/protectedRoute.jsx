@@ -10,8 +10,6 @@ const ProtectedRoute = ({ element, requiredRole }) => {
     return <Navigate to="/login" />;
   }
 
-  console.log('User logged in:', currentUser.email, 'Role:', currentUser.role);
-
   if (requiredRole !== undefined && currentUser.role !== requiredRole) {
     console.log('User does not have required role, redirecting to unauthorized');
     return <Navigate to="/unauthorized" />;
