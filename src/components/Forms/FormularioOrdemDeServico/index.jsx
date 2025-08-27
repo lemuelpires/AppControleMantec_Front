@@ -714,7 +714,7 @@ const FormularioOrdemDeServico = ({
           <ResponsiveFormGroup delay="0.3s">
             <SectionHeader>
               <SectionTitle onClick={addProduto} title="Clique para adicionar produto">
-                Produtos <span style={{color:'red'}}>*</span>
+                Produtos
               </SectionTitle>
             </SectionHeader>
             <ItemSection>
@@ -760,7 +760,7 @@ const FormularioOrdemDeServico = ({
           <ResponsiveFormGroup delay="0.4s">
             <SectionHeader>
               <SectionTitle onClick={addServico} title="Clique para adicionar serviço">
-                Serviços <span style={{color:'red'}}>*</span>
+                Serviços
               </SectionTitle>
             </SectionHeader>
             <ItemSection>
