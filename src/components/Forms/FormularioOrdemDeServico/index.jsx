@@ -505,7 +505,7 @@ const FormularioOrdemDeServico = ({
   useEffect(() => {
     const soma = (Number(formData.valorMaoDeObra) || 0)
       + (Number(formData.valorPecas) || 0)
-      + (Number(formData.valorServico) || 0);
+      + (Number(valorServicos) || 0);
 
     if (soma !== Number(formData.valorTotal || 0)) {
       setFormData(prev => ({ ...prev, valorTotal: soma }));
