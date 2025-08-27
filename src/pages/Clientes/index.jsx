@@ -26,6 +26,7 @@ import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEdit, faTrash, faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { FaWhatsapp } from 'react-icons/fa';
 
 Modal.setAppElement('#root');
 
@@ -126,6 +127,13 @@ const filteredClientes = clientes.filter(
     currentPage * itemsPerPage
   );
 
+  const handleWhatsApp = (telefone) => {
+    if (telefone) {
+      const whatsappUrl = `https://wa.me/${telefone}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  };
+
   return (
     <ClientesContainer>
       <ClientesTitle>Clientes</ClientesTitle>
@@ -190,6 +198,11 @@ const filteredClientes = clientes.filter(
                     <ActionButton className="delete" onClick={() => handleExcluir(cliente.id)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </ActionButton>
+                    {cliente.telefone && (
+                      <span onClick={() => handleWhatsApp(cliente.telefone)} title="Enviar WhatsApp" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', margin: '0 2px' }}>
+                        <FaWhatsapp size={30} color="#25D366" />
+                      </span>
+                    )}
                   </IconWrapper>
                 </td>
               </tr>
