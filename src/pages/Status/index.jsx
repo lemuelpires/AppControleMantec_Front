@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
-import { FaShareAlt } from 'react-icons/fa';
+import { FaShareAlt, FaWhatsapp } from 'react-icons/fa';
 import {
     StatusContainer,
     StatusCard,
@@ -47,6 +47,7 @@ const StatusOS = () => {
     const [produtosMap, setProdutosMap] = useState({});
     const [servicosMap, setServicosMap] = useState({});
     const [clienteNome, setClienteNome] = useState('');
+    const [clienteTelefone, setClienteTelefone] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -67,11 +68,14 @@ const StatusOS = () => {
                     try {
                         const clienteRes = await apiCliente.get(`/Cliente/${ordem.clienteID}`);
                         setClienteNome(clienteRes.data.nome);
+                        setClienteTelefone(clienteRes.data.telefone || ''); // Assuming 'telefone' is the field; adjust if needed
                     } catch {
                         setClienteNome('');
+                        setClienteTelefone('');
                     }
                 } else {
                     setClienteNome('');
+                    setClienteTelefone('');
                 }
 
                 // Coleta IDs de produtos e serviços usados
@@ -117,6 +121,7 @@ const StatusOS = () => {
             } catch (err) {
                 setOrdens([]);
                 setClienteNome('');
+                setClienteTelefone('');
             } finally {
                 setLoading(false);
             }
@@ -142,6 +147,14 @@ const StatusOS = () => {
         }
     };
 
+    // Função para abrir WhatsApp
+    const handleWhatsApp = () => {
+        const url = window.location.href;
+        const message = `Acompanhe o status: ${url}`;
+        const whatsappUrl = `https://wa.me/${clienteTelefone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
     return (
         <StatusContainer>
             <StatusCard>
@@ -153,6 +166,11 @@ const StatusOS = () => {
                         <StatusShareButton onClick={handleShare} title="Compartilhar link">
                             <FaShareAlt size={22} color="#fff" />
                         </StatusShareButton>
+                        {clienteTelefone && (
+                            <StatusShareButton onClick={handleWhatsApp} title="Enviar via WhatsApp" style={{ marginLeft: '10px' }}>
+                                <FaWhatsapp size={22} color="#fff" />
+                            </StatusShareButton>
+                        )}
                     </StatusShareGroup>
                 </StatusHeader>
                 {loading ? (
@@ -200,28 +218,33 @@ const StatusOS = () => {
                                     </StatusStatusBadge>
                                 </StatusLabelSection>
                             </InfoSectionCard>
-                            <InfoSectionCard>
-                                <StatusInfoRow>
-                                    <StatusInfoLabel>Equipamento:</StatusInfoLabel>
-                                    <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
-                                </StatusInfoRow>
-                                <StatusInfoRow>
-                                    <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
-                                    <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
-                                </StatusInfoRow>
-                                <StatusInfoRow>
-                                    <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
-                                    <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
-                                </StatusInfoRow>
-                                <StatusInfoRow>
-                                    <StatusInfoLabel>Observações:</StatusInfoLabel>
-                                    <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
-                                </StatusInfoRow>
-                            </InfoSectionCard>
+
+                            {os.status !== "Não iniciado" && (
+                                <>
+                                    <InfoSectionCard>
+                                        <StatusInfoRow>
+                                            <StatusInfoLabel>Equipamento:</StatusInfoLabel>
+                                            <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
+                                        </StatusInfoRow>
+                                        <StatusInfoRow>
+                                            <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
+                                            <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
+                                        </StatusInfoRow>
+                                        <StatusInfoRow>
+                                            <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
+                                            <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
+                                        </StatusInfoRow>
+                                        <StatusInfoRow>
+                                            <StatusInfoLabel>Observações:</StatusInfoLabel>
+                                            <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
+                                        </StatusInfoRow>
+                                    </InfoSectionCard>
+                                </>
+                            )}
                             <InfoSectionCard>
                                 <StatusInfoRow>
                                     <StatusInfoLabel>Valor Total:</StatusInfoLabel>
-                                    <StatusInfoValue>{os.valorTotal ? `R$ ${os.valorTotal}` : '---'}</StatusInfoValue>
+                                    <StatusInfoValue>{os.valorTotal ? `R$ ${os.valorTotal}` : 'Verificando...'}</StatusInfoValue>
                                 </StatusInfoRow>
                                 <StatusInfoRow>
                                     <StatusInfoLabel>Pago:</StatusInfoLabel>

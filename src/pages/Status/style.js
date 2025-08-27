@@ -114,7 +114,7 @@ export const StatusStatusBadge = styled.div`
     background: ${({ status }) =>
         status === 'Concluída' || status === 'Concluido' ? 'linear-gradient(90deg, #28a745 60%, #6ee7b7 100%)' :
         status === 'Em andamento' ? 'linear-gradient(90deg, #007bff 60%, #5e2ced 100%)' :
-        status === 'Não iniciado' ? 'linear-gradient(90deg, #dc3545 60%, #ff6ec4 100%)' :
+        status === 'Não iniciado' ? 'linear-gradient(90deg, #857c7dff 60%, #383537ff 100%)' :
         'linear-gradient(90deg, #888 60%, #bdbdbd 100%)'};
     letter-spacing: 0.7px;
     transition: background 0.2s, transform 0.2s;
