@@ -38,7 +38,7 @@ const FormularioFuncionario = ({ initialValues = {}, onSubmit, onClose, title = 
     e.preventDefault();
     if (!validate()) return;
     onSubmit({ ...formValues, ativo: true });
-    setFormValues({}); // Limpa o formulário após enviar
+    setFormValues({}); 
   };
 
   return (

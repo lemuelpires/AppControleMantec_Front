@@ -2,6 +2,7 @@
 import Modal from 'react-modal';
 import FormularioProduto from '../../../Forms/FormularioProduto';
 import { Titulo } from './style';
+import apiCliente from '../../../../services/apiCliente';
 
 const modalStyles = {
   overlay: {
@@ -46,6 +47,15 @@ const ModalEdicaoProduto = ({ isOpen, onClose, item, onSubmit }) => {
     dataEntrada: item.dataEntrada ? item.dataEntrada.slice(0, 10) : '',
   };
 
+  const handleSubmit = async (formData) => {
+    try {
+      await apiCliente.put(`/Produto/${formData.id}`, formData);
+      onClose(); // Fecha o modal e atualiza a listagem no componente pai
+    } catch (error) {
+      console.error('Erro ao editar produto:', error);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -61,7 +71,7 @@ const ModalEdicaoProduto = ({ isOpen, onClose, item, onSubmit }) => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
         {item && <FormularioProduto
           initialValues={initialValues}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
           onClose={onClose}
           modalTitle="Editar Produto"
         />}

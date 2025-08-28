@@ -2,6 +2,7 @@
 import Modal from 'react-modal';
 import FormularioProduto from '../../../Forms/FormularioProduto';
 import { Titulo } from './style';
+import apiCliente from '../../../../services/apiCliente';
 
 // Definir as classes do Modal
 const modalStyles = {
@@ -45,6 +46,15 @@ const ModalNovoProduto = ({ isOpen, onClose, onSubmit }) => {
     ativo: true,
   };
 
+  const handleSubmit = async (formData) => {
+    try {
+      await apiCliente.post('/Produto', formData);
+      onClose(); // Fecha o modal e atualiza a listagem no componente pai
+    } catch (error) {
+      // ...existing error handling...
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -60,7 +70,7 @@ const ModalNovoProduto = ({ isOpen, onClose, onSubmit }) => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
         <FormularioProduto 
         initialValues={initialValues} 
-        onSubmit={onSubmit} 
+        onSubmit={handleSubmit} 
         onClose={onClose}
         modalTitle="Adicionar Produto"
       />

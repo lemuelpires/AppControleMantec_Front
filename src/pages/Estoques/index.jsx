@@ -105,6 +105,7 @@ const Estoque = () => {
     setIsEdicaoModalOpen(false);
     setIsNovoModalOpen(false);
     setSelectedItem(null);
+    fetchItensEstoque();
   };
 
   const handleSearchChange = (e) => {

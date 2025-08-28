@@ -97,6 +97,7 @@ const Produto = () => {
     setIsNovoModalOpen(false);
     setIsCadastrarImagemModalOpen(false);
     setSelectedItem(null);
+    fetchProdutos();
   };
 
   const handleSave = async (formData) => {
@@ -106,7 +107,6 @@ const Produto = () => {
       } else {
         await apiCliente.post('/Produto', formData);
       }
-      fetchProdutos();
       closeModal();
     } catch (error) {
       console.error('Erro ao salvar produto:', error);

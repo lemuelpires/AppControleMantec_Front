@@ -82,6 +82,7 @@ const Servico = () => {
     setIsEdicaoModalOpen(false);
     setIsNovoModalOpen(false);
     setSelectedItem(null);
+    fetchServicos();
   };
 
   const handleSave = async (formData) => {

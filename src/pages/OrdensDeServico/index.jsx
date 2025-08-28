@@ -133,6 +133,7 @@ const OrdemDeServico = () => {
     setIsEdicaoModalOpen(false);
     setIsNovoModalOpen(false);
     setSelectedItem(null);
+    fetchOrdensDeServico();
   };
 
   const handleSave = async (formData) => {

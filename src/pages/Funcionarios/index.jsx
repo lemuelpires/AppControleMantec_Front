@@ -84,19 +84,26 @@ const Funcionarios = () => {
     setIsEdicaoModalOpen(false);
     setIsNovoModalOpen(false);
     setSelectedItem(null);
+    fetchFuncionarios();
   };
 
-  const handleSave = async (formData) => {
+  const handleCreate = async (formData) => {
     try {
-      if (formData.id) {
-        await apiCliente.put(`/Funcionario/${formData.id}`, formData);
-      } else {
-        await apiCliente.post('/Funcionario', formData);
-      }
+      await apiCliente.post('/Funcionario', formData);
       fetchFuncionarios();
       closeModal();
     } catch (error) {
       console.error('Erro ao salvar funcionário:', error);
+    }
+  };
+
+  const handleUpdate = async (formData) => {
+    try {
+      await apiCliente.put(`/Funcionario/${formData.id}`, formData);
+      fetchFuncionarios();
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao atualizar funcionário:', error);
     }
   };
 
@@ -236,8 +243,8 @@ const Funcionarios = () => {
       </PaginationContainer>
 
       <ModalDetalhes isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicaoFuncionario isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
-      <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
+      <ModalEdicaoFuncionario isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleUpdate} />
+      <ModalNovo isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleCreate} />
     </FuncionariosContainer>
   );
 };

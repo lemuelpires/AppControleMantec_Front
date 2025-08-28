@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import Modal from 'react-modal';
 import FormularioFuncionario from '../../../Forms/FormularioFuncionario';
+import apiCliente from '../../../../services/apiCliente';
 
 // Definir as classes do Modal
 const modalStyles = {
@@ -41,6 +42,14 @@ const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
       : new Date().toISOString().slice(0, 10),
   };
 
+  const handleSubmit = async (formData) => {
+    try {
+      await apiCliente.put(`/Funcionario/${formData.id}`, formData);
+      onClose(); 
+    } catch (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+    }
+  };
 
   return (
     <Modal
@@ -59,7 +68,7 @@ const ModalEdicaoFuncionario = ({ isOpen, onClose, item, onSubmit }) => {
           <FormularioFuncionario
             title="Editar Funcionário"
             initialValues={dadosCompletos} // <== agora sim estÃ¡ usando os dados ajustados
-            onSubmit={onSubmit}
+            onSubmit={handleSubmit}
             onClose={onClose}
           />
         )}

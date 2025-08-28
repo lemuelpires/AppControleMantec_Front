@@ -98,6 +98,7 @@ const Clientes = () => {
     setIsEdicaoModalOpen(false);
     setIsNovoModalOpen(false);
     setSelectedItem(null);
+    fetchClientes();
   };
 
   const handleSave = async (formData) => {
@@ -107,7 +108,6 @@ const Clientes = () => {
       } else {
         await apiCliente.post('/Cliente', formData);
       }
-      fetchClientes();
       closeModal();
     } catch (error) {
       console.error('Erro ao salvar cliente:', error);

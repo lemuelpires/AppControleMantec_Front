@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import Modal from 'react-modal';
 import FormularioFuncionario from '../../../Forms/FormularioFuncionario';
+import apiCliente from '../../../../services/apiCliente';
 
 // Definir as classes do Modal
 const modalStyles = {
@@ -42,6 +43,15 @@ const ModalNovoFuncionario = ({ isOpen, onClose, onSubmit }) => {
     ativo: true,
   };
 
+  const handleSubmit = async (formData) => {
+    try {
+      await apiCliente.post('/Funcionario', formData);
+      onClose();
+    } catch (error) {
+      console.error('Erro ao cadastrar funcionário:', error);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -58,7 +68,7 @@ const ModalNovoFuncionario = ({ isOpen, onClose, onSubmit }) => {
         <FormularioFuncionario
           title="Nova Funcionário"
           initialValues={initialValues}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
           onClose={onClose}
         />
       </div>
