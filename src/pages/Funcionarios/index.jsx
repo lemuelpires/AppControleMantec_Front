@@ -18,12 +18,13 @@ import {
   HideMobileTh
 } from './style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrashAlt, faDownload } from '@fortawesome/free-solid-svg-icons';
 import ModalDetalhes from '../../components/Modais/Funcionario/ModalDetalhes';
 import ModalEdicaoFuncionario from '../../components/Modais/Funcionario/ModalEdicao';
 import ModalNovo from '../../components/Modais/Funcionario/ModalNovo';
 import apiCliente from '../../services/apiCliente';
 import Modal from 'react-modal';
+import * as XLSX from 'xlsx';
 
 Modal.setAppElement('#root');
 
@@ -99,6 +100,13 @@ const Funcionarios = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredFuncionarios);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Funcionarios");
+    XLSX.writeFile(wb, "funcionarios.xlsx");
+  };
+
   const filteredFuncionarios = funcionarios.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -111,7 +119,28 @@ const Funcionarios = () => {
 
   return (
     <FuncionariosContainer>
-      <FuncionariosTitle>Funcionários</FuncionariosTitle>
+      <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <FuncionariosTitle>
+          Funcionários
+        </FuncionariosTitle>
+        <button
+          onClick={handleExport}
+          title="Exportar Excel"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            color: '#666'
+          }}
+        >
+          <FontAwesomeIcon icon={faDownload} size="lg" />
+        </button>
+      </div>
       
       <HeaderControls>
         <SearchContainer>

@@ -25,8 +25,9 @@ import apiCliente from '../../services/apiCliente';
 
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEdit, faTrash, faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit, faTrash, faPlus, faPlusCircle, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from 'react-icons/fa';
+import * as XLSX from 'xlsx';
 
 Modal.setAppElement('#root');
 
@@ -113,6 +114,13 @@ const Clientes = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredClientes);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Clientes");
+    XLSX.writeFile(wb, "clientes.xlsx");
+  };
+
   // Filtra clientes pelo nome E apenas os ativos
 const filteredClientes = clientes.filter(
   (cliente) =>
@@ -136,8 +144,28 @@ const filteredClientes = clientes.filter(
 
   return (
     <ClientesContainer>
-      <ClientesTitle>Clientes</ClientesTitle>
-
+      <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <ClientesTitle>
+          Clientes
+        </ClientesTitle>
+        <button
+          onClick={handleExport}
+          title="Exportar Excel"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            color: '#666'
+          }}
+        >
+          <FontAwesomeIcon icon={faDownload} size="lg" />
+        </button>
+      </div>
       <HeaderControls>
         <SearchContainer>
           <SearchInput

@@ -24,7 +24,8 @@ import ModalNovoEstoque from '../../components/Modais/Estoque/ModalNovo';
 import apiEstoque from '../../services/apiCliente'; // Importe a API correta para manipulação de Estoque
 import apiCliente from '../../services/apiCliente'; // Importe a API para manipulação de Produto
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit, faTrash, faPlus, faDownload } from '@fortawesome/free-solid-svg-icons';
+import * as XLSX from 'xlsx';
 
 // Definir o elemento de aplicação para react-modal
 Modal.setAppElement('#root');
@@ -161,6 +162,13 @@ const Estoque = () => {
   // Função para mudar a página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredItens);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Estoques");
+    XLSX.writeFile(wb, "estoques.xlsx");
+  };
+
    const totalPages = Math.ceil(filteredItens.length / itemsPerPage);
   const currentItems = filteredItens.slice(
     (currentPage - 1) * itemsPerPage,
@@ -169,7 +177,28 @@ const Estoque = () => {
 
   return (
     <EstoqueContainer>
-      <EstoqueTitle>Estoque</EstoqueTitle>
+      <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <EstoqueTitle>
+          Estoques
+        </EstoqueTitle>
+        <button
+          onClick={handleExport}
+          title="Exportar Excel"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            color: '#666'
+          }}
+        >
+          <FontAwesomeIcon icon={faDownload} size="lg" />
+        </button>
+      </div>
 
       <HeaderControls>
         <SearchContainer>

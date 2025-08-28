@@ -23,8 +23,8 @@ import ModalNovoServico from '../../components/Modais/Servico/ModalNovo';
 import apiServico from '../../services/apiCliente';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-
+import { faPlusCircle, faEye, faEdit, faTrash, faDownload } from '@fortawesome/free-solid-svg-icons';
+import * as XLSX from 'xlsx';
 
 Modal.setAppElement('#root');
 
@@ -98,6 +98,13 @@ const Servico = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredServicos);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Servicos");
+    XLSX.writeFile(wb, "servicos.xlsx");
+  };
+
   const filteredServicos = servicos.filter(s =>
     s.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -110,8 +117,28 @@ const Servico = () => {
 
   return (
     <ServicosContainer>
-      <ServicosTitle>Serviços</ServicosTitle>
-
+      <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <ServicosTitle>
+          Serviços
+        </ServicosTitle>
+        <button
+          onClick={handleExport}
+          title="Exportar Excel"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            color: '#666'
+          }}
+        >
+          <FontAwesomeIcon icon={faDownload} size="lg" />
+        </button>
+      </div>
       <HeaderControls>
         <SearchContainer>
           <SearchInput

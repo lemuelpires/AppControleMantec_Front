@@ -49,6 +49,7 @@ export const OrdemDeServicoTitle = styled.h2`
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   letter-spacing: -0.5px;
   position: relative;
+  text-align: left;
   
   &::after {
     content: '';

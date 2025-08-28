@@ -19,12 +19,13 @@ import {
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrash, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash, faStar, faDownload } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
 import ModalEdicaoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalEdicao';
 import ModalNovoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalNovo';
+import * as XLSX from 'xlsx';
 
 Modal.setAppElement('#root');
 
@@ -169,6 +170,13 @@ const OrdemDeServico = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredOrdens);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "OrdensDeServico");
+    XLSX.writeFile(wb, "ordens_de_servico.xlsx");
+  };
+
   const filteredOrdens = ordensDeServico.filter(ordem =>
     clientes[ordem.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -181,7 +189,28 @@ const OrdemDeServico = () => {
 
   return (
     <OrdemDeServicoContainer>
-      <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
+      <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <OrdemDeServicoTitle>
+          Ordens de Serviço
+        </OrdemDeServicoTitle>
+        <button
+          onClick={handleExport}
+          title="Exportar Excel"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            color: '#666'
+          }}
+        >
+          <FontAwesomeIcon icon={faDownload} size="lg" />
+        </button>
+      </div>
 
       <HeaderControls>
         <SearchContainer>
