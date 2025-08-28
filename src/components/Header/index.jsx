@@ -132,7 +132,14 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
           )}
         </Espacamento>
       </MenuHeader>
-      <Sidebar open={isOpen} onMouseLeave={handleMouseLeave}>
+      <Sidebar
+        open={isOpen}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          width: '320px',
+          maxWidth: '90vw',
+        }}
+      >
         <ul>
           {auth.currentUser ? (
             <>
