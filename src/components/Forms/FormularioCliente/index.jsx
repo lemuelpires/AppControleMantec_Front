@@ -37,8 +37,15 @@ const FormularioCliente = ({ initialValues = {}, onSubmit, onClose, title = "Dad
     e.preventDefault();
     if (!validate()) return;
 
+    let telefone = formValues.telefone || '';
+    // Adiciona +55 se não houver
+    if (!telefone.startsWith('+55')) {
+      telefone = '+55' + telefone.replace(/^0+/, '');
+    }
+
     const clienteComData = {
       ...formValues,
+      telefone,
       dataCadastro: formValues.dataCadastro || new Date().toISOString()
     };
 
