@@ -172,6 +172,7 @@ const CompactFormRow = styled(FormRow)`
 
 // Mapeamento de cor para cada status
 const statusColors = {
+  'Orçamento': '#6c757d',
   'Não iniciado': '#6c757d',
   'Em andamento': '#007bff',
   'Concluido': '#28a745',
