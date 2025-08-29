@@ -215,7 +215,7 @@ const StatusOS = () => {
                             </InfoSectionCard>
                             <InfoSectionCard>
                                 <StatusLabelSection>
-                                    <Label>O reparo do seu produto está:</Label>
+                                    <Label> Status atual:</Label>
                                     <StatusStatusBadge status={os.status}>
                                         {os.status || 'Não informado'}
                                     </StatusStatusBadge>
