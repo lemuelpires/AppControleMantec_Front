@@ -172,7 +172,40 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
   const handleSubmit = async (data) => {
     try {
       console.log('Dados do formulário de edição antes do envio:', data);
+
+      const oldStatus = item.status;
+      const newStatus = data.status;
+
+      // Se mudou de "Concluido" para outro status, adicionar de volta as quantidades
+      if (oldStatus === "Concluido" && newStatus !== "Concluido" && Array.isArray(data.produtos)) {
+        for (const produto of data.produtos) {
+          if (produto.produtoID && produto.quantidade) {
+            const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
+            const novaQuantidade = produtoAtual.data.quantidade + produto.quantidade;
+            await apiCliente.put(`/Produto/${produto.produtoID}`, {
+              ...produtoAtual.data,
+              quantidade: novaQuantidade
+            });
+          }
+        }
+      }
+
       await onSubmit(data);
+
+      // Se mudou para "Concluido", subtrair quantidades
+      if (newStatus === "Concluido" && oldStatus !== "Concluido" && Array.isArray(data.produtos)) {
+        for (const produto of data.produtos) {
+          if (produto.produtoID && produto.quantidade) {
+            const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
+            const novaQuantidade = produtoAtual.data.quantidade - produto.quantidade;
+            await apiCliente.put(`/Produto/${produto.produtoID}`, {
+              ...produtoAtual.data,
+              quantidade: novaQuantidade
+            });
+          }
+        }
+      }
+
       onClose();
     } catch (error) {
       console.error('Erro ao salvar ordem de serviço:', error);

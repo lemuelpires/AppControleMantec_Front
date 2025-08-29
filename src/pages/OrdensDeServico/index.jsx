@@ -157,12 +157,50 @@ const OrdemDeServico = () => {
 
       console.log('Dados preparados para envio:', dataToSend);
 
+      // Garante que produtos sempre seja um array
+      const produtosBaixa = formData.produtos || formData.produtoIDs?.map(id => ({ produtoID: id, quantidade: 1 })) || [];
+
+      let ordemAnterior = null;
       if (formData.id) {
-        console.log('Editando ordem existente...');
+        const res = await apiCliente.get(`/OrdemDeServico/${formData.id}`);
+        ordemAnterior = res.data;
+      }
+
+      if (formData.id) {
         await apiCliente.put(`/OrdemDeServico/${formData.id}`, dataToSend);
+        // Se status mudou para "Concluido", dar baixa nos produtos
+        if (
+          ordemAnterior &&
+          ordemAnterior.status !== "Concluido" &&
+          formData.status === "Concluido"
+        ) {
+          for (const produto of produtosBaixa) {
+            if (produto.produtoID && produto.quantidade) {
+              // Buscar produto atual
+              const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
+              const novaQuantidade = (produtoAtual.data.quantidade || 0) - Number(produto.quantidade);
+              await apiCliente.put(`/Produto/${produto.produtoID}`, {
+                ...produtoAtual.data,
+                quantidade: novaQuantidade
+              });
+            }
+          }
+        }
       } else {
-        console.log('Criando nova ordem...');
         await apiCliente.post('/OrdemDeServico', dataToSend);
+        // Se status é "Concluido", dar baixa nos produtos
+        if (formData.status === "Concluido" && Array.isArray(produtosBaixa)) {
+          for (const produto of produtosBaixa) {
+            if (produto.produtoID && produto.quantidade) {
+              const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
+              const novaQuantidade = (produtoAtual.data.quantidade || 0) - Number(produto.quantidade);
+              await apiCliente.put(`/Produto/${produto.produtoID}`, {
+                ...produtoAtual.data,
+                quantidade: novaQuantidade
+              });
+            }
+          }
+        }
       }
       fetchOrdensDeServico();
       closeModal();
