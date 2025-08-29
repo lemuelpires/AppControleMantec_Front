@@ -893,6 +893,7 @@ const FormularioOrdemDeServico = ({
             <ReactSelect
               name="status"
               options={[
+                { value: 'Orçamento', label: 'Orçamento' },
                 { value: 'Não iniciado', label: 'Não iniciado' },
                 { value: 'Em andamento', label: 'Em andamento' },
                 { value: 'Concluido', label: 'Concluido' },
