@@ -190,7 +190,17 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         }
       }
 
-      await onSubmit(data);
+      // Ao preparar os dados para envio:
+      const dataEntradaFormatada = data.dataEntrada ? new Date(data.dataEntrada).toISOString().slice(0, 10) : null;
+      const dataConclusaoFormatada = data.dataConclusao ? new Date(data.dataConclusao).toISOString().slice(0, 10) : null;
+
+      const ordemData = {
+        ...data,
+        dataEntrada: dataEntradaFormatada,
+        dataConclusao: dataConclusaoFormatada,
+      };
+
+      await onSubmit(ordemData);
 
       // Se mudou para "Concluido", subtrair quantidades
       if (newStatus === "Concluido" && oldStatus !== "Concluido" && Array.isArray(data.produtos)) {

@@ -103,6 +103,20 @@ const modalStyles = {
   },
 };
 
+// Função para formatar datas sem perder um dia (robusta, com troca de mês/dia)
+function formatDateBr(dateStr) {
+  if (!dateStr) return '--/--/----';
+  const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    const [, year, month, day] = match;
+    return `${month}/${day}/${year}`;  // Troca mês e dia para corrigir inversão
+  }
+  // Fallback para outros formatos
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '--/--/----';
+  return d.toLocaleDateString('pt-BR');
+}
+
 const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
   return (
     <Modal
@@ -134,7 +148,14 @@ const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
             padding: '0 1rem'
           }}>
             {/* Renderizar relatório técnico */}
-            <OrdemDeServicoReport ordemDeServico={item} onClose={onClose} />
+            <OrdemDeServicoReport 
+              ordemDeServico={{
+                ...item,
+                dataEntrada: formatDateBr(item.dataEntrada),
+                dataConclusao: formatDateBr(item.dataConclusao)
+              }} 
+              onClose={onClose} 
+            />
           </div>
         ) : (
           <div style={{
@@ -197,3 +218,4 @@ const ModalDetalhesOrdemDeServico = ({ isOpen, onClose, item }) => {
 };
 
 export default ModalDetalhesOrdemDeServico;
+

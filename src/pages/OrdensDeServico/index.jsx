@@ -226,6 +226,15 @@ const OrdemDeServico = () => {
     currentPage * itemsPerPage
   );
 
+  // Função para formatar datas corretamente
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '--/--/----';
+    const d = new Date(dateStr);
+    // Corrige o deslocamento de fuso horário
+    const localDate = new Date(d.getTime() + Math.abs(d.getTimezoneOffset()) * 60000);
+    return localDate.toLocaleDateString('pt-BR');
+  };
+
   return (
     <OrdemDeServicoContainer>
       <div style={{ position: 'relative', marginBottom: '16px' }}>
@@ -317,8 +326,8 @@ const OrdemDeServico = () => {
                   <td>{ordem.numeroOS}</td>
                   <td>{clientes[ordem.clienteID]}</td>
                   <HideMobile>{funcionarios[ordem.funcionarioID]}</HideMobile>
-                  <HideMobile>{new Date(ordem.dataEntrada).toLocaleDateString()}</HideMobile>
-                  <HideMobile>{ordem.dataConclusao ? new Date(ordem.dataConclusao).toLocaleDateString() : 'N/A'}</HideMobile>
+                  <HideMobile>{formatDate(ordem.dataEntrada)}</HideMobile>
+                  <HideMobile>{formatDate(ordem.dataConclusao)}</HideMobile>
                   <td>
                     <IconWrapper>
                       <ActionButton

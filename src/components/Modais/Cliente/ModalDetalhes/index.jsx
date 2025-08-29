@@ -34,6 +34,21 @@ const modalStyles = {
 };
 
 const ModalDetalhes = ({ isOpen, onClose, item }) => {
+  // Função auxiliar para formatar datas com hora sem deslocamento de fuso
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    if (match) {
+      const [, year, month, day, hour, minute] = match;
+      return `${day}/${month}/${year} ${hour}:${minute}`;
+    }
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const datePart = d.toLocaleDateString('pt-BR');
+    const timePart = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `${datePart} ${timePart}`;
+  };
+
   const formatLabel = (key) => {
     const labelMap = {
       id: 'ID',
@@ -52,18 +67,8 @@ const ModalDetalhes = ({ isOpen, onClose, item }) => {
   const formatValue = (key, value) => {
     if (!value) return '';
     
-    if (key === 'dataNascimento' || key === 'dataAtualizacao' || key === 'dataCriacao') {
-      try {
-        const date = new Date(value);
-        const formattedDate = date.toLocaleDateString('pt-BR');
-        const formattedTime = date.toLocaleTimeString('pt-BR', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        });
-        return `📅 ${formattedDate} às ${formattedTime}`;
-      } catch {
-        return value;
-      }
+    if (key === 'dataNascimento' || key === 'dataAtualizacao' || key === 'dataCriacao' || key === 'dataCadastro') {
+      return `📅 ${formatDate(value)}`;  // Inclui data e hora
     }
     
     if (key === 'email') return `📧 ${value.toLowerCase()}`;

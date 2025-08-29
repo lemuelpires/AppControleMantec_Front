@@ -610,14 +610,18 @@ const FormularioOrdemDeServico = ({
     e.preventDefault();
     if (!validate()) return;
 
+    // Formatação das datas para envio
+    const dataEntradaFormatada = formData.dataEntrada ? new Date(formData.dataEntrada).toISOString().slice(0, 10) : null;
+    const dataConclusaoFormatada = formData.dataConclusao ? new Date(formData.dataConclusao).toISOString().slice(0, 10) : null;
+
     const finalData = {
       id: formData.id || undefined,
       clienteID: formData.clienteID || '',
       funcionarioID: formData.funcionarioID || '',
       produtoIDs: (formData.produtos || []).map(p => p.produtoID).filter(Boolean),
       servicoIDs: (formData.servicos || []).map(s => s.servicoID).filter(Boolean),
-      dataEntrada: formData.dataEntrada ? new Date(formData.dataEntrada).toISOString() : null,
-      dataConclusao: formData.dataConclusao ? new Date(formData.dataConclusao).toISOString() : null,
+      dataEntrada: dataEntradaFormatada,
+      dataConclusao: dataConclusaoFormatada,
       status: formData.status || '',
       observacoes: formData.observacoes || '',
       ativo: !!formData.ativo,
@@ -663,16 +667,9 @@ const FormularioOrdemDeServico = ({
   };
 
   // Filtro e label customizado para produtos
-  const filteredProdutoOptions = (produtoOptions || []).filter(opt => Number(opt.quantidade) >= 1).map(opt => ({
+  const filteredProdutoOptions = (produtoOptions || []).map(opt => ({
     ...opt,
-    label: (
-      <span>
-        {opt.label}
-        <span style={{ color: 'green', marginLeft: 8, fontWeight: 600 }}>
-          ({opt.quantidade})
-        </span>
-      </span>
-    )
+    label: opt.label || '',  // Mantém como string simples
   }));
 
   return (
@@ -739,6 +736,18 @@ const FormularioOrdemDeServico = ({
                     placeholder="Selecione um produto"
                     styles={customSelectStyles}
                     isSearchable
+                    formatOptionLabel={(option, { context }) => (
+                      option.value === '' ? (
+                        option.label
+                      ) : (
+                        <span>
+                          {option.label}
+                          <span style={{ color: 'green', marginLeft: 8, fontWeight: 600 }}>
+                            ({option.quantidade || 0})
+                          </span>
+                        </span>
+                      )
+                    )}
                   />
                   <QuantityInput
                     type="number"

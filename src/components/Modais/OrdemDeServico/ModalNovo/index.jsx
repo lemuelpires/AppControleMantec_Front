@@ -191,6 +191,21 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
     }
   };
 
+  // Ao preparar os dados para envio:
+  const handleCreate = async () => {
+    // ...existing code...
+    const dataEntradaFormatada = dataEntrada ? new Date(dataEntrada).toISOString().slice(0, 10) : null;
+    const dataConclusaoFormatada = dataConclusao ? new Date(dataConclusao).toISOString().slice(0, 10) : null;
+    // ...existing code...
+    const ordemData = {
+        // ...existing code...
+        dataEntrada: dataEntradaFormatada,
+        dataConclusao: dataConclusaoFormatada,
+        // ...existing code...
+    };
+    // ...existing code...
+  }
+
   return (
     <Modal
       isOpen={isOpen}

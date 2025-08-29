@@ -34,6 +34,21 @@ const modalStyles = {
 };
 
 const ModalDetalhesFuncionario = ({ isOpen, onClose, item }) => {
+  // Função auxiliar para formatar datas com hora sem deslocamento de fuso (referência do ModalDetalhesCliente)
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    if (match) {
+      const [, year, month, day, hour, minute] = match;
+      return `${day}/${month}/${year} ${hour}:${minute}`;
+    }
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const datePart = d.toLocaleDateString('pt-BR');
+    const timePart = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `${datePart} ${timePart}`;
+  };
+
   const formatLabel = (key) => {
     const labelMap = {
       id: 'ID',
@@ -55,16 +70,8 @@ const ModalDetalhesFuncionario = ({ isOpen, onClose, item }) => {
   const formatValue = (key, value) => {
     if (!value) return 'Não informado';
     
-    if (key === 'dataNascimento' || key === 'dataAtualizacao' || key === 'dataCriacao' || key === 'dataAdmissao') {
-      try {
-        const date = new Date(value);
-        return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        });
-      } catch {
-        return value;
-      }
+    if (key.includes('data')) {
+      return `📅 ${formatDate(value)}`;  // Captura qualquer chave com 'data'
     }
     
     if (key === 'email') return value.toLowerCase();

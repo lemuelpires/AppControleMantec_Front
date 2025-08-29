@@ -25,8 +25,11 @@ import {
 // Função para formatar datas
 const formatDate = (dateStr) => {
     if (!dateStr) return '--/--/----';
+    // Ajuste para evitar erro de fuso horário
     const d = new Date(dateStr);
-    return d.toLocaleDateString('pt-BR');
+    // Corrige o deslocamento de fuso horário
+    const localDate = new Date(d.getTime() + Math.abs(d.getTimezoneOffset()) * 60000);
+    return localDate.toLocaleDateString('pt-BR');
 };
 
 // Função para calcular prazo restante
