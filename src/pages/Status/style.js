@@ -124,7 +124,7 @@ export const ClienteNome = styled.div`
 
 export const StatusInfoRow = styled.div`
     display: flex;
-    align-items: center;
+    align-items: left;
     gap: 0;
     margin-bottom: 0.4rem;
     @media (max-width: 700px) {
@@ -137,11 +137,13 @@ export const StatusInfoLabel = styled.span`
     color: #6c757d;
     font-weight: 500;
     margin-right: 0.5rem;
+    text-align: left;
 `;
 
 export const StatusInfoValue = styled.span`
     color: #2c3e50;
     font-weight: bold;
+    text-align: left;
 `;
 
 export const PrazoRestante = styled.span`
