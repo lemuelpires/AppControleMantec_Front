@@ -286,13 +286,13 @@ const StatusOS = () => {
                     <StatusExtraIcon>
                     </StatusExtraIcon>
                     <h3>Métodos de Pagamento</h3>
-                    <div>
+                    <div style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.2)', paddingBottom: '1em', width: '100%' }}>
                         <StatusExtraQr src={qrsumup} alt="QR Code Pagamento SumUp" />
                         <StatusExtraQrLabel>
                             <strong>Escaneie para pagar via SumUp</strong>
                         </StatusExtraQrLabel>
                     </div>
-                    <div>
+                    <div style={{ padding: '1em 0', borderBottom: '1px solid rgba(0, 0, 0, 0.2)', width: '100%' }}>
                         <StatusExtraPixLabel>
                             <strong>Chave Pix Copia e Cola:</strong>
                         </StatusExtraPixLabel>

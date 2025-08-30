@@ -191,7 +191,7 @@ export const StatusFooter = styled.div`
 // Nova seção extra
 export const StatusExtra = styled.div`
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 2rem;
     justify-content: space-around;
     margin: 3.5rem auto; // Espaçamento maior entre containers principais
@@ -199,7 +199,7 @@ export const StatusExtra = styled.div`
     background: linear-gradient(120deg, #e3eafc 0%, #f8f9fc 100%);
     border-radius: 18px;
     box-shadow: 0 4px 16px rgba(0, 123, 255, 0.07);
-    max-width: 1100px;
+    max-width: 700px;
     @media (max-width: 700px) {
 
         flex-direction: column;
@@ -211,7 +211,10 @@ export const StatusExtra = styled.div`
 `;
 
 export const StatusExtraCard = styled.div`
-    flex: 1 1 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 1rem;
     background: ${({ $bgcolor }) => $bgcolor || '#f8f9fc'};
