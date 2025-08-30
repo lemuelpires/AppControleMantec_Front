@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
-import { FaShareAlt, FaWhatsapp } from 'react-icons/fa';
+import { FaShareAlt, FaWhatsapp, FaCreditCard, FaClock } from 'react-icons/fa';
+import qrsumup from '../../assets/qrsumup.jpeg';
 import {
     StatusContainer,
     StatusCard,
@@ -19,7 +20,19 @@ import {
     PrazoRestante,
     StatusFooter,
     Label,
-    StatusLabelSection
+    StatusLabelSection,
+    StatusExtra,
+    StatusExtraCard,
+    StatusExtraIcon,
+    StatusExtraQr,
+    StatusExtraQrLabel,
+    StatusExtraPixLabel,
+    StatusExtraPixRow,
+    StatusExtraPixInput,
+    StatusExtraPixBtn,
+    StatusExtraWhatsappRow,
+    StatusExtraWhatsappIcon,
+    StatusExtraWhatsappLink
 } from './style';
 
 // Função para formatar datas
@@ -158,6 +171,15 @@ const StatusOS = () => {
         window.open(whatsappUrl, '_blank');
     };
 
+    const pixChave = "00020126830014br.gov.bcb.pix0136c4e03de3-0e43-4494-98c4-676ee59f3ebb0221Pagamento de Servicos5204000053039865802BR5921Lemuel Pires da Silva6005Matao62290525SUMUP2025082922373056728063043324";
+
+    const handleCopyPix = () => {
+        navigator.clipboard.writeText(pixChave);
+        alert('Chave Pix copiada!');
+    };
+
+    const isMobile = window.innerWidth <= 700;
+
     return (
         <StatusContainer>
             <StatusCard>
@@ -167,11 +189,11 @@ const StatusOS = () => {
                     </StatusTitle>
                     <StatusShareGroup>
                         <StatusShareButton onClick={handleShare} title="Compartilhar link">
-                            <FaShareAlt size={22} color="#fff" />
+                            <FaShareAlt size={isMobile ? 18 : 22} color="#fff" />
                         </StatusShareButton>
                         {clienteTelefone && (
-                            <StatusShareButton onClick={handleWhatsApp} title="Enviar via WhatsApp" style={{ marginLeft: '10px' }}>
-                                <FaWhatsapp size={22} color="#fff" />
+                            <StatusShareButton onClick={handleWhatsApp} title="Enviar via WhatsApp">
+                                <FaWhatsapp size={isMobile ? 18 : 22} color="#fff" />
                             </StatusShareButton>
                         )}
                     </StatusShareGroup>
@@ -215,34 +237,31 @@ const StatusOS = () => {
                             </InfoSectionCard>
                             <InfoSectionCard>
                                 <StatusLabelSection>
-                                    <Label> Status atual:</Label>
+                                    <Label>Status atual:</Label>
                                     <StatusStatusBadge status={os.status}>
                                         {os.status || 'Não informado'}
                                     </StatusStatusBadge>
                                 </StatusLabelSection>
                             </InfoSectionCard>
-
                             {os.status !== "Não iniciado" && (
-                                <>
-                                    <InfoSectionCard>
-                                        <StatusInfoRow>
-                                            <StatusInfoLabel>Equipamento:</StatusInfoLabel>
-                                            <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
-                                        </StatusInfoRow>
-                                        <StatusInfoRow>
-                                            <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
-                                            <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
-                                        </StatusInfoRow>
-                                        <StatusInfoRow>
-                                            <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
-                                            <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
-                                        </StatusInfoRow>
-                                        <StatusInfoRow>
-                                            <StatusInfoLabel>Observações:</StatusInfoLabel>
-                                            <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
-                                        </StatusInfoRow>
-                                    </InfoSectionCard>
-                                </>
+                                <InfoSectionCard>
+                                    <StatusInfoRow>
+                                        <StatusInfoLabel>Equipamento:</StatusInfoLabel>
+                                        <StatusInfoValue>{os.marca} {os.modelo}</StatusInfoValue>
+                                    </StatusInfoRow>
+                                    <StatusInfoRow>
+                                        <StatusInfoLabel>Defeito relatado:</StatusInfoLabel>
+                                        <StatusInfoValue>{os.defeitoRelatado || 'Não informado'}</StatusInfoValue>
+                                    </StatusInfoRow>
+                                    <StatusInfoRow>
+                                        <StatusInfoLabel>Laudo Técnico:</StatusInfoLabel>
+                                        <StatusInfoValue>{os.laudoTecnico || 'Não informado'}</StatusInfoValue>
+                                    </StatusInfoRow>
+                                    <StatusInfoRow>
+                                        <StatusInfoLabel>Observações:</StatusInfoLabel>
+                                        <StatusInfoValue>{os.observacoes || 'Nenhuma'}</StatusInfoValue>
+                                    </StatusInfoRow>
+                                </InfoSectionCard>
                             )}
                             <InfoSectionCard>
                                 <StatusInfoRow>
@@ -260,6 +279,63 @@ const StatusOS = () => {
                     ))
                 )}
             </StatusCard>
+
+            {/* Nova seção para informações adicionais */}
+            <StatusExtra>
+                <StatusExtraCard>
+                    <StatusExtraIcon>
+                    </StatusExtraIcon>
+                    <h3>Métodos de Pagamento</h3>
+                    <div>
+                        <StatusExtraQr src={qrsumup} alt="QR Code Pagamento SumUp" />
+                        <StatusExtraQrLabel>
+                            <strong>Escaneie para pagar via SumUp</strong>
+                        </StatusExtraQrLabel>
+                    </div>
+                    <div>
+                        <StatusExtraPixLabel>
+                            <strong>Chave Pix Copia e Cola:</strong>
+                        </StatusExtraPixLabel>
+                        <StatusExtraPixRow>
+                            <StatusExtraPixInput
+                                type="text"
+                                value={pixChave}
+                                readOnly
+                                onFocus={e => e.target.select()}
+                            />
+                            <StatusExtraPixBtn
+                                onClick={handleCopyPix}
+                                title="Copiar chave Pix"
+                            >
+                                Copiar
+                            </StatusExtraPixBtn>
+                        </StatusExtraPixRow>
+                    </div>
+                    <StatusExtraWhatsappRow>
+                        <StatusExtraWhatsappIcon>
+                            <FaWhatsapp />
+                        </StatusExtraWhatsappIcon>
+                        <StatusExtraWhatsappLink
+                            href="https://wa.me/5516992614410?text=Olá! Segue o comprovante de pagamento."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Envie o comprovante para 16 992614410
+                        </StatusExtraWhatsappLink>
+                    </StatusExtraWhatsappRow>
+                </StatusExtraCard>
+                <StatusExtraCard>
+                    <StatusExtraIcon className="clock">
+                        <FaClock />
+                    </StatusExtraIcon>
+                    <h3>Horários de Retirada</h3>
+                    <p>
+                        <strong>Segunda a Sexta:</strong> 09:00 às 18:00<br />
+                        <strong>Sábados:</strong> 09:00 às 17:00
+                    </p>
+                </StatusExtraCard>
+            </StatusExtra>
+
             <StatusFooter>
                 © {new Date().getFullYear()} Mantec Informática - Status de Ordem de Serviço
             </StatusFooter>
