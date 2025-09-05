@@ -265,7 +265,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
             <th style={{ width: '70px' }}>Código</th>
             <th style={{ width: '200px' }}>Descrição</th>
             <th>Produto/Serviço</th>
-            <th>Valor Unitário</th>
+            {/* <th>Valor Unitário</th> */}
             <th style={{ width: '80px' }}>Qtd</th>
             <th style={{ width: '120px' }}>Valor</th>
           </tr>
@@ -282,7 +282,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
                 }
               </td>
               <td>{servico.nome}</td>
-              <td className="right">{formatCurrency(parseFloat(servico.preco) || 0)}</td>
+              {/* <td className="right">{formatCurrency(parseFloat(servico.preco) || 0)}</td> */}
               <td className="center">{servico.quantidade || 1}</td>
               <td className="right">{formatCurrency((parseFloat(servico.preco) || 0) * (servico.quantidade || 1))}</td>
             </tr>
@@ -294,7 +294,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
               <td className="center">{ordemDeServico.numeroOS || '----'}</td>
               <td>Peça instalada - modelo: {ordemDeServico.modelo || 'Não informado'}</td>
               <td>{produto.nome}</td>
-              <td className="right">{formatCurrency(parseFloat(produto.preco) || 0)}</td>
+              {/* <td className="right">{formatCurrency(parseFloat(produto.preco) || 0)}</td> */}
               <td className="center">{produto.quantidade || 1}</td>
               <td className="right">{formatCurrency((parseFloat(produto.preco) || 0) * (produto.quantidade) + ordemDeServico.valorMaoDeObra)}</td>
             </tr>
@@ -304,7 +304,6 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           {[...Array(Math.max(0, 5 - servicos.length - produtos.length))].map((_, index) => (
             <tr key={`empty-${index}`}>
               <td >&nbsp;</td>
-              <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>

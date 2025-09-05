@@ -644,10 +644,11 @@ const Vendas = () => {
       {ordensConcluidas.length} vendas concluídas encontradas
     </span>
   </div>
-  {/* Wrapper responsivo para tabela */}
+  {/* Wrapper com barra de rolagem para tabela */}
   <div style={{
     overflowX: 'auto',
-    minHeight: '1px',
+    overflowY: 'auto', // Adiciona rolagem vertical
+    maxHeight: '500px', // Limita a altura da tabela
     borderRadius: '8px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
     background: '#fff',
@@ -656,7 +657,7 @@ const Vendas = () => {
     <Table
       columns={columns}
       data={ordensConcluidas}
-      initialPageSize={10}
+      initialPageSize={ordensConcluidas.length} // Exibe todos os itens
     />
   </div>
 </TableContainer>
