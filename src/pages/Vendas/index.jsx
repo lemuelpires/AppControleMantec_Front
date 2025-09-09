@@ -648,13 +648,12 @@ const Vendas = () => {
     justifyContent: 'space-between',
     alignItems: 'center'
   }}>
-    📋 Lista de Vendas Concluídas
+    📋 Vendas
     <span style={{
       fontSize: '0.9rem',
       color: '#6c757d',
       fontWeight: '500'
     }}>
-      {ordensConcluidas.length} vendas concluídas encontradas
     </span>
   </div>
   {/* Wrapper com barra de rolagem para tabela */}
