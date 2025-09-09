@@ -42,6 +42,7 @@ const OrdemDeServico = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
     fetchOrdensDeServico();
@@ -216,9 +217,11 @@ const OrdemDeServico = () => {
     XLSX.writeFile(wb, "ordens_de_servico.xlsx");
   };
 
-  const filteredOrdens = ordensDeServico.filter(ordem =>
-    clientes[ordem.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOrdens = ordensDeServico.filter(ordem => {
+    const matchesCliente = clientes[ordem.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter ? ordem.status === statusFilter : true;
+    return matchesCliente && matchesStatus;
+  });
 
   const totalPages = Math.ceil(filteredOrdens.length / itemsPerPage);
   const paginatedOrdens = filteredOrdens.slice(
@@ -237,160 +240,186 @@ const OrdemDeServico = () => {
 
   return (
     <OrdemDeServicoContainer>
-      <div style={{ position: 'relative', marginBottom: '16px' }}>
-        <OrdemDeServicoTitle>
-          Ordens de Serviço
-        </OrdemDeServicoTitle>
-        <button
-          onClick={handleExport}
-          title="Exportar Excel"
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 4,
-            color: '#666'
-          }}
-        >
-          <FontAwesomeIcon icon={faDownload} size="lg" />
-        </button>
-      </div>
-
-      <HeaderControls>
-        <SearchContainer>
-          <SearchInput
-            type="text"
-            placeholder="Buscar cliente..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-          <PerPageSelect
-            value={itemsPerPage}
-            onChange={e => setItemsPerPage(Number(e.target.value))}
+      <>
+        <div style={{ position: 'relative', marginBottom: '16px' }}>
+          <OrdemDeServicoTitle>
+            Ordens de Serviço
+          </OrdemDeServicoTitle>
+          <button
+            onClick={handleExport}
+            title="Exportar Excel"
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              color: '#666'
+            }}
           >
-            <option value={25}>25 por página</option>
-            <option value={50}>50 por página</option>
-            <option value={100}>100 por página</option>
-          </PerPageSelect>
-        </SearchContainer>
+            <FontAwesomeIcon icon={faDownload} size="lg" />
+          </button>
+        </div>
 
-        <AddButton onClick={openNovoModal}>
-          <FontAwesomeIcon icon={faPlusCircle} />
-          Nova Ordem
-        </AddButton>
-      </HeaderControls>
+        <HeaderControls>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="Buscar cliente..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{
+                marginLeft: '8px',
+                padding: '4px',
+                borderRadius: '10px',
+                border: '2px solid rgba(108, 117, 125, 0.2)',
+                height: '48px',
+                fontSize: '14px',
+                backgroundColor: '#fff',
+                color: '#333',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="">Todos os Status</option>
+              <option value="Orçamento">Orçamento</option>
+              <option value="Não iniciado">Não iniciado</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Concluido">Concluído</option>
+              <option value="Cancelado">Cancelado</option>
+              <option value="Entregue">Entregue</option>
+            </select>
+            <PerPageSelect
+              value={itemsPerPage}
+              onChange={e => setItemsPerPage(Number(e.target.value))}
+            >
+              <option value={25}>25 por página</option>
+              <option value={50}>50 por página</option>
+              <option value={100}>100 por página</option>
+            </PerPageSelect>
+          </SearchContainer>
 
-      <OrdemDeServicoTableWrapper>
-        <OrdemDeServicoTable>
-          <thead>
-            <tr>
-              <th>Número OS</th>
-              <th>Cliente</th>
-              <HideMobileTh>Funcionário</HideMobileTh>
-              <HideMobileTh>Entrada</HideMobileTh>
-              <HideMobileTh>Conclusão</HideMobileTh>
-              <th style={{ textAlign: 'center' }}>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedOrdens.map(ordem => {
-              // Função para formatar produtos/serviços
-              const formatProdutos = (ordem) => {
-                if (ordem.produtos && Array.isArray(ordem.produtos) && ordem.produtos.length > 0) {
-                  return ordem.produtos
-                    .filter(produto => produto.produtoID)
-                    .map(produto => `${produtos[produto.produtoID]} (${produto.quantidade})`)
-                    .join(', ') || '-';
-                }
-                // Compatibilidade com formato antigo
-                return ordem.produtoID ? produtos[ordem.produtoID] : '-';
-              };
+          <AddButton onClick={openNovoModal}>
+            <FontAwesomeIcon icon={faPlusCircle} />
+            Nova Ordem
+          </AddButton>
+        </HeaderControls>
 
-              const formatServicos = (ordem) => {
-                if (ordem.servicos && Array.isArray(ordem.servicos) && ordem.servicos.length > 0) {
-                  return ordem.servicos
-                    .filter(servico => servico.servicoID)
-                    .map(servico => `${servicos[servico.servicoID]} (${servico.quantidade})`)
-                    .join(', ') || '-';
-                }
-                // Compatibilidade com formato antigo
-                return ordem.servicoID ? servicos[ordem.servicoID] : '-';
-              };
+        <OrdemDeServicoTableWrapper>
+          <OrdemDeServicoTable>
+            <thead>
+              <tr>
+                <th>Número OS</th>
+                <th>Cliente</th>
+                <HideMobileTh>Funcionário</HideMobileTh>
+                <HideMobileTh>Entrada</HideMobileTh>
+                <HideMobileTh>Conclusão</HideMobileTh>
+                <th style={{ textAlign: 'center' }}>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedOrdens.map(ordem => {
+                // Função para formatar produtos/serviços
+                const formatProdutos = (ordem) => {
+                  if (ordem.produtos && Array.isArray(ordem.produtos) && ordem.produtos.length > 0) {
+                    return ordem.produtos
+                      .filter(produto => produto.produtoID)
+                      .map(produto => `${produtos[produto.produtoID]} (${produto.quantidade})`)
+                      .join(', ') || '-';
+                  }
+                  // Compatibilidade com formato antigo
+                  return ordem.produtoID ? produtos[ordem.produtoID] : '-';
+                };
 
-              return (
-                <tr key={ordem.id}>
-                  <td>{ordem.numeroOS}</td>
-                  <td>{clientes[ordem.clienteID]}</td>
-                  <HideMobile>{funcionarios[ordem.funcionarioID]}</HideMobile>
-                  <HideMobile>{formatDate(ordem.dataEntrada)}</HideMobile>
-                  <HideMobile>{formatDate(ordem.dataConclusao)}</HideMobile>
-                  <td>
-                    <IconWrapper>
-                      <ActionButton
-                        className="view"
-                        onClick={() => openDetalhesModal(ordem)}
-                        title="Visualizar detalhes"
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </ActionButton>
-                      <ActionButton
-                        className="edit"
-                        onClick={() => openEdicaoModal(ordem)}
-                        title="Editar ordem"
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </ActionButton>
-                      <ActionButton
-                        className="delete"
-                        onClick={() => handleExcluir(ordem.id)}
-                        title="Excluir ordem"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </ActionButton>
-                      <ActionButton
-                        className="status"
-                        onClick={() => window.open(`/ordem-os/${ordem.id}`, '_blank')}
-                        title="Ver status da ordem"
-                        style={{ color: '#ff9800' }}
-                      >
-                        <FontAwesomeIcon icon={faStar} />
-                      </ActionButton>
-                    </IconWrapper>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </OrdemDeServicoTable>
-      </OrdemDeServicoTableWrapper>
+                const formatServicos = (ordem) => {
+                  if (ordem.servicos && Array.isArray(ordem.servicos) && ordem.servicos.length > 0) {
+                    return ordem.servicos
+                      .filter(servico => servico.servicoID)
+                      .map(servico => `${servicos[servico.servicoID]} (${servico.quantidade})`)
+                      .join(', ') || '-';
+                  }
+                  // Compatibilidade com formato antigo
+                  return ordem.servicoID ? servicos[ordem.servicoID] : '-';
+                };
 
-      <PaginationContainer>
-        <PaginationButton
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Anterior
-        </PaginationButton>
+                return (
+                  <tr key={ordem.id}>
+                    <td>{ordem.numeroOS}</td>
+                    <td>{clientes[ordem.clienteID]}</td>
+                    <HideMobile>{funcionarios[ordem.funcionarioID]}</HideMobile>
+                    <HideMobile>{formatDate(ordem.dataEntrada)}</HideMobile>
+                    <HideMobile>{formatDate(ordem.dataConclusao)}</HideMobile>
+                    <td>
+                      <IconWrapper>
+                        <ActionButton
+                          className="view"
+                          onClick={() => openDetalhesModal(ordem)}
+                          title="Visualizar detalhes"
+                        >
+                          <FontAwesomeIcon icon={faEye} />
+                        </ActionButton>
+                        <ActionButton
+                          className="edit"
+                          onClick={() => openEdicaoModal(ordem)}
+                          title="Editar ordem"
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </ActionButton>
+                        <ActionButton
+                          className="delete"
+                          onClick={() => handleExcluir(ordem.id)}
+                          title="Excluir ordem"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </ActionButton>
+                        <ActionButton
+                          className="status"
+                          onClick={() => window.open(`/ordem-os/${ordem.id}`, '_blank')}
+                          title="Ver status da ordem"
+                          style={{ color: '#ff9800' }}
+                        >
+                          <FontAwesomeIcon icon={faStar} />
+                        </ActionButton>
+                      </IconWrapper>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </OrdemDeServicoTable>
+        </OrdemDeServicoTableWrapper>
 
-        <PaginationInfo>
-          Página {currentPage} de {totalPages} ({filteredOrdens.length} ordens)
-        </PaginationInfo>
+        <PaginationContainer>
+          <PaginationButton
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </PaginationButton>
 
-        <PaginationButton
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Próxima
-        </PaginationButton>
-      </PaginationContainer>
+          <PaginationInfo>
+            Página {currentPage} de {totalPages} ({filteredOrdens.length} ordens)
+          </PaginationInfo>
 
-      <ModalDetalhesOrdemDeServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-      <ModalEdicaoOrdemDeServico isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
-      <ModalNovoOrdemDeServico isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
+          <PaginationButton
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Próxima
+          </PaginationButton>
+        </PaginationContainer>
+
+        <ModalDetalhesOrdemDeServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
+        <ModalEdicaoOrdemDeServico isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
+        <ModalNovoOrdemDeServico isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
+      </>
     </OrdemDeServicoContainer>
   );
 };

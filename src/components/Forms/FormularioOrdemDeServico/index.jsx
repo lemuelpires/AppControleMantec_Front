@@ -173,10 +173,11 @@ const CompactFormRow = styled(FormRow)`
 // Mapeamento de cor para cada status
 const statusColors = {
   'Orçamento': '#6c757d',
-  'Não iniciado': '#6c757d',
+  'Não iniciado': '#eba50dff',
   'Em andamento': '#007bff',
   'Concluido': '#28a745',
-  'Cancelado': '#dc3545'
+  'Cancelado': '#dc3545',
+  'Entregue': '#ffea00ff'
 };
 
 // Customização do ReactSelect para status com cor
@@ -907,6 +908,7 @@ const FormularioOrdemDeServico = ({
                 { value: 'Em andamento', label: 'Em andamento' },
                 { value: 'Concluido', label: 'Concluido' },
                 { value: 'Cancelado', label: 'Cancelado' },
+                { value: 'Entregue', label: 'Entregue' },
               ]}
               value={formData.status ? { value: formData.status, label: formData.status } : null}
               onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}

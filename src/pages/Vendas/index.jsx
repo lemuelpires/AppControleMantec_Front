@@ -48,6 +48,7 @@ const Vendas = () => {
 
   const [reciboModalOpen, setReciboModalOpen] = useState(false);
   const [ordemSelecionada, setOrdemSelecionada] = useState(null);
+  const [statusFiltro, setStatusFiltro] = useState('Todos');
 
   useEffect(() => {
     fetchData();
@@ -55,16 +56,16 @@ const Vendas = () => {
 
   useEffect(() => {
     aplicarFiltros();
-  }, [ordens, filtros]);
+  }, [ordens, filtros, statusFiltro]);
 
   useEffect(() => {
-    // Sempre calcula stats e exibe apenas ordens concluídas
-    const ordensConcluidas = ordensFiltered.filter(o => o.status === 'Concluido');
+    // Calcula stats com base no filtro de status
+    const ordensFiltradas = ordensFiltered.filter(o => o.status === statusFiltro || statusFiltro === 'Todos');
     if (
-      ordensConcluidas.length > 0 &&
+      ordensFiltradas.length > 0 &&
       (Object.keys(produtosPreco).length > 0 || Object.keys(servicosPreco).length > 0)
     ) {
-      calculateStats(ordensConcluidas);
+      calculateStats(ordensFiltradas);
     } else {
       setStats({
         totalVendas: 0,
@@ -73,7 +74,7 @@ const Vendas = () => {
         valorMes: 0
       });
     }
-  }, [ordensFiltered, produtosPreco, servicosPreco]);
+  }, [ordensFiltered, produtosPreco, servicosPreco, statusFiltro]);
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -268,6 +269,10 @@ const Vendas = () => {
   const aplicarFiltros = () => {
     let ordensFiltradas = [...ordens];
 
+    if (statusFiltro !== 'Todos') {
+      ordensFiltradas = ordensFiltradas.filter(ordem => ordem.status === statusFiltro);
+    }
+
     if (filtros.cliente) {
       ordensFiltradas = ordensFiltradas.filter(ordem => {
         const nomeCliente = getClienteNome(ordem.clienteID).toLowerCase();
@@ -316,6 +321,7 @@ const Vendas = () => {
       valorMin: '',
       valorMax: ''
     });
+    setStatusFiltro('Todos');
   };
 
   const handleFiltroChange = (campo, valor) => {
@@ -486,6 +492,7 @@ const Vendas = () => {
 
   // Só exibe stats e tabela de ordens concluídas
   const ordensConcluidas = ordensFiltered.filter(o => o.status === 'Concluido');
+  const ordensExibidas = ordensFiltered.filter(o => statusFiltro === 'Todos' || o.status === statusFiltro);
 
   return (
     <Container>
@@ -598,6 +605,19 @@ const Vendas = () => {
               step="0.01"
             />
           </FilterGroup>
+
+          <FilterGroup>
+            <label>Status</label>
+            <select
+              value={statusFiltro}
+              onChange={(e) => setStatusFiltro(e.target.value)}
+            >
+              <option value="Todos">Todos</option>
+              <option value="Concluido">Concluído</option>
+              <option value="Cancelado">Cancelado</option>
+              <option value="Entregue">Entregue</option>
+            </select>
+          </FilterGroup>
         </FiltersGrid>
 
         <FilterActions>
@@ -612,15 +632,8 @@ const Vendas = () => {
             color: '#6c757d'
           }}>
             <span>
-              <strong>{ordensConcluidas.length}</strong> de <strong>{ordens.length}</strong> vendas concluídas
+              <strong>{ordensFiltered.length}</strong> de <strong>{ordens.length}</strong> vendas encontradas
             </span>
-            {ordensConcluidas.length > 0 && (
-              <span>
-                Total: <strong style={{ color: '#28a745' }}>
-                  {formatCurrency(ordensConcluidas.reduce((sum, ordem) => sum + calcularPrecoTotal(ordem), 0))}
-                </strong>
-              </span>
-            )}
           </div>
         </FilterActions>
       </FiltersContainer>
@@ -656,8 +669,8 @@ const Vendas = () => {
   }}>
     <Table
       columns={columns}
-      data={ordensConcluidas}
-      initialPageSize={ordensConcluidas.length} // Exibe todos os itens
+      data={ordensExibidas}
+      initialPageSize={ordensExibidas.length} // Exibe todos os itens
     />
   </div>
 </TableContainer>
