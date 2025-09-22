@@ -47,8 +47,10 @@ const formatDate = (dateStr) => {
 
 // Função para calcular prazo restante
 const prazoRestante = (dataConclusao, status) => {
+    if (status === 'Concluído' || status === 'Entregue' || status === 'Orçamento') {
+        return status;
+    }
     if (!dataConclusao) return 'Sem prazo';
-    if (status === 'Concluido') return '';
     const hoje = new Date();
     const prazo = new Date(dataConclusao);
     const diff = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
@@ -171,11 +173,11 @@ const StatusOS = () => {
         window.open(whatsappUrl, '_blank');
     };
 
-    const pixChave = "00020126830014br.gov.bcb.pix0136c4e03de3-0e43-4494-98c4-676ee59f3ebb0221Pagamento de Servicos5204000053039865802BR5921Lemuel Pires da Silva6005Matao62290525SUMUP2025082922373056728063043324";
+    const cnpj = "27.737.565/0001-02";
 
-    const handleCopyPix = () => {
-        navigator.clipboard.writeText(pixChave);
-        alert('Chave Pix copiada!');
+    const handleCopyCnpj = () => {
+        navigator.clipboard.writeText(cnpj.replace(/\D/g, '')); // Copy without formatting
+        alert('CNPJ 27737565000102 copiado!');
     };
 
     const isMobile = window.innerWidth <= 700;
@@ -185,15 +187,15 @@ const StatusOS = () => {
             <StatusCard>
                 <StatusHeader>
                     <StatusTitle>
-                        Status da Ordem de Serviço
+                        Status da Ordem de Serviço 
                     </StatusTitle>
                     <StatusShareGroup>
-                        <StatusShareButton onClick={handleShare} title="Compartilhar link">
-                            <FaShareAlt size={isMobile ? 18 : 22} color="#fff" />
+                        <StatusShareButton onClick={handleShare} title="Compartilhar link" style={{ background: 'none', boxShadow: 'none' }}>
+                            <FaShareAlt size={isMobile ? 24 : 28} color="#007bff" />
                         </StatusShareButton>
                         {clienteTelefone && (
-                            <StatusShareButton onClick={handleWhatsApp} title="Enviar via WhatsApp">
-                                <FaWhatsapp size={isMobile ? 18 : 22} color="#fff" />
+                            <StatusShareButton onClick={handleWhatsApp} title="Enviar via WhatsApp" style={{ background: 'none', boxShadow: 'none' }}>
+                                <FaWhatsapp size={isMobile ? 24 : 28} color="#25D366" />
                             </StatusShareButton>
                         )}
                     </StatusShareGroup>
@@ -284,45 +286,53 @@ const StatusOS = () => {
             <StatusExtra>
                 <StatusExtraCard>
                     <StatusExtraIcon>
+                        <FaCreditCard size={24} color="#007bff" />
+                        <span style={{ marginLeft: '0.5em' }}>Formas de Pagamento</span>
                     </StatusExtraIcon>
-                    <h3>Métodos de Pagamento</h3>
-                    <div style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.2)', paddingBottom: '1em', width: '100%' }}>
-                        <StatusExtraQr src={qrsumup} alt="QR Code Pagamento SumUp" />
-                        <StatusExtraQrLabel>
-                            <strong>Escaneie para pagar via SumUp</strong>
-                        </StatusExtraQrLabel>
-                    </div>
-                    <div style={{ padding: '1em 0', borderBottom: '1px solid rgba(0, 0, 0, 0.2)', width: '100%'}}>
-                        <StatusExtraPixLabel>
-                            <strong>Chave Pix Copia e Cola:</strong>
-                        </StatusExtraPixLabel>
-                        <StatusExtraPixRow>
-                            <StatusExtraPixInput
-                                type="text"
-                                value={pixChave}
-                                readOnly
-                                onFocus={e => e.target.select()}
-                            />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', width: '100%' }}>
+                        <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                            <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>📱</div>
+                            <strong>Pix (QR Code)</strong><br />
+                            <span style={{ fontSize: '0.9em', color: '#666' }}>Escaneie para pagar via Pix</span><br />
+                            <StatusExtraQr src={qrsumup} alt="QR Code Pagamento Pix" style={{ width: '80px', height: '80px', marginTop: '0.5em' }} />
+                        </div>
+                        <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                            <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>🏦</div>
+                            <strong>Pix (CNPJ)</strong><br />
+                            <span style={{ fontSize: '0.9em', color: '#666' }}>27.737.565/0001-02</span><br />
                             <StatusExtraPixBtn
-                                onClick={handleCopyPix}
-                                title="Copiar chave Pix"
+                                onClick={handleCopyCnpj}
+                                title="Copiar CNPJ"
+                                style={{ marginTop: '0.5em', padding: '0.5em 1em', fontSize: '0.9em' }}
                             >
-                                Copiar
+                                Copiar CNPJ
                             </StatusExtraPixBtn>
-                        </StatusExtraPixRow>
+                        </div>
+                        <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                            <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>💵</div>
+                            <strong>Dinheiro (Presencial)</strong><br />
+                            <span style={{ fontSize: '0.9em', color: '#666' }}>Pague na retirada do equipamento</span>
+                        </div>
+                        <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                            <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>💳</div>
+                            <strong>Cartão (Presencial)</strong><br />
+                            <span style={{ fontSize: '0.9em', color: '#666' }}>Aceitamos crédito e débito</span>
+                        </div>
                     </div>
-                    <StatusExtraWhatsappRow>
-                        <StatusExtraWhatsappIcon>
-                            <FaWhatsapp />
-                        </StatusExtraWhatsappIcon>
-                        <StatusExtraWhatsappLink
-                            href="https://wa.me/5516992614410?text=Olá! Segue o comprovante de pagamento."
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Envie o comprovante para 16 992614410
-                        </StatusExtraWhatsappLink>
-                    </StatusExtraWhatsappRow>
+                    <div style={{ textAlign: 'center', marginTop: '1em' }}>
+                        <StatusExtraWhatsappRow>
+                            <StatusExtraWhatsappIcon>
+                                <FaWhatsapp />
+                            </StatusExtraWhatsappIcon>
+                            <StatusExtraWhatsappLink
+                                href="https://wa.me/5516992614410?text=Olá! Segue o comprovante de pagamento."
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Envie comprovante pelo WhatsApp
+                            </StatusExtraWhatsappLink>
+                        </StatusExtraWhatsappRow>
+                    </div>
                 </StatusExtraCard>
                 <StatusExtraCard>
                     <StatusExtraIcon className="clock">

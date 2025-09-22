@@ -12,10 +12,35 @@ const fadeInUp = keyframes`
     }
 `;
 
+// Animação pulsante para ícones
+const pulse = keyframes`
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+`;
+
 export const StatusContainer = styled.div`
-    background: linear-gradient(120deg, #f4f8ff 0%, #e3eafc 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    position: relative;
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
 `;
 
 export const StatusCard = styled.div`
@@ -56,9 +81,13 @@ export const StatusHeader = styled.div`
 export const StatusTitle = styled.h2`
     font-size: 2rem;
     font-weight: 700;
-    color: #2c3e50;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: -1px;
     margin-bottom: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     @media (max-width: 700px) {
         font-size: 1.3rem;
         margin-bottom: 1rem;
@@ -166,24 +195,31 @@ export const Label = styled.span`
 
 export const StatusStatusBadge = styled.span`
     background: ${({ status }) =>
-        status === 'Concluido' ? '#28a745' :
-        status === 'Cancelado' ? '#dc3545' :
-        '#007bff'};
+        status === 'Concluído' ? 'linear-gradient(45deg, #28a745, #20c997)' :
+        status === 'Entregue' ? 'linear-gradient(45deg, #17a2b8, #20c997)' :
+        status === 'Cancelado' ? 'linear-gradient(45deg, #dc3545, #fd7e14)' :
+        status === 'Orçamento' ? 'linear-gradient(45deg, #ffc107, #fd7e14)' :
+        'linear-gradient(45deg, #007bff, #6610f2)'};
     color: #fff;
-    border-radius: 8px;
-    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    padding: 0.4rem 1.2rem;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-left: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 `;
 
 export const StatusFooter = styled.div`
-    color: #27292cff;
+    color: #636e72;
     font-size: 1rem;
-    padding: 1.2rem 0;
+    padding: 1.5rem 0;
     border-radius: 0 0 18px 18px;
     text-align: center;
     margin-top: 2rem;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
     @media (max-width: 700px) {
         font-size: 0.95rem;
         padding: 1rem 0;
@@ -218,31 +254,40 @@ export const StatusExtraCard = styled.div`
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1rem;
-    background: ${({ $bgcolor }) => $bgcolor || '#f8f9fc'};
-    border-radius: 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    border: 1px solid #e1e7f0;
+    padding: 1.5rem;
+    background: ${({ $bgcolor }) => $bgcolor || 'rgba(255, 255, 255, 0.8)'};
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     margin-bottom: 0;
     color: #2c3e50;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
     @media (max-width: 700px) {
-        padding: 1rem 0.3rem;
+        padding: 1rem 0.5rem;
         margin-bottom: 1rem;
     }
 `;
 
 export const StatusExtraIcon = styled.div`
     margin-bottom: 0.7rem;
-    font-size: 32px;
-    color: #007bff;
+    font-size: 36px;
+    color: #6c5ce7;
+    filter: drop-shadow(0 2px 4px rgba(108, 92, 231, 0.3));
+    animation: ${pulse} 2s infinite;
     &.clock {
-        color: #28a745;
-        font-size: 64px;
+        color: #00b894;
+        font-size: 72px;
+        filter: drop-shadow(0 2px 4px rgba(0, 184, 148, 0.3));
     }
     @media (max-width: 700px) {
-        font-size: 26px;
+        font-size: 30px;
         &.clock {
-            font-size: 50px;
+            font-size: 60px;
         }
     }
 `;
@@ -303,18 +348,24 @@ export const StatusExtraPixInput = styled.input`
 `;
 
 export const StatusExtraPixBtn = styled.button`
-    padding: 0.3rem 0.7rem;
-    background: linear-gradient(90deg,#007bff,#28a745);
+    padding: 0.5rem 1rem;
+    background: linear-gradient(45deg, #667eea, #764ba2);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 25px;
     font-weight: bold;
     cursor: pointer;
     font-size: 0.95rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
     @media (max-width: 700px) {
         font-size: 0.85rem;
         margin-top: 0.5rem;
-        padding: 0.3rem 0.5rem;
+        padding: 0.4rem 0.8rem;
     }
 `;
 
@@ -327,18 +378,24 @@ export const StatusExtraWhatsappRow = styled.div`
 `;
 
 export const StatusExtraWhatsappIcon = styled.div`
-    font-size: 24px;
-    color: #25D366;
+    font-size: 28px;
+    color: #00b894;
+    filter: drop-shadow(0 2px 4px rgba(0, 184, 148, 0.3));
     @media (max-width: 700px) {
-        font-size: 20px;
+        font-size: 24px;
     }
 `;
 
 export const StatusExtraWhatsappLink = styled.a`
-    color: #25D366;
+    color: #00b894;
     font-weight: bold;
     text-decoration: none;
     font-size: 1.05rem;
+    transition: color 0.2s ease;
+    &:hover {
+        color: #00cec9;
+        text-decoration: underline;
+    }
     @media (max-width: 700px) {
         font-size: 0.95rem;
     }
