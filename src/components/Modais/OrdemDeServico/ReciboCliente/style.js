@@ -11,6 +11,19 @@ export const ReciboContainer = styled.div`
   color: #2c3e50;
   user-select: none;
 
+  @media (max-width: 768px) {
+    padding: 1.5rem 2rem;
+    margin: 1.5rem auto;
+    max-width: 95%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem 1.5rem;
+    margin: 1rem auto;
+    max-width: 100%;
+    border-radius: 8px;
+  }
+
   @media print {
     box-shadow: none;
     margin: 0;
@@ -33,6 +46,13 @@ export const Header = styled.header`
   border-bottom: 2px solid #e1e7f0;
   padding-bottom: 1rem;
 
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
   @media print {
     border-bottom: 1px solid #333;
     margin-bottom: 1rem;
@@ -50,6 +70,14 @@ export const CompanyInfo = styled.div`
     -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
 
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.5rem;
+    }
+
     @media print {
       background: none;
       -webkit-background-clip: initial;
@@ -66,6 +94,15 @@ export const CompanyInfo = styled.div`
     font-weight: 500;
     color: #6c757d;
     max-width: 350px;
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+      max-width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.8rem;
+    }
 
     @media print {
       color: #333;
@@ -92,6 +129,11 @@ export const CompanyData = styled.div`
     }
   }
 
+  @media (max-width: 768px) {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
   @media print {
     color: #000;
     font-size: 0.95rem;
@@ -110,12 +152,26 @@ export const ClientSection = styled.section`
     padding-left: 1rem;
     user-select: none;
 
+    @media (max-width: 768px) {
+      font-size: 1.1rem;
+      padding-left: 0.8rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1rem;
+      padding-left: 0.5rem;
+    }
+
     @media print {
       color: #000;
       border-left: 4px solid #333;
       font-size: 1.1rem;
       padding-left: 0.7rem;
     }
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 1.5rem;
   }
 `;
 
@@ -126,6 +182,11 @@ export const ClientInfo = styled.div`
 
   @media(max-width: 600px) {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
   }
 
   @media print {
@@ -145,6 +206,11 @@ export const InfoRow = styled.div`
     font-size: 0.95rem;
     user-select: text;
 
+    @media (max-width: 480px) {
+      min-width: auto;
+      margin-bottom: 0.2rem;
+    }
+
     @media print {
       color: #000;
       font-size: 0.95rem;
@@ -156,10 +222,20 @@ export const InfoRow = styled.div`
     font-size: 0.95rem;
     word-break: break-word;
 
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+
     @media print {
       color: #000;
       font-size: 0.95rem;
     }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0.8rem;
   }
 `;
 
@@ -170,6 +246,17 @@ export const ServiceTable = styled.table`
   border-radius: 8px;
   overflow-x: auto;
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 
   @media print {
     box-shadow: none;
@@ -192,6 +279,16 @@ export const ServiceTable = styled.table`
       text-align: center;
       letter-spacing: 0.03em;
       user-select: none;
+
+      @media (max-width: 768px) {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 480px) {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.75rem;
+      }
 
       @media print {
         background: #fff;
@@ -240,6 +337,16 @@ export const ServiceTable = styled.table`
         }
       }
 
+      @media (max-width: 768px) {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 480px) {
+        padding: 0.4rem 0.3rem;
+        font-size: 0.8rem;
+      }
+
       @media print {
         color: #000;
         font-size: 0.8rem !important; // diminui fonte das células
@@ -265,6 +372,14 @@ export const TotalSection = styled.div`
     margin-bottom: 0.25rem;
     user-select: none;
 
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+
     @media print {
       color: #000;
       font-size: 1rem;
@@ -278,11 +393,28 @@ export const TotalSection = styled.div`
     user-select: text;
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 
+    @media (max-width: 768px) {
+      font-size: 1.4rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.2rem;
+    }
+
     @media print {
       color: #000;
       text-shadow: none;
       font-size: 1.2rem;
     }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.2rem 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem 1rem;
+    margin-bottom: 1.5rem;
   }
 
   @media print {
@@ -302,6 +434,12 @@ export const PaymentSection = styled.section`
 
   @media(max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.8rem;
+    margin-bottom: 2rem;
   }
 
   @media print {
@@ -329,6 +467,14 @@ export const PaymentBox = styled.div`
     font-size: 1rem;
     user-select: none;
 
+    @media (max-width: 768px) {
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+
     @media print {
       color: #000;
       font-size: 1rem;
@@ -342,10 +488,27 @@ export const PaymentBox = styled.div`
     text-align: center;
     user-select: text;
 
+    @media (max-width: 768px) {
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.1rem;
+    }
+
     @media print {
       color: #000;
       font-size: 1.1rem;
     }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.8rem 1.2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
   }
 
   @media print {
@@ -365,6 +528,13 @@ export const SignatureSection = styled.section`
 
   @media(max-width: 600px) {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
 
   @media print {
@@ -389,6 +559,16 @@ export const SignatureBox = styled.div`
     color: #495057;
     user-select: text;
 
+    @media (max-width: 768px) {
+      margin: 1.5rem 0 0.8rem 0;
+      height: 45px;
+    }
+
+    @media (max-width: 480px) {
+      margin: 1rem 0 0.6rem 0;
+      height: 35px;
+    }
+
     @media print {
       border-bottom: 1px solid #333;
       color: #000;
@@ -405,10 +585,23 @@ export const SignatureBox = styled.div`
     letter-spacing: 0.5px;
     user-select: none;
 
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+
     @media print {
       color: #000;
       font-size: 0.95rem;
     }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.2rem 0.8rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem 0.6rem;
+    border-radius: 6px;
   }
 
   @media print {
@@ -424,6 +617,12 @@ export const ButtonContainer = styled.div`
   justify-content: center;
   gap: 1.5rem;
   margin-top: 2rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
 
   @media print {
     display: none !important;
@@ -472,6 +671,11 @@ export const Button = styled.button`
       transform: translateY(0);
       box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
     }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
   }
 
   @media print {

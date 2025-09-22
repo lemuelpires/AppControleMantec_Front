@@ -17,6 +17,7 @@ import {
   Table,
   CheckboxSection,
   CheckboxItem,
+  CheckboxGrid,
   SignatureSection,
   SignatureBox,
   ButtonContainer,
@@ -331,58 +332,60 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
         {/* Produtos e Serviços */}
         <Card>
           <SectionTitle>💰 Resumo Financeiro da Ordem</SectionTitle>
-          <Table>
-            <thead>
-              <tr>
-                <th>Descrição</th>
-                <th>Fornecedor</th>
-                <th>Quantidade</th>
-                <th>Valor Unitário</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Serviços */}
-              {servicos.map((servico, index) => (
-                <tr key={`servico-${index}`}>
-                  <td>{servico.nome || 'Serviço não especificado'} <span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Serviço||</span></td>
-                  <td>-</td>
-                  <td>{servico.quantidade || 1}</td>
-                  <td className="currency">{formatCurrency(servico.preco)}</td>
-                  <td className="currency">{formatCurrency((servico.preco || 0) * (servico.quantidade || 1))}</td>
-                </tr>
-              ))}
-              {/* Produtos */}
-              {produtos.map((produto, index) => (
-                <tr key={`produto-${index}`}>
-                  <td>{produto.nome || 'Peça/Produto'}<span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Produto||</span></td>
-                  <td>{produto.fornecedor || '-'}</td>
-                  <td>{produto.quantidade || 1}</td>
-                  <td className="currency">{formatCurrency(produto.preco)}</td>
-                  <td className="currency">{formatCurrency((produto.preco || 0) * (produto.quantidade || 1))}</td>
-                </tr>
-              ))}
-              {/* Valor Mão de Obra digitado */}
-              {(ordemDeServico.valorMaoDeObra && ordemDeServico.valorMaoDeObra > 0) && (
+          <div className="os-table-wrapper">
+            <Table className="os-table">
+              <thead>
                 <tr>
-                  <td><span style={{ color: 'gray', fontSize: '0.8rem' }}>|| Mão de Obra (manual) ||</span></td>
-                  <td>-</td>
-                  <td>1</td>
-                  <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra)}</td>
-                  <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra)}</td>
+                  <th>Descrição</th>
+                  <th>Fornecedor</th>
+                  <th>Quantidade</th>
+                  <th>Valor Unitário</th>
+                  <th>Total</th>
                 </tr>
-              )}
-              <tr className="total-row">
-                <td colSpan="4"><strong>Total Geral</strong></td>
-                <td className="currency"><strong>{formatCurrency(valorTotal)}</strong></td>
-              </tr>
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {/* Serviços */}
+                {servicos.map((servico, index) => (
+                  <tr key={`servico-${index}`}>
+                    <td>{servico.nome || 'Serviço não especificado'} <span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Serviço||</span></td>
+                    <td>-</td>
+                    <td>{servico.quantidade || 1}</td>
+                    <td className="currency">{formatCurrency(servico.preco)}</td>
+                    <td className="currency">{formatCurrency((servico.preco || 0) * (servico.quantidade || 1))}</td>
+                  </tr>
+                ))}
+                {/* Produtos */}
+                {produtos.map((produto, index) => (
+                  <tr key={`produto-${index}`}>
+                    <td>{produto.nome || 'Peça/Produto'}<span style={{ color: 'gray', fontSize: '0.8rem' }}> ||Produto||</span></td>
+                    <td>{produto.fornecedor || '-'}</td>
+                    <td>{produto.quantidade || 1}</td>
+                    <td className="currency">{formatCurrency(produto.preco)}</td>
+                    <td className="currency">{formatCurrency((produto.preco || 0) * (produto.quantidade || 1))}</td>
+                  </tr>
+                ))}
+                {/* Valor Mão de Obra digitado */}
+                {(ordemDeServico.valorMaoDeObra && ordemDeServico.valorMaoDeObra > 0) && (
+                  <tr>
+                    <td><span style={{ color: 'gray', fontSize: '0.8rem' }}>|| Mão de Obra (manual) ||</span></td>
+                    <td>-</td>
+                    <td>1</td>
+                    <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra)}</td>
+                    <td className="currency">{formatCurrency(ordemDeServico.valorMaoDeObra)}</td>
+                  </tr>
+                )}
+                <tr className="total-row">
+                  <td colSpan="4"><strong>Total Geral</strong></td>
+                  <td className="currency"><strong>{formatCurrency(valorTotal)}</strong></td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
         </Card>
         <Card>
           <CheckboxSection>
             <strong style={{ marginBottom: '0.5rem', display: 'block', fontSize: '0.9rem' }}>Status do Equipamento na Entrega:</strong>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.3rem' }}>
+            <CheckboxGrid>
               <CheckboxItem>
                 <input type="checkbox" />
                 <span>Equipamento testado e funcionando</span>
@@ -407,7 +410,7 @@ const OrdemDeServicoReport = ({ ordemDeServico, onClose }) => {
                 <input type="checkbox" />
                 <span>Acessórios devolvidos completos</span>
               </CheckboxItem>
-            </div>
+            </CheckboxGrid>
           </CheckboxSection>
         </Card>
 

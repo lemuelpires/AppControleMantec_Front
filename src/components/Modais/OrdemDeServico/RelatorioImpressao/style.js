@@ -26,6 +26,19 @@ export const ReportContainer = styled.div`
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
   border-radius: 8px;
 
+  @media (max-width: 768px) {
+    margin: 1rem auto;
+    padding: 1rem;
+    max-width: 95%;
+  }
+
+  @media (max-width: 480px) {
+    margin: 0.5rem auto;
+    padding: 0.5rem;
+    max-width: 100%;
+    border-radius: 4px;
+  }
+
   @media print {
     box-shadow: none;
     margin: 0;
@@ -41,6 +54,17 @@ export const Card = styled.section`
   padding: 1.6rem 2rem;
   margin-bottom: 1.8rem;
   box-shadow: inset 0 0 5px rgb(0 0 0 / 0.05);
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
 `;
 
 // Cabeçalho do relatório
@@ -56,6 +80,14 @@ export const CompanyLogo = styled.div`
   color: ${colors.primary};
   font-family: 'Montserrat', sans-serif;
   margin-bottom: 0.3rem;
+
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
 `;
 
 // Títulos no cabeçalho
@@ -64,6 +96,14 @@ export const HeaderTitle = styled.h1`
   margin: 0;
   font-weight: 700;
   color: ${colors.grayDark};
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 `;
 
 export const HeaderSubtitle = styled.p`
@@ -71,6 +111,14 @@ export const HeaderSubtitle = styled.p`
   font-weight: 500;
   color: ${colors.grayMedium};
   font-size: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
 `;
 
 // Badge da Ordem de Serviço no cabeçalho
@@ -94,6 +142,11 @@ export const ContentGrid = styled.div`
 
   @media (max-width: 720px) {
     flex-direction: column;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
   }
 `;
 
@@ -124,6 +177,13 @@ export const InfoRow = styled.div`
   &:last-child {
     border-bottom: none;
   }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    font-size: 0.85rem;
+  }
 `;
 
 // Label da informação (lado esquerdo)
@@ -134,6 +194,11 @@ export const InfoLabel = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+    white-space: normal;
+  }
 `;
 
 // Valor da informação (lado direito)
@@ -145,6 +210,11 @@ export const InfoValue = styled.div`
 
   &.highlight {
     color: ${colors.primaryDark};
+  }
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+    text-align: left;
   }
 `;
 
@@ -175,6 +245,23 @@ export const Table = styled.table`
     font-weight: 700;
     border-top: 2px solid ${colors.primary};
     background-color: ${colors.secondary};
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+    th, td {
+      padding: 0.5rem 0.3rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    th, td {
+      padding: 0.4rem 0.2rem;
+    }
   }
 `;
 
@@ -207,6 +294,14 @@ export const CheckboxSection = styled.div`
   font-size: 0.95rem;
   color: ${colors.grayDark};
   padding-top: 0.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
 `;
 
 // Cada item checkbox alinhado
@@ -220,6 +315,17 @@ export const CheckboxItem = styled.label`
     width: 18px;
     height: 18px;
     cursor: pointer;
+  }
+`;
+
+// Grid para checkboxes
+export const CheckboxGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.3rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -269,6 +375,12 @@ export const ButtonContainer = styled.div`
   gap: 1rem;
   margin-top: 2rem;
 
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
   @media print {
     display: none;
   }
@@ -291,6 +403,11 @@ export const Button = styled.button`
     background-color: ${props => props.className?.includes('primary') ? colors.primaryDark : colors.grayMedium};
     color: white;
   }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 `;
 
 // Loading e error
@@ -300,6 +417,11 @@ export const LoadingContainer = styled.div`
   color: ${colors.primary};
   font-size: 1.1rem;
   padding: 3rem 0;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    padding: 2rem 0;
+  }
 `;
 
 export const ErrorContainer = styled.div`
@@ -308,6 +430,11 @@ export const ErrorContainer = styled.div`
   color: ${colors.danger};
   font-size: 1.1rem;
   padding: 3rem 0;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    padding: 2rem 0;
+  }
 `;
 
 import { createGlobalStyle } from 'styled-components';

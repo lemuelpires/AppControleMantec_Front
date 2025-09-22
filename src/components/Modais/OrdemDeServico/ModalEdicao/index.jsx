@@ -159,7 +159,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         defeitoRelatado: item.defeitoRelatado || '',
         valorTotal: item.valorTotal || 0,
         formaPagamento: item.formaPagamento || '',
-        pago: item.pago || false,
+        pago: item.status === 'Entregue' ? true : (item.pago || false),
         tipoAtendimento: item.tipoAtendimento || '',
         prioridade: item.prioridade || '',
         numeroOS: item.numeroOS || 0,

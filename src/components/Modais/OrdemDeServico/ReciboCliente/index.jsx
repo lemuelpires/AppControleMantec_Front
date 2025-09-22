@@ -219,7 +219,7 @@ const ReciboCliente = ({ ordemDeServico, onClose }) => {
           <p className="subtitle">Assistência Técnica Especializada em Computadores, Celulares e Tablets</p>
         </CompanyInfo>
         <CompanyData>
-          <p><strong>CNPJ:</strong> 27.737.565/0001-02</p>
+          <p><strong>CNPJ: </strong> 27.737.565/0001-02</p>
           <p><strong>Telefone:</strong> (16) 3506 3698</p>
           <p><strong>Celular:</strong> (16) 99261-4410</p>
         </CompanyData>
