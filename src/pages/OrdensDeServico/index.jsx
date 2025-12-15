@@ -52,7 +52,19 @@ const OrdemDeServico = () => {
     try {
       const response = await apiCliente.get('/OrdemDeServico');
       const ordensAtivas = response.data.filter(ordem => ordem.ativo);
-      setOrdensDeServico(ordensAtivas);
+
+      // Ordena do mais recente para o mais antigo com base em `dataEntrada`.
+      const parseDate = (d) => {
+        if (!d) return new Date(0);
+        const dt = new Date(d);
+        if (!isNaN(dt)) return dt;
+        // tenta parsear strings ISO sem fuso
+        const alt = new Date(d.replace(/-/g, '/'));
+        return isNaN(alt) ? new Date(0) : alt;
+      };
+
+      const ordensOrdenadas = [...ordensAtivas].sort((a, b) => parseDate(b.dataEntrada) - parseDate(a.dataEntrada));
+      setOrdensDeServico(ordensOrdenadas);
 
       const clientesIds = new Set(ordensAtivas.map(o => o.clienteID));
       const funcionariosIds = new Set(ordensAtivas.map(o => o.funcionarioID));
