@@ -36,7 +36,6 @@ const OrdemDeServico = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [ordensDeServico, setOrdensDeServico] = useState([]);
   const [clientes, setClientes] = useState({});
-  const [funcionarios, setFuncionarios] = useState({});
   const [produtos, setProdutos] = useState({});
   const [servicos, setServicos] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,7 +66,6 @@ const OrdemDeServico = () => {
       setOrdensDeServico(ordensOrdenadas);
 
       const clientesIds = new Set(ordensAtivas.map(o => o.clienteID));
-      const funcionariosIds = new Set(ordensAtivas.map(o => o.funcionarioID));
 
       // Coleta IDs de produtos e serviços, considerando tanto formato antigo quanto arrays
       const produtosIds = new Set();
@@ -94,7 +92,6 @@ const OrdemDeServico = () => {
 
       await Promise.all([
         fetchMap(clientesIds, clientes, '/Cliente/', setClientes),
-        fetchMap(funcionariosIds, funcionarios, '/Funcionario/', setFuncionarios),
         fetchMap(produtosIds, produtos, '/Produto/', setProdutos),
         fetchMap(servicosIds, servicos, '/Servico/', setServicos),
       ]);
@@ -330,7 +327,6 @@ const OrdemDeServico = () => {
               <tr>
                 <th>Número OS</th>
                 <th>Cliente</th>
-                <HideMobileTh>Funcionário</HideMobileTh>
                 <HideMobileTh>Entrada</HideMobileTh>
                 <HideMobileTh>Conclusão</HideMobileTh>
                 <th style={{ textAlign: 'center' }}>Ações</th>
@@ -365,7 +361,6 @@ const OrdemDeServico = () => {
                   <tr key={ordem.id}>
                     <td>{ordem.numeroOS}</td>
                     <td>{clientes[ordem.clienteID]}</td>
-                    <HideMobile>{funcionarios[ordem.funcionarioID]}</HideMobile>
                     <HideMobile>{formatDate(ordem.dataEntrada)}</HideMobile>
                     <HideMobile>{formatDate(ordem.dataConclusao)}</HideMobile>
                     <td>

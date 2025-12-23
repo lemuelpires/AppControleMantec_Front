@@ -24,6 +24,7 @@ import ProtectedRoute from './routes/protectedRoute';
 import ModalCadastroUsuario from './components/Modais/CadastroUsuario';
 import ResetPasswordModal from './components/Modais/RedefinicaoSenha';
 import StatusOS from './pages/Status';
+import Orcamento from './pages/Orcamento';
 
 Modal.setAppElement('#root');
 
@@ -74,6 +75,7 @@ function App() {
           <Route path="/funcionarios" element={<ProtectedRoute element={<Funcionarios />} />} />
           <Route path="/estoque" element={<ProtectedRoute element={<Estoque />} />} />
           <Route path="/ordem-de-servico" element={<ProtectedRoute element={<OrdemDeServico />} />} />
+          <Route path="/orcamento" element={<ProtectedRoute element={<Orcamento />} />} />
           <Route path="/vendas" element={<ProtectedRoute element={<Vendas />} />} />
           <Route path="/produtos" element={<ProtectedRoute element={<Produtos />} />} />
           <Route path="/servicos" element={<ProtectedRoute element={<Servicos />} />} />
