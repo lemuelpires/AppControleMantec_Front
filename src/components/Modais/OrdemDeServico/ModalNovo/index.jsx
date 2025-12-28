@@ -33,6 +33,7 @@ const modalStyles = {
 };
 
 const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
+  const [submitting, setSubmitting] = useState(false);
   const [clienteOptions, setClienteOptions] = useState([]);
   const [funcionarioOptions, setFuncionarioOptions] = useState([]);
   const [produtoOptions, setProdutoOptions] = useState([]);
@@ -106,6 +107,7 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       const servicos = response.data.filter(servico => servico.ativo).map(servico => ({
         value: servico.id,
         label: servico.nome,
+        preco: servico.preco, // Adiciona o preço do serviço
       }));
       setServicoOptions(servicos);
     } catch (error) {
@@ -114,6 +116,8 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = async (formData) => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
       console.log('Dados do formulário antes do envio:', formData);
 
@@ -188,6 +192,8 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       onClose();
     } catch (error) {
       console.error('Erro ao salvar ordem de serviço:', error.response ? error.response.data : error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -224,6 +230,7 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
           initialValues={formData}
           onSubmit={handleSubmit}
           onClose={onClose}
+          submitting={submitting}
           clienteOptions={clienteOptions}
           funcionarioOptions={funcionarioOptions}
           produtoOptions={produtoOptions}

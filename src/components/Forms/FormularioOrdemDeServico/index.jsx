@@ -294,6 +294,7 @@ const FormularioOrdemDeServico = ({
   initialValues = {},
   onSubmit,
   onClose,
+  submitting,
   clienteOptions = [],
   funcionarioOptions = [],
   produtoOptions = [],
@@ -968,10 +969,10 @@ const FormularioOrdemDeServico = ({
               type="text"
               name="valorTotal"
               value={formatCurrency(formData.valorTotal)}
-              onChange={e => handleCurrencyChange(e, 'valorTotal')}
+              readOnly
               inputMode="decimal"
-              // pattern="[\d,.]+" // Remover esta linha!
               placeholder="R$ 0,00"
+              style={{ background: '#f8f9fa', color: '#2c3e50', fontWeight: '500' }}
             />
           </FormGroup>
           <FormGroup>

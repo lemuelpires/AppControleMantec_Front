@@ -123,6 +123,16 @@ const OrdemDeServico = () => {
     setOrdens(prev => prev.filter(o => o.id !== id));
   }, []);
 
+  const handleUpdate = useCallback(async (updatedData) => {
+    try {
+      const response = await apiCliente.put(`/OrdemDeServico/${updatedData.id}`, updatedData);
+      setOrdens(prev => prev.map(o => o.id === updatedData.id ? response.data : o));
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao atualizar ordem de serviço:', error);
+    }
+  }, []);
+
   const handleExport = () => {
     const ws = XLSX.utils.json_to_sheet(filteredOrdens);
     const wb = XLSX.utils.book_new();
@@ -253,7 +263,7 @@ const OrdemDeServico = () => {
       </PaginationContainer>
 
       <ModalDetalhesOrdemDeServico isOpen={modal === 'detalhes'} onClose={closeModal} item={selectedItem} />
-      <ModalEdicaoOrdemDeServico isOpen={modal === 'edicao'} onClose={closeModal} item={selectedItem} />
+      <ModalEdicaoOrdemDeServico isOpen={modal === 'edicao'} onClose={closeModal} item={selectedItem} onSubmit={handleUpdate} />
       <ModalNovoOrdemDeServico isOpen={modal === 'novo'} onClose={closeModal} />
     </OrdemDeServicoContainer>
   );
