@@ -1,416 +1,403 @@
 import styled, { keyframes } from 'styled-components';
 
-// Animação de entrada para os cards
 const fadeInUp = keyframes`
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-`;
-
-// Animação pulsante para ícones
-const pulse = keyframes`
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 export const StatusContainer = styled.div`
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-    position: relative;
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
-        pointer-events: none;
-    }
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  padding: 2rem;
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 export const StatusCard = styled.div`
-    max-width: 700px;
-    margin: 2rem auto 1rem auto;
-    border-radius: 18px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.08), 0 1.5px 6px rgba(0,0,0,0.03);
-    background: linear-gradient(120deg, #f8f9fc 70%, #e3eafc 100%);
-    padding: 2rem 1rem;
-    border: 1px solid #e1e7f0;
-    animation: ${fadeInUp} 0.7s cubic-bezier(.25,.8,.25,1);
-    transition: box-shadow 0.25s, transform 0.25s;
-    will-change: box-shadow, transform;
-    &:hover {
-        box-shadow: 0 16px 48px rgba(106,17,203,0.22), 0 2px 12px rgba(39,71,255,0.13);
-        transform: translateY(-2px) scale(1.012);
-    }
-    @media (max-width: 700px) {
-        max-width: 98vw;
-        padding: 1rem 0.5rem;
-        margin: 1rem auto;
-    }
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 2.5rem;
+  animation: ${fadeInUp} 0.5s ease-out;
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
 `;
 
-export const StatusHeader = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    @media (max-width: 700px) {
-        display: block;
-        justify-content: center;
-        align-items: flex-start;
-        margin-bottom: 1rem;
-    }
+export const StatusHeader = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
 `;
 
-export const StatusTitle = styled.h2`
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -1px;
-    margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    @media (max-width: 700px) {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
+export const StatusTitle = styled.h1`
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e2a5a;
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
 `;
 
 export const StatusShareGroup = styled.div`
-    display: flex;
-    gap: 0.7rem;
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
     justify-content: flex-end;
-    @media (max-width: 700px) {
-        justify-content: center;
-    }
+  }
 `;
 
 export const StatusShareButton = styled.button`
-    background: #ffffff;
-    border: none;
-    border-radius: 50%;
-    padding: 0.6rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &:hover {   
-        background: #f1f3f5;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        transform: translateY(-2px);
-    }
-    &:active {
-        transform: translateY(0);
-    }
-    @media (max-width: 700px) {
-        padding: 0.5rem;
-    }
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #495057;
+  transition: all 0.2s ease;
+  &:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+  }
+  @media (max-width: 768px) {
+    width: 50px;
+    height: 50px;
+  }
 `;
 
-export const OSSection = styled.div`
-    margin-bottom: 3.5rem; // Espaçamento maior entre os cards principais
-    @media (max-width: 700px) {
-        margin-bottom: 2.5rem;
-    }
+export const MainContent = styled.main`
+  display: grid;
+  gap: 2.5rem;
+  @media (max-width: 992px) {
+    gap: 2rem;
+  }
+`;
+
+export const InfoColumn = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+export const ActionColumn = styled.aside`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
 
 export const InfoSectionCard = styled.div`
-    background: #f8f9fc;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 2.5rem;
-    border: 1px solid #e1e7f0;
-    /* Sobretom para destaque */
-    &.highlight {
-        background: #e3eafc;
-    }
-    &:last-child {
-        margin-bottom: 0;
-    }
-    @media (max-width: 700px) {
-        padding: 1rem;
-        margin-bottom: 2rem;
-    }
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 15px;
+  padding: 1.5rem;
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
-export const ClienteNome = styled.div`
-    font-weight: bold;
-    color: #007bff;
-    font-size: 1.1rem;
-    margin-bottom: 0.7rem;
-    @media (max-width: 700px) {
-        font-size: 1rem;
-    }
+export const ClienteNome = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 1rem;
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
 `;
 
 export const StatusInfoRow = styled.div`
-    display: flex;
-    align-items: left;
-    gap: 0;
-    margin-bottom: 0.4rem;
-    @media (max-width: 700px) {
-        flex-direction: column;
-        gap: 0.2rem;
-    }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  &:not(:last-child) {
+    border-bottom: 1px solid #e9ecef;
+  }
 `;
 
 export const StatusInfoLabel = styled.span`
-    color: #6c757d;
-    font-weight: 500;
-    margin-right: 0.5rem;
-    text-align: left;
+  color: #6c757d;
+  font-size: 0.9rem;
 `;
 
 export const StatusInfoValue = styled.span`
-    color: #2c3e50;
-    font-weight: bold;
-    text-align: left;
+  color: #343a40;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: right;
 `;
 
 export const PrazoRestante = styled.span`
-    color: #28a745;
-    font-weight: bold;
-    margin-left: 0.5rem;
+  margin-left: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: ${({ status }) =>
+    status === 'Prazo vencido' ? '#dc3545' : '#28a745'};
 `;
 
 export const StatusLabelSection = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 `;
 
 export const Label = styled.span`
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 1rem;
+  color: #495057;
+  font-weight: 500;
+  font-size: 1.1rem;
 `;
 
 export const StatusStatusBadge = styled.span`
-    background: ${({ status }) =>
-        status === 'Concluído' ? 'linear-gradient(45deg, #28a745, #20c997)' :
-        status === 'Entregue' ? 'linear-gradient(45deg, #17a2b8, #20c997)' :
-        status === 'Cancelado' ? 'linear-gradient(45deg, #dc3545, #fd7e14)' :
-        status === 'Orçamento' ? 'linear-gradient(45deg, #ffc107, #fd7e14)' :
-        'linear-gradient(45deg, #007bff, #6610f2)'};
-    color: #fff;
-    border-radius: 20px;
-    padding: 0.4rem 1.2rem;
-    font-weight: bold;
-    font-size: 0.9rem;
-    margin-left: 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  background: ${({ status }) =>
+    ({
+      'Concluído': '#28a745',
+      'Entregue': '#17a2b8',
+      'Cancelado': '#dc3545',
+      'Orçamento': '#ffc107',
+      'Em andamento': '#007bff'
+    }[status] || '#6c757d')};
+  color: #fff;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-left: auto;
+  text-transform: uppercase;
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
 `;
 
-export const StatusFooter = styled.div`
-    color: #636e72;
-    font-size: 1rem;
-    padding: 1.5rem 0;
-    border-radius: 0 0 18px 18px;
-    text-align: center;
+const BaseActionCard = styled.div`
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+  }
+`;
+
+export const ActionCard = styled(BaseActionCard)`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+`;
+
+export const ActionTitle = styled.h3`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+`;
+
+export const ActionIcon = styled.div`
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+`;
+
+export const QrCode = styled.img`
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  margin: 1rem auto;
+  background: white;
+  padding: 5px;
+  @media (max-width: 768px) {
+    width: 120px;
+    height: 120px;
+  }
+`;
+
+const BaseButton = styled.button`
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+export const PixButton = styled(BaseButton)`
+  background-color: #fff;
+  color: #6a5acd;
+  margin-bottom: 0.5rem;
+  &:hover {
+    background-color: #f0f0ff;
+  }
+`;
+
+export const WhatsappButton = styled.a`
+  /* Inherits from BaseButton styles */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  
+  background-color: #25d366;
+  color: #fff;
+  &:hover {
+    background-color: #20c15a;
+  }
+`;
+
+export const HorarioCard = styled(BaseActionCard)`
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  color: #343a40;
+`;
+
+export const HorarioTitle = styled(ActionTitle)`
+  color: #343a40;
+`;
+
+export const HorarioIcon = styled(ActionIcon)`
+  color: #6c757d;
+`;
+
+export const HorarioList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #495057;
+`;
+
+export const HorarioItem = styled.li`
+  margin-bottom: 0.5rem;
+`;
+
+export const StatusFooter = styled.footer`
+  text-align: center;
+  margin-top: 2rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+`;
+
+// Timeline styles
+export const Timeline = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 20px; /* Alinha com o centro do ícone */
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background-color: #e9ecef;
+    z-index: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
     margin-top: 2rem;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(5px);
-    @media (max-width: 700px) {
-        font-size: 0.95rem;
-        padding: 1rem 0;
+    &::before {
+      top: 20px;
+      left: 20px;
+      bottom: 20px;
+      right: auto;
+      width: 2px;
+      height: auto;
     }
+  }
 `;
 
-// Nova seção extra
-export const StatusExtra = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    justify-content: space-around;
-    margin: 3.5rem auto; // Espaçamento maior entre containers principais
-    padding: 2rem 1rem;
-    background: linear-gradient(120deg, #e3eafc 0%, #f8f9fc 100%);
-    border-radius: 18px;
-    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.07);
-    max-width: 700px;
-    @media (max-width: 700px) {
-
-        flex-direction: column;
-        gap: 1rem;
-        margin: 2.5rem auto;
-        padding: 1rem 0.3rem;
-        max-width: 99vw;
+export const TimelineItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  color: ${({ active }) => (active ? '#007bff' : '#adb5bd')};
+  transition: color 0.3s ease;
+  text-align: center;
+  width: 100px;
+  
+  @media (max-width: 768px) {
+    flex-direction: row;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 2rem;
+    &:last-child {
+      margin-bottom: 0;
     }
+  }
 `;
 
-export const StatusExtraCard = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 1.5rem;
-    background: ${({ $bgcolor }) => $bgcolor || 'rgba(255, 255, 255, 0.8)'};
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 0;
-    color: #2c3e50;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    &:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    }
-    @media (max-width: 700px) {
-        padding: 1rem 0.5rem;
-        margin-bottom: 1rem;
-    }
+export const TimelineIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${({ active }) => (active ? '#007bff' : '#e9ecef')};
+  color: ${({ active }) => (active ? '#fff' : '#adb5bd')};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 4px solid #f8f9fa; /* Match card background */
+  transition: all 0.3s ease;
+  
+  ${TimelineItem}:hover & {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
 `;
 
-export const StatusExtraIcon = styled.div`
-    margin-bottom: 0.7rem;
-    font-size: 36px;
-    color: #6c5ce7;
-    filter: drop-shadow(0 2px 4px rgba(108, 92, 231, 0.3));
-    animation: ${pulse} 2s infinite;
-    &.clock {
-        color: #00b894;
-        font-size: 72px;
-        filter: drop-shadow(0 2px 4px rgba(0, 184, 148, 0.3));
-    }
-    @media (max-width: 700px) {
-        font-size: 30px;
-        &.clock {
-            font-size: 60px;
-        }
-    }
-`;
+export const TimelineContent = styled.div`
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
 
-export const StatusExtraQr = styled.img`
-    width: 140px;
-    height: 140px;
-    object-fit: contain;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    margin-bottom: 0.5rem;
-    @media (max-width: 700px) {
-        width: 110px;
-        height: 110px;
-    }
-`;
-
-export const StatusExtraQrLabel = styled.div`
-    font-size: 0.95rem;
-    color: #6c757d;
-    margin-bottom: 0.5rem;
-    @media (max-width: 700px) {
-        font-size: 0.85rem;
-    }
-`;
-
-export const StatusExtraPixLabel = styled.span`
-    font-size: 0.95rem;
-    color: #6c757d;
-    display: block;
-    margin-bottom: 0.3rem;
-    @media (max-width: 700px) {
-        font-size: 0.85rem;
-    }
-`;
-
-export const StatusExtraPixRow = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    @media (max-width: 700px) {
-        flex-direction: column;
-    }
-`;
-
-export const StatusExtraPixInput = styled.input`
-    width: 70%;
-    font-size: 0.9rem;
-    padding: 0.3rem;
-    border: 1px solid #e1e7f0;
-    border-radius: 6px;
-    background: #f8f9fa;
-    color: #2c3e50;
-    @media (max-width: 700px) {
-        font-size: 0.85rem;
-    }
-`;
-
-export const StatusExtraPixBtn = styled.button`
-    padding: 0.5rem 1rem;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-    }
-    @media (max-width: 700px) {
-        font-size: 0.85rem;
-        margin-top: 0.5rem;
-        padding: 0.4rem 0.8rem;
-    }
-`;
-
-export const StatusExtraWhatsappRow = styled.div`
-    margin: 1rem 0 0 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.7rem;
-`;
-
-export const StatusExtraWhatsappIcon = styled.div`
-    font-size: 28px;
-    color: #00b894;
-    filter: drop-shadow(0 2px 4px rgba(0, 184, 148, 0.3));
-    @media (max-width: 700px) {
-        font-size: 24px;
-    }
-`;
-
-export const StatusExtraWhatsappLink = styled.a`
-    color: #00b894;
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 1.05rem;
-    transition: color 0.2s ease;
-    &:hover {
-        color: #00cec9;
-        text-decoration: underline;
-    }
-    @media (max-width: 700px) {
-        font-size: 0.95rem;
-    }
+  @media (max-width: 768px) {
+    margin-top: 0;
+  }
 `;
 

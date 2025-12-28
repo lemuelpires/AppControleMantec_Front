@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
-import { FaShareAlt, FaWhatsapp, FaCreditCard, FaClock } from 'react-icons/fa';
+import { FaShareAlt, FaWhatsapp, FaCreditCard, FaClock, FaCalendarCheck, FaBoxOpen, FaClipboardList, FaPrint } from 'react-icons/fa';
 import qrsumup from '../../assets/qrsumup.jpeg';
 
 import {
@@ -11,8 +11,9 @@ import {
   StatusTitle,
   StatusShareGroup,
   StatusShareButton,
-  OSSection,
-  StatusStatusBadge,
+  MainContent,
+  InfoColumn,
+  ActionColumn,
   InfoSectionCard,
   ClienteNome,
   StatusInfoRow,
@@ -22,17 +23,23 @@ import {
   StatusFooter,
   Label,
   StatusLabelSection,
-  StatusExtra,
-  StatusExtraCard,
-  StatusExtraIcon,
-  StatusExtraQr,
-  StatusExtraPixBtn,
-  StatusExtraWhatsappRow,
-  StatusExtraWhatsappIcon,
-  StatusExtraWhatsappLink
+  StatusStatusBadge,
+  ActionCard,
+  ActionTitle,
+  ActionIcon,
+  QrCode,
+  PixButton,
+  WhatsappButton,
+  HorarioCard,
+  HorarioTitle,
+  HorarioIcon,
+  HorarioList,
+  HorarioItem,
+  Timeline,
+  TimelineItem,
+  TimelineIcon,
+  TimelineContent
 } from './style';
-
-/* ================= UTILIDADES ================= */
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '--/--/----';
@@ -53,7 +60,32 @@ const prazoRestante = (dataConclusao, status) => {
   return `${diff} dia(s)`;
 };
 
-/* ================= COMPONENTE ================= */
+const StatusTimeline = ({ status }) => {
+  const statuses = ['Orçamento', 'Em andamento', 'Concluído', 'Entregue'];
+  const currentStatusIndex = statuses.indexOf(status);
+
+  const getStatusIcon = (s) => {
+    switch (s) {
+      case 'Orçamento': return <FaClipboardList />;
+      case 'Em andamento': return <FaBoxOpen />;
+      case 'Concluído': return <FaCalendarCheck />;
+      case 'Entregue': return <FaPrint />;
+      default: return <FaClipboardList />;
+    }
+  };
+
+  return (
+    <Timeline>
+      {statuses.map((s, index) => (
+        <TimelineItem key={s} active={index <= currentStatusIndex}>
+          <TimelineIcon active={index <= currentStatusIndex}>{getStatusIcon(s)}</TimelineIcon>
+          <TimelineContent>{s}</TimelineContent>
+        </TimelineItem>
+      ))}
+    </Timeline>
+  );
+};
+
 
 const StatusOS = () => {
   const { id } = useParams();
@@ -61,21 +93,17 @@ const StatusOS = () => {
   const [cliente, setCliente] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* ========= FETCH OTIMIZADO ========= */
   useEffect(() => {
     const fetchDados = async () => {
       try {
         setLoading(true);
-
-        // 1️⃣ BUSCA APENAS A OS NECESSÁRIA
         const osRes = id
           ? await apiCliente.get(`/OrdemDeServico/${id}`)
-          : await apiCliente.get('/OrdemDeServico');
+          : (await apiCliente.get('/OrdemDeServico')).data?.[0];
 
-        const osData = id ? osRes.data : osRes.data?.[0];
+        const osData = id ? osRes.data : osRes;
         setOrdem(osData);
 
-        // 2️⃣ BUSCA CLIENTE APENAS SE EXISTIR
         if (osData?.clienteID) {
           const clienteRes = await apiCliente.get(`/Cliente/${osData.clienteID}`);
           setCliente(clienteRes.data);
@@ -92,16 +120,16 @@ const StatusOS = () => {
     fetchDados();
   }, [id]);
 
-  /* ========= MEMOS ========= */
   const clienteTelefone = cliente?.telefone || '';
-  const isMobile = useMemo(() => window.innerWidth <= 700, []);
 
-  /* ========= AÇÕES ========= */
   const handleShare = () => {
     const url = window.location.href;
-    navigator.share
-      ? navigator.share({ title: 'Status da OS', url })
-      : navigator.clipboard.writeText(url);
+    if (navigator.share) {
+      navigator.share({ title: 'Status da OS', url });
+    } else {
+      navigator.clipboard.writeText(url);
+      alert('Link copiado para a área de transferência!');
+    }
   };
 
   const handleWhatsApp = () => {
@@ -109,12 +137,11 @@ const StatusOS = () => {
     window.open(`https://wa.me/${clienteTelefone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
+  const cnpj = "27.737.565/0001-02";
   const handleCopyCnpj = () => {
-    navigator.clipboard.writeText('27737565000102');
-    alert('CNPJ copiado!');
+    navigator.clipboard.writeText(cnpj.replace(/\D/g, '')); // Copy without formatting
+    alert('CNPJ 27737565000102 copiado!');
   };
-
-  /* ================= RENDER ================= */
 
   if (loading) {
     return (
@@ -136,111 +163,116 @@ const StatusOS = () => {
     );
   }
 
+  const prazo = prazoRestante(ordem.dataConclusao, ordem.status);
+
   return (
     <StatusContainer>
       <StatusCard>
         <StatusHeader>
           <StatusTitle>Status da Ordem de Serviço</StatusTitle>
-
           <StatusShareGroup>
-            <StatusShareButton onClick={handleShare}>
-              <FaShareAlt size={isMobile ? 22 : 26} />
+            <StatusShareButton onClick={handleShare} aria-label="Compartilhar">
+              <FaShareAlt size={22} />
             </StatusShareButton>
-
             {clienteTelefone && (
-              <StatusShareButton onClick={handleWhatsApp}>
-                <FaWhatsapp size={isMobile ? 22 : 26} color="#25D366" />
+              <StatusShareButton onClick={handleWhatsApp} aria-label="Enviar por WhatsApp">
+                <FaWhatsapp size={22} color="#25D366" />
               </StatusShareButton>
             )}
           </StatusShareGroup>
         </StatusHeader>
 
-        <OSSection>
-          <InfoSectionCard>
-            {cliente?.nome && <ClienteNome>{cliente.nome}</ClienteNome>}
+        <MainContent>
+          <InfoColumn>
+            <InfoSectionCard>
+              {cliente?.nome && <ClienteNome>{cliente.nome}</ClienteNome>}
+              <StatusInfoRow>
+                <StatusInfoLabel>Nº OS:</StatusInfoLabel>
+                <StatusInfoValue>{ordem.numeroOS}</StatusInfoValue>
+              </StatusInfoRow>
+              <StatusInfoRow>
+                <StatusInfoLabel>Entrada:</StatusInfoLabel>
+                <StatusInfoValue>{formatDate(ordem.dataEntrada)}</StatusInfoValue>
+              </StatusInfoRow>
+              <StatusInfoRow>
+                <StatusInfoLabel>Prazo:</StatusInfoLabel>
+                <StatusInfoValue>
+                  {formatDate(ordem.dataConclusao)}
+                  <PrazoRestante status={prazo}>
+                    ({prazo})
+                  </PrazoRestante>
+                </StatusInfoValue>
+              </StatusInfoRow>
+            </InfoSectionCard>
 
-            <StatusInfoRow>
-              <StatusInfoLabel>Nº OS:</StatusInfoLabel>
-              <StatusInfoValue>{ordem.numeroOS}</StatusInfoValue>
-            </StatusInfoRow>
+            <InfoSectionCard>
+              <StatusLabelSection>
+                <Label>Status:</Label>
+                <StatusStatusBadge status={ordem.status}>
+                  {ordem.status}
+                </StatusStatusBadge>
+              </StatusLabelSection>
+              <StatusTimeline status={ordem.status} />
+            </InfoSectionCard>
 
-            <StatusInfoRow>
-              <StatusInfoLabel>Entrada:</StatusInfoLabel>
-              <StatusInfoValue>{formatDate(ordem.dataEntrada)}</StatusInfoValue>
-            </StatusInfoRow>
+            <InfoSectionCard>
+              <StatusInfoRow>
+                <StatusInfoLabel>Valor:</StatusInfoLabel>
+                <StatusInfoValue>R$ {ordem.valorTotal}</StatusInfoValue>
+              </StatusInfoRow>
+              <StatusInfoRow>
+                <StatusInfoLabel>Pago:</StatusInfoLabel>
+                <StatusInfoValue>{ordem.pago ? 'Sim' : 'Não'}</StatusInfoValue>
+              </StatusInfoRow>
+            </InfoSectionCard>
+          </InfoColumn>
 
-            <StatusInfoRow>
-              <StatusInfoLabel>Prazo:</StatusInfoLabel>
-              <StatusInfoValue>
-                {formatDate(ordem.dataConclusao)}
-                <PrazoRestante>
-                  ({prazoRestante(ordem.dataConclusao, ordem.status)})
-                </PrazoRestante>
-              </StatusInfoValue>
-            </StatusInfoRow>
-          </InfoSectionCard>
-
-          <InfoSectionCard>
-            <StatusLabelSection>
-              <Label>Status:</Label>
-              <StatusStatusBadge status={ordem.status}>
-                {ordem.status}
-              </StatusStatusBadge>
-            </StatusLabelSection>
-          </InfoSectionCard>
-
-          <InfoSectionCard>
-            <StatusInfoRow>
-              <StatusInfoLabel>Valor:</StatusInfoLabel>
-              <StatusInfoValue>R$ {ordem.valorTotal}</StatusInfoValue>
-            </StatusInfoRow>
-
-            <StatusInfoRow>
-              <StatusInfoLabel>Pago:</StatusInfoLabel>
-              <StatusInfoValue>{ordem.pago ? 'Sim' : 'Não'}</StatusInfoValue>
-            </StatusInfoRow>
-          </InfoSectionCard>
-        </OSSection>
+          <ActionColumn>
+            <ActionCard>
+              <ActionTitle><FaCreditCard size={24} /> Formas de Pagamento</ActionTitle>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', width: '100%', color: '#343a40' }}>
+                <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                  <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>📱</div>
+                  <strong>Pix (QR Code)</strong><br />
+                  <span style={{ fontSize: '0.9em', color: '#666' }}>Escaneie para pagar via Pix</span><br />
+                  <QrCode src={qrsumup} alt="QR Code Pagamento Pix" style={{ width: '80px', height: '80px', marginTop: '0.5em' }} />
+                </div>
+                <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                  <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>🏦</div>
+                  <strong>Pix (CNPJ)</strong><br />
+                  <span style={{ fontSize: '0.9em', color: '#666' }}>27.737.565/0001-02</span><br />
+                  <PixButton onClick={handleCopyCnpj} title="Copiar CNPJ" style={{ marginTop: '0.5em', padding: '0.5em 1em', fontSize: '0.9em' }} > Copiar CNPJ </PixButton>
+                </div>
+                <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                  <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>💵</div>
+                  <strong>Dinheiro (Presencial)</strong><br />
+                  <span style={{ fontSize: '0.9em', color: '#666' }}>Pague na retirada do equipamento</span>
+                </div>
+                <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
+                  <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>💳</div>
+                  <strong>Cartão (Presencial)</strong><br />
+                  <span style={{ fontSize: '0.9em', color: '#666' }}>Aceitamos crédito e débito</span>
+                </div>
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '1em' }}>
+                <WhatsappButton href="https://wa.me/5516992614410?text=Olá! Segue o comprovante de pagamento." target="_blank" rel="noopener noreferrer" > 
+                    <FaWhatsapp size={25} /> Envie comprovante pelo WhatsApp 
+                </WhatsappButton>
+              </div>
+            </ActionCard>
+            <HorarioCard>
+                <HorarioIcon><FaClock size={45} color='green'/></HorarioIcon>
+                <HorarioTitle>Horários de Retirada</HorarioTitle>
+                <p>
+                    <strong>Segunda a Sexta:</strong> 09:00 às 18:00<br />
+                    <strong>Sábados:</strong> 09:00 às 17:00
+                </p>
+            </HorarioCard>
+          </ActionColumn>
+        </MainContent>
       </StatusCard>
-
-      {/* ======= PAGAMENTO ======= */}
-      <StatusExtra>
-        <StatusExtraCard>
-          <StatusExtraIcon>
-            <FaCreditCard />
-          </StatusExtraIcon>
-
-          <StatusExtraQr src={qrsumup} />
-          <StatusExtraPixBtn onClick={handleCopyCnpj}>
-            Copiar CNPJ Pix
-          </StatusExtraPixBtn>
-
-          <StatusExtraWhatsappRow>
-            <StatusExtraWhatsappIcon>
-              <FaWhatsapp />
-            </StatusExtraWhatsappIcon>
-            <StatusExtraWhatsappLink
-              href="https://wa.me/5516992614410"
-              target="_blank"
-            >
-              Enviar comprovante
-            </StatusExtraWhatsappLink>
-          </StatusExtraWhatsappRow>
-        </StatusExtraCard>
-
-        <StatusExtraCard>
-          <StatusExtraIcon className="clock">
-            <FaClock />
-          </StatusExtraIcon>
-          <p>
-            <strong>Seg–Sex:</strong> 09h–18h<br />
-            <strong>Sáb:</strong> 09h–17h
-          </p>
-        </StatusExtraCard>
-      </StatusExtra>
-
       <StatusFooter>
-        © {new Date().getFullYear()} Mantec Informática
+        © {new Date().getFullYear()} Mantec Informática. Todos os direitos reservados.
       </StatusFooter>
     </StatusContainer>
   );
