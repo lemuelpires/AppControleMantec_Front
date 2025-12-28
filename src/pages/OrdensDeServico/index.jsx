@@ -65,32 +65,40 @@ const OrdemDeServico = () => {
      FETCH OTIMIZADO
   ========================= */
 
+  const fetchOrdens = useCallback(async () => {
+    try {
+      const osRes = await apiCliente.get('/OrdemDeServico');
+      setOrdens(
+        osRes.data
+          .filter(o => o.ativo)
+          .sort((a, b) => parseDate(b.dataEntrada) - parseDate(a.dataEntrada))
+      );
+    } catch (e) {
+      console.error('Erro ao carregar ordens de serviço:', e);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchAll = async () => {
+    const fetchAllInitialData = async () => {
       try {
-        const [osRes, cliRes, prodRes, servRes] = await Promise.all([
-          apiCliente.get('/OrdemDeServico'),
+        await fetchOrdens(); // Fetch ordens using the new function
+
+        const [cliRes, prodRes, servRes] = await Promise.all([
           apiCliente.get('/Cliente'),
           apiCliente.get('/Produto'),
           apiCliente.get('/Servico'),
         ]);
 
-        setOrdens(
-          osRes.data
-            .filter(o => o.ativo)
-            .sort((a, b) => parseDate(b.dataEntrada) - parseDate(a.dataEntrada))
-        );
-
         setClientes(Object.fromEntries(cliRes.data.map(c => [c.id, c.nome])));
         setProdutos(Object.fromEntries(prodRes.data.map(p => [p.id, p.nome])));
         setServicos(Object.fromEntries(servRes.data.map(s => [s.id, s.nome])));
       } catch (e) {
-        console.error('Erro ao carregar dados:', e);
+        console.error('Erro ao carregar dados iniciais:', e);
       }
     };
 
-    fetchAll();
-  }, []);
+    fetchAllInitialData();
+  }, [fetchOrdens]); // Add fetchOrdens to dependency array
 
   /* =========================
      FILTRO + PAGINAÇÃO
@@ -149,6 +157,11 @@ const OrdemDeServico = () => {
     setModal(null);
     setSelectedItem(null);
   };
+
+  const handleOrderSaved = useCallback(() => {
+    fetchOrdens(); // Refresh the list
+    closeModal();   // Close the modal
+  }, [fetchOrdens]);
 
   /* =========================
      FORMATADORES
@@ -263,8 +276,8 @@ const OrdemDeServico = () => {
       </PaginationContainer>
 
       <ModalDetalhesOrdemDeServico isOpen={modal === 'detalhes'} onClose={closeModal} item={selectedItem} />
-      <ModalEdicaoOrdemDeServico isOpen={modal === 'edicao'} onClose={closeModal} item={selectedItem} onSubmit={handleUpdate} />
-      <ModalNovoOrdemDeServico isOpen={modal === 'novo'} onClose={closeModal} />
+      <ModalEdicaoOrdemDeServico isOpen={modal === 'edicao'} onClose={closeModal} item={selectedItem} onSubmit={handleUpdate} onOrderSaved={handleOrderSaved} />
+      <ModalNovoOrdemDeServico isOpen={modal === 'novo'} onClose={closeModal} onOrderSaved={handleOrderSaved} />
     </OrdemDeServicoContainer>
   );
 };

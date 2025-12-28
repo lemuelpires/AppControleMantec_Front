@@ -32,7 +32,7 @@ const modalStyles = {
   },
 };
 
-const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
+const ModalNovaOrdemDeServico = ({ isOpen, onClose, onOrderSaved }) => {
   const [submitting, setSubmitting] = useState(false);
   const [clienteOptions, setClienteOptions] = useState([]);
   const [funcionarioOptions, setFuncionarioOptions] = useState([]);
@@ -156,39 +156,9 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose }) => {
       const response = await apiCliente.post('/OrdemDeServico', ordemDeServicoDto);
       console.log('Ordem de Serviço criada:', response.data);
 
-      // Baixa de estoque apenas se status for "Concluido"
-      if (formData.status === "Concluido") {
-        // Se vier pelo campo produtos (formato novo)
-        if (Array.isArray(formData.produtos) && formData.produtos.length > 0) {
-          for (const produto of formData.produtos) {
-            if (produto.produtoID && produto.quantidade) {
-              const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
-              const quantidadeAtual = Number(produtoAtual.data.quantidade) || 0;
-              const quantidadeBaixa = Number(produto.quantidade) || 0;
-              const novaQuantidade = quantidadeAtual - quantidadeBaixa;
-              await apiCliente.put(`/Produto/${produto.produtoID}`, {
-                ...produtoAtual.data,
-                quantidade: novaQuantidade
-              });
-            }
-          }
-        }
-        // Se vier pelo campo produtoIDs (formato antigo)
-        else if (Array.isArray(formData.produtoIDs) && formData.produtoIDs.length > 0) {
-          for (const produtoID of formData.produtoIDs) {
-            const produtoAtual = await apiCliente.get(`/Produto/${produtoID}`);
-            const quantidadeAtual = Number(produtoAtual.data.quantidade) || 0;
-            // Usa quantidadeProduto do DTO ou 1 como padrão
-            const quantidadeBaixa = Number(formData.quantidadeProduto) || 1;
-            const novaQuantidade = quantidadeAtual - quantidadeBaixa;
-            await apiCliente.put(`/Produto/${produtoID}`, {
-              ...produtoAtual.data,
-              quantidade: novaQuantidade
-            });
-          }
-        }
+      if (onOrderSaved) {
+        onOrderSaved();
       }
-
       onClose();
     } catch (error) {
       console.error('Erro ao salvar ordem de serviço:', error.response ? error.response.data : error.message);

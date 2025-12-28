@@ -32,7 +32,8 @@ const modalStyles = {
   },
 };
 
-const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
+const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onOrderSaved }) => {
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     id: '',
     clienteID: '',
@@ -170,6 +171,8 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
     }
   }, [item, isOpen]);
   const handleSubmit = async (data) => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
       console.log('Dados do formulário de edição antes do envio:', data);
 
@@ -200,7 +203,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         dataConclusao: dataConclusaoFormatada,
       };
 
-      await onSubmit(ordemData);
+      await apiCliente.put(`/OrdemDeServico/${ordemData.id}`, ordemData);
 
       // Se mudou para "Concluido", subtrair quantidades
       if (newStatus === "Concluido" && oldStatus !== "Concluido" && Array.isArray(data.produtos)) {
@@ -216,9 +219,12 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
         }
       }
 
-      onClose();
+      onOrderSaved(); // Notify parent to refresh
     } catch (error) {
       console.error('Erro ao salvar ordem de serviço:', error);
+    } finally {
+      setSubmitting(false);
+      onClose(); // Close modal after successful save or error
     }
   };
 
@@ -238,6 +244,7 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onSubmit }) => {
           initialValues={formData} // Todos os campos, inclusive valorMaoDeObra, são passados corretamente
           onSubmit={handleSubmit}
           onClose={onClose}
+          submitting={submitting}
           clienteOptions={clienteOptions}
           funcionarioOptions={funcionarioOptions}
           produtoOptions={produtoOptions}

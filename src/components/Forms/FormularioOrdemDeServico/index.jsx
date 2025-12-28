@@ -1043,8 +1043,10 @@ const FormularioOrdemDeServico = ({
         </FormGroup>
 
         <EspacamentoButton>
-          <Button type="submit" className="save">Salvar</Button>
-          <Button type="button" className="cancel" onClick={onClose}>Cancelar</Button>
+          <Button type="submit" className="save" disabled={submitting}>
+            {submitting ? 'Salvando...' : 'Salvar'}
+          </Button>
+          <Button type="button" className="cancel" onClick={onClose} disabled={submitting}>Cancelar</Button>
         </EspacamentoButton>
       </Form>
     </FormContainer>
