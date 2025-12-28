@@ -182,7 +182,7 @@ const Vendas = () => {
       {
         Header: 'Ações',
         Cell: ({ row }) => (
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
             <ActionButton
               onClick={() => {
                 setOrdemSelecionada(row.original);
