@@ -20,7 +20,8 @@ import {
   FaShoppingCart,
   FaUserPlus,
   FaTools,
-  FaWarehouse
+  FaWarehouse,
+  FaAddressBook
 } from 'react-icons/fa';
 import useAuthentication from '../../hooks/userAuthentication';
 import {
@@ -40,6 +41,7 @@ import {
   LoginIconWrapper,
   MenuOverlay,
 } from './style';
+import { FaBook } from 'react-icons/fa6';
 
 const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -212,6 +214,12 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                       <SubMenuLink to="/vendas" onClick={toggleMenu}>
                         <FaShoppingCart size="0.9em" />
                         Vendas
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink to="/orcamento" onClick={toggleMenu}>
+                        <FaBook size="0.9em" />
+                        Orçamentos
                       </SubMenuLink>
                     </SubMenuItem>
                   </SubMenu>

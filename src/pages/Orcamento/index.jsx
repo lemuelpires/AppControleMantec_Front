@@ -313,7 +313,14 @@ const Orcamento = () => {
 					</PaginationButton>
 				</PaginationContainer>
 
-				<ModalDetalhesOrcamento isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
+				<ModalDetalhesOrcamento 
+					isOpen={isDetalhesModalOpen} 
+					onClose={closeModal} 
+					item={selectedItem} 
+					cliente={selectedItem ? clientes[selectedItem.clienteID] : ''}
+					produtos={produtos}
+					servicos={servicos}
+				/>
 				<ModalEdicaoOrcamento isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
 				<ModalNovoOrcamento isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
 			</>
