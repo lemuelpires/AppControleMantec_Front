@@ -72,14 +72,18 @@ const Vendas = () => {
         clientes[c.id] = c.nome;
       });
       setClientesMap(clientes);
-      const ordensAtivas = ordensRes.data
-        .filter(o => o.ativo)
+      const ordensDeVenda = ordensRes.data
+        .filter(o => {
+          if (!o.ativo) return false;
+          const status = (o.status || '').toLowerCase();
+          return status === 'concluido' || status === 'entregue';
+        })
         .sort(
           (a, b) =>
             new Date(b.dataConclusao || b.dataEntrada) -
             new Date(a.dataConclusao || a.dataEntrada)
         );
-      setOrdens(ordensAtivas);
+      setOrdens(ordensDeVenda);
     } catch (err) {
       setError('Não foi possível carregar os dados de vendas. Verifique sua conexão ou tente novamente mais tarde.');
       console.error('Erro ao carregar vendas:', err);
@@ -254,9 +258,6 @@ const Vendas = () => {
           <option value="">Todos os status</option>
           <option value="Entregue">Entregue</option>
           <option value="Concluido">Concluído</option>
-          <option value="Em andamento">Em andamento</option>
-          <option value="Cancelado">Cancelado</option>
-          {/* Adicione outros status conforme necessário */}
         </FiltroSelect>
         <FiltroInput
           type="date"
