@@ -100,7 +100,7 @@ export const SearchInput = styled.input`
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 280px;
+  min-width: 250px;
   
   &::placeholder {
     color: #6c757d;
@@ -150,6 +150,41 @@ export const PerPageSelect = styled.select`
   @media (max-width: 640px) {
     min-width: unset;
     width: 100%;
+  }
+`;
+
+export const SelectStatus = styled.select`
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(108, 117, 125, 0.2);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2c3e50;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 180px;
+  margin-left: 1rem;
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    transform: translateY(-1px);
+  }
+
+  option {
+    background: white;
+    color: #2c3e50;
+    padding: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    min-width: unset;
+    width: 100%;
+    margin-left: 0;
   }
 `;
 
@@ -306,7 +341,7 @@ export const ActionButton = styled.button`
   svg {
     width: 14px !important;
     height: 14px !important;
-    color: inherit;
+    color: white;
   }
   
   &.view {

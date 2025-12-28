@@ -104,14 +104,27 @@ export const StatusShareGroup = styled.div`
 `;
 
 export const StatusShareButton = styled.button`
-    background: linear-gradient(90deg,#007bff,#28a745);
-    border-radius: 8px;
-    padding: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+    background: #ffffff;
     border: none;
+    border-radius: 50%;
+    padding: 0.6rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    cursor: pointer;
+    justify-content: center;
+    &:hover {   
+        background: #f1f3f5;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    &:active {
+        transform: translateY(0);
+    }
+    @media (max-width: 700px) {
+        padding: 0.5rem;
+    }
 `;
 
 export const OSSection = styled.div`

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   OrdemDeServicoContainer,
   OrdemDeServicoTitle,
   HeaderControls,
   SearchContainer,
   SearchInput,
+  SelectStatus,
   PerPageSelect,
   AddButton,
   OrdemDeServicoTableWrapper,
@@ -29,404 +30,231 @@ import * as XLSX from 'xlsx';
 
 Modal.setAppElement('#root');
 
+/* =========================
+   UTILIDADES
+========================= */
+
+const parseDate = d => {
+  if (!d) return new Date(0);
+  const dt = new Date(d);
+  return isNaN(dt) ? new Date(0) : dt;
+};
+
+const formatDate = d =>
+  d ? new Date(d).toLocaleDateString('pt-BR') : '--/--/----';
+
+/* =========================
+   COMPONENTE
+========================= */
+
 const OrdemDeServico = () => {
-  const [isDetalhesModalOpen, setIsDetalhesModalOpen] = useState(false);
-  const [isEdicaoModalOpen, setIsEdicaoModalOpen] = useState(false);
-  const [isNovoModalOpen, setIsNovoModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [ordensDeServico, setOrdensDeServico] = useState([]);
+  const [ordens, setOrdens] = useState([]);
   const [clientes, setClientes] = useState({});
   const [produtos, setProdutos] = useState({});
   const [servicos, setServicos] = useState({});
+
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modal, setModal] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
-  const [statusFilter, setStatusFilter] = useState('');
+
+  /* =========================
+     FETCH OTIMIZADO
+  ========================= */
 
   useEffect(() => {
-    fetchOrdensDeServico();
+    const fetchAll = async () => {
+      try {
+        const [osRes, cliRes, prodRes, servRes] = await Promise.all([
+          apiCliente.get('/OrdemDeServico'),
+          apiCliente.get('/Cliente'),
+          apiCliente.get('/Produto'),
+          apiCliente.get('/Servico'),
+        ]);
+
+        setOrdens(
+          osRes.data
+            .filter(o => o.ativo)
+            .sort((a, b) => parseDate(b.dataEntrada) - parseDate(a.dataEntrada))
+        );
+
+        setClientes(Object.fromEntries(cliRes.data.map(c => [c.id, c.nome])));
+        setProdutos(Object.fromEntries(prodRes.data.map(p => [p.id, p.nome])));
+        setServicos(Object.fromEntries(servRes.data.map(s => [s.id, s.nome])));
+      } catch (e) {
+        console.error('Erro ao carregar dados:', e);
+      }
+    };
+
+    fetchAll();
   }, []);
 
-  const fetchOrdensDeServico = async () => {
-    try {
-      const response = await apiCliente.get('/OrdemDeServico');
-      const ordensAtivas = response.data.filter(ordem => ordem.ativo);
+  /* =========================
+     FILTRO + PAGINAÇÃO
+  ========================= */
 
-      // Ordena do mais recente para o mais antigo com base em `dataEntrada`.
-      const parseDate = (d) => {
-        if (!d) return new Date(0);
-        const dt = new Date(d);
-        if (!isNaN(dt)) return dt;
-        // tenta parsear strings ISO sem fuso
-        const alt = new Date(d.replace(/-/g, '/'));
-        return isNaN(alt) ? new Date(0) : alt;
-      };
+  const filteredOrdens = useMemo(() => {
+    return ordens.filter(o => {
+      const nomeCliente = clientes[o.clienteID]?.toLowerCase() || '';
+      return (
+        nomeCliente.includes(searchTerm.toLowerCase()) &&
+        (!statusFilter || o.status === statusFilter)
+      );
+    });
+  }, [ordens, clientes, searchTerm, statusFilter]);
 
-      const ordensOrdenadas = [...ordensAtivas].sort((a, b) => parseDate(b.dataEntrada) - parseDate(a.dataEntrada));
-      setOrdensDeServico(ordensOrdenadas);
+  const totalPages = Math.max(1, Math.ceil(filteredOrdens.length / itemsPerPage));
 
-      const clientesIds = new Set(ordensAtivas.map(o => o.clienteID));
+  const paginatedOrdens = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredOrdens.slice(start, start + itemsPerPage);
+  }, [filteredOrdens, currentPage, itemsPerPage]);
 
-      // Coleta IDs de produtos e serviços, considerando tanto formato antigo quanto arrays
-      const produtosIds = new Set();
-      const servicosIds = new Set();
+  /* =========================
+     AÇÕES
+  ========================= */
 
-      ordensAtivas.forEach(ordem => {
-        // Formato antigo (compatibilidade)
-        if (ordem.produtoID) produtosIds.add(ordem.produtoID);
-        if (ordem.servicoID) servicosIds.add(ordem.servicoID);
-
-        // Formato novo (arrays)
-        if (ordem.produtos && Array.isArray(ordem.produtos)) {
-          ordem.produtos.forEach(produto => {
-            if (produto.produtoID) produtosIds.add(produto.produtoID);
-          });
-        }
-
-        if (ordem.servicos && Array.isArray(ordem.servicos)) {
-          ordem.servicos.forEach(servico => {
-            if (servico.servicoID) servicosIds.add(servico.servicoID);
-          });
-        }
-      });
-
-      await Promise.all([
-        fetchMap(clientesIds, clientes, '/Cliente/', setClientes),
-        fetchMap(produtosIds, produtos, '/Produto/', setProdutos),
-        fetchMap(servicosIds, servicos, '/Servico/', setServicos),
-      ]);
-    } catch (error) {
-      console.error('Erro ao buscar ordens de serviço:', error);
-    }
-  };
-
-  const fetchMap = async (ids, existing, endpoint, setState) => {
-    const dataMap = {};
-    await Promise.all(Array.from(ids).map(async id => {
-      if (!existing[id]) {
-        const response = await apiCliente.get(`${endpoint}${id}`);
-        dataMap[id] = response.data.nome;
-      }
-    }));
-    setState(prev => ({ ...prev, ...dataMap }));
-  };
-
-  const handleExcluir = async (id) => {
-    if (window.confirm('Deseja excluir esta ordem de serviço?')) {
-      try {
-        await apiCliente.put(`/OrdemDeServico/desativar/${id}`);
-        fetchOrdensDeServico();
-        alert('Ordem de Serviço excluída com sucesso!');
-      } catch (error) {
-        console.error('Erro ao excluir ordem de serviço:', error);
-      }
-    }
-  };
-
-  const openDetalhesModal = (item) => {
-    setSelectedItem(item);
-    setIsDetalhesModalOpen(true);
-  };
-
-  const openEdicaoModal = (item) => {
-    setSelectedItem(item);
-    setIsEdicaoModalOpen(true);
-  };
-
-  const openNovoModal = () => {
-    setSelectedItem(null);
-    setIsNovoModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsDetalhesModalOpen(false);
-    setIsEdicaoModalOpen(false);
-    setIsNovoModalOpen(false);
-    setSelectedItem(null);
-    fetchOrdensDeServico();
-  };
-
-  const handleSave = async (formData) => {
-    try {
-      console.log('handleSave - Dados recebidos:', formData);
-      console.log('handleSave - Produtos:', formData.produtos);
-      console.log('handleSave - Serviços:', formData.servicos);
-
-      // Preparar dados mantendo compatibilidade com backend atual
-      const dataToSend = {
-        ...formData,
-        // Manter compatibilidade - pegar o primeiro item se existir
-        produtoID: formData.produtos?.[0]?.produtoID || null,
-        servicoID: formData.servicos?.[0]?.servicoID || null,
-        quantidadeProduto: formData.produtos?.[0]?.quantidade || 1,
-        quantidadeServico: formData.servicos?.[0]?.quantidade || 1,
-        // Manter arrays para futuro uso
-        produtos: formData.produtos || [],
-        servicos: formData.servicos || []
-      };
-
-      console.log('Dados preparados para envio:', dataToSend);
-
-      // Garante que produtos sempre seja um array
-      const produtosBaixa = formData.produtos || formData.produtoIDs?.map(id => ({ produtoID: id, quantidade: 1 })) || [];
-
-      let ordemAnterior = null;
-      if (formData.id) {
-        const res = await apiCliente.get(`/OrdemDeServico/${formData.id}`);
-        ordemAnterior = res.data;
-      }
-
-      if (formData.id) {
-        await apiCliente.put(`/OrdemDeServico/${formData.id}`, dataToSend);
-        // Se status mudou para "Concluido", dar baixa nos produtos
-        if (
-          ordemAnterior &&
-          ordemAnterior.status !== "Concluido" &&
-          formData.status === "Concluido"
-        ) {
-          for (const produto of produtosBaixa) {
-            if (produto.produtoID && produto.quantidade) {
-              // Buscar produto atual
-              const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
-              const novaQuantidade = (produtoAtual.data.quantidade || 0) - Number(produto.quantidade);
-              await apiCliente.put(`/Produto/${produto.produtoID}`, {
-                ...produtoAtual.data,
-                quantidade: novaQuantidade
-              });
-            }
-          }
-        }
-      } else {
-        await apiCliente.post('/OrdemDeServico', dataToSend);
-        // Se status é "Concluido", dar baixa nos produtos
-        if (formData.status === "Concluido" && Array.isArray(produtosBaixa)) {
-          for (const produto of produtosBaixa) {
-            if (produto.produtoID && produto.quantidade) {
-              const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
-              const novaQuantidade = (produtoAtual.data.quantidade || 0) - Number(produto.quantidade);
-              await apiCliente.put(`/Produto/${produto.produtoID}`, {
-                ...produtoAtual.data,
-                quantidade: novaQuantidade
-              });
-            }
-          }
-        }
-      }
-      fetchOrdensDeServico();
-      closeModal();
-    } catch (error) {
-      console.error('Erro ao salvar ordem de serviço:', error);
-    }
-  };
+  const handleExcluir = useCallback(async id => {
+    if (!window.confirm('Deseja excluir esta ordem?')) return;
+    await apiCliente.put(`/OrdemDeServico/desativar/${id}`);
+    setOrdens(prev => prev.filter(o => o.id !== id));
+  }, []);
 
   const handleExport = () => {
     const ws = XLSX.utils.json_to_sheet(filteredOrdens);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "OrdensDeServico");
-    XLSX.writeFile(wb, "ordens_de_servico.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, 'Ordens');
+    XLSX.writeFile(wb, 'ordens_de_servico.xlsx');
   };
 
-  const filteredOrdens = ordensDeServico.filter(ordem => {
-    const matchesCliente = clientes[ordem.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter ? ordem.status === statusFilter : true;
-    return matchesCliente && matchesStatus;
-  });
-
-  const totalPages = Math.ceil(filteredOrdens.length / itemsPerPage);
-  const paginatedOrdens = filteredOrdens.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Função para formatar datas corretamente
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '--/--/----';
-    const d = new Date(dateStr);
-    // Corrige o deslocamento de fuso horário
-    const localDate = new Date(d.getTime() + Math.abs(d.getTimezoneOffset()) * 60000);
-    return localDate.toLocaleDateString('pt-BR');
+  const openModal = (type, item = null) => {
+    setSelectedItem(item);
+    setModal(type);
   };
+
+  const closeModal = () => {
+    setModal(null);
+    setSelectedItem(null);
+  };
+
+  /* =========================
+     FORMATADORES
+  ========================= */
+
+  const getProdutos = ordem =>
+    ordem.produtos?.length
+      ? ordem.produtos.map(p => `${produtos[p.produtoID]} (${p.quantidade})`).join(', ')
+      : produtos[ordem.produtoID] || '-';
+
+  const getServicos = ordem =>
+    ordem.servicos?.length
+      ? ordem.servicos.map(s => `${servicos[s.servicoID]} (${s.quantidade})`).join(', ')
+      : servicos[ordem.servicoID] || '-';
+
+  /* =========================
+     RENDER
+  ========================= */
 
   return (
     <OrdemDeServicoContainer>
-      <>
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
-          <OrdemDeServicoTitle>
-            Ordens de Serviço
-          </OrdemDeServicoTitle>
-          <button
-            onClick={handleExport}
-            title="Exportar Excel"
-            style={{
-              position: 'absolute',
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 4,
-              color: '#666'
-            }}
-          >
-            <FontAwesomeIcon icon={faDownload} size="lg" />
-          </button>
-        </div>
+      <OrdemDeServicoTitle>Ordens de Serviço</OrdemDeServicoTitle>
 
-        <HeaderControls>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              placeholder="Buscar cliente..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                marginLeft: '8px',
-                padding: '4px',
-                borderRadius: '10px',
-                border: '2px solid rgba(108, 117, 125, 0.2)',
-                height: '48px',
-                fontSize: '14px',
-                backgroundColor: '#fff',
-                color: '#333',
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="">Todos os Status</option>
-              <option value="Orçamento">Orçamento</option>
-              <option value="Não iniciado">Não iniciado</option>
-              <option value="Em andamento">Em andamento</option>
-              <option value="Concluido">Concluído</option>
-              <option value="Cancelado">Cancelado</option>
-              <option value="Entregue">Entregue</option>
-            </select>
-            <PerPageSelect
-              value={itemsPerPage}
-              onChange={e => setItemsPerPage(Number(e.target.value))}
-            >
-              <option value={25}>25 por página</option>
-              <option value={50}>50 por página</option>
-              <option value={100}>100 por página</option>
-            </PerPageSelect>
-          </SearchContainer>
+      <HeaderControls>
+        <SearchContainer>
+          <SearchInput
+            placeholder="Buscar cliente..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
 
-          <AddButton onClick={openNovoModal}>
-            <FontAwesomeIcon icon={faPlusCircle} />
-            Nova Ordem
-          </AddButton>
-        </HeaderControls>
+          <SelectStatus value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+            <option value="">Todos</option>
+            <option value="Orçamento">Orçamento</option>
+            <option value="Não iniciado">Não iniciado</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Concluido">Concluído</option>
+            <option value="Cancelado">Cancelado</option>
+            <option value="Entregue">Entregue</option>
+          </SelectStatus>
 
-        <OrdemDeServicoTableWrapper>
-          <OrdemDeServicoTable>
-            <thead>
-              <tr>
-                <th>Número OS</th>
-                <th>Cliente</th>
-                <HideMobileTh>Entrada</HideMobileTh>
-                <HideMobileTh>Conclusão</HideMobileTh>
-                <th style={{ textAlign: 'center' }}>Ações</th>
+          <PerPageSelect value={itemsPerPage} onChange={e => setItemsPerPage(+e.target.value)}>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </PerPageSelect>
+        </SearchContainer>
+
+        <AddButton onClick={() => openModal('novo')}>
+          <FontAwesomeIcon icon={faPlusCircle} /> Nova Ordem
+        </AddButton>
+      </HeaderControls>
+
+      <OrdemDeServicoTableWrapper>
+        <OrdemDeServicoTable>
+          <thead>
+            <tr>
+              <th>OS</th>
+              <th>Cliente</th>
+              <HideMobileTh>Entrada</HideMobileTh>
+              <HideMobileTh>Conclusão</HideMobileTh>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedOrdens.map(o => (
+              <tr key={o.id}>
+                <td>{o.numeroOS}</td>
+                <td>{clientes[o.clienteID]}</td>
+                <HideMobile>{formatDate(o.dataEntrada)}</HideMobile>
+                <HideMobile>{formatDate(o.dataConclusao)}</HideMobile>
+                <td>
+                  <IconWrapper>
+                    <ActionButton className="view" onClick={() => openModal('detalhes', o)}>
+                      <FontAwesomeIcon icon={faEye} />
+                    </ActionButton>
+                    <ActionButton className="edit" onClick={() => openModal('edicao', o)}>
+                      <FontAwesomeIcon icon={faEdit} />
+                    </ActionButton>
+                    <ActionButton className="delete" onClick={() => handleExcluir(o.id)}>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </ActionButton>
+                    <ActionButton
+                      className="status"
+                      onClick={() => window.open(`/ordem-os/${o.id}`, '_blank')}
+                    >
+                      <FontAwesomeIcon icon={faStar} />
+                    </ActionButton>
+                  </IconWrapper>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {paginatedOrdens.map(ordem => {
-                // Função para formatar produtos/serviços
-                const formatProdutos = (ordem) => {
-                  if (ordem.produtos && Array.isArray(ordem.produtos) && ordem.produtos.length > 0) {
-                    return ordem.produtos
-                      .filter(produto => produto.produtoID)
-                      .map(produto => `${produtos[produto.produtoID]} (${produto.quantidade})`)
-                      .join(', ') || '-';
-                  }
-                  // Compatibilidade com formato antigo
-                  return ordem.produtoID ? produtos[ordem.produtoID] : '-';
-                };
+            ))}
+          </tbody>
+        </OrdemDeServicoTable>
+      </OrdemDeServicoTableWrapper>
 
-                const formatServicos = (ordem) => {
-                  if (ordem.servicos && Array.isArray(ordem.servicos) && ordem.servicos.length > 0) {
-                    return ordem.servicos
-                      .filter(servico => servico.servicoID)
-                      .map(servico => `${servicos[servico.servicoID]} (${servico.quantidade})`)
-                      .join(', ') || '-';
-                  }
-                  // Compatibilidade com formato antigo
-                  return ordem.servicoID ? servicos[ordem.servicoID] : '-';
-                };
+      <PaginationContainer>
+        <PaginationButton disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+          Anterior
+        </PaginationButton>
 
-                return (
-                  <tr key={ordem.id}>
-                    <td>{ordem.numeroOS}</td>
-                    <td>{clientes[ordem.clienteID]}</td>
-                    <HideMobile>{formatDate(ordem.dataEntrada)}</HideMobile>
-                    <HideMobile>{formatDate(ordem.dataConclusao)}</HideMobile>
-                    <td>
-                      <IconWrapper>
-                        <ActionButton
-                          className="view"
-                          onClick={() => openDetalhesModal(ordem)}
-                          title="Visualizar detalhes"
-                        >
-                          <FontAwesomeIcon icon={faEye} />
-                        </ActionButton>
-                        <ActionButton
-                          className="edit"
-                          onClick={() => openEdicaoModal(ordem)}
-                          title="Editar ordem"
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </ActionButton>
-                        <ActionButton
-                          className="delete"
-                          onClick={() => handleExcluir(ordem.id)}
-                          title="Excluir ordem"
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </ActionButton>
-                        <ActionButton
-                          className="status"
-                          onClick={() => window.open(`/ordem-os/${ordem.id}`, '_blank')}
-                          title="Ver status da ordem"
-                          style={{ color: '#ff9800' }}
-                        >
-                          <FontAwesomeIcon icon={faStar} />
-                        </ActionButton>
-                      </IconWrapper>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </OrdemDeServicoTable>
-        </OrdemDeServicoTableWrapper>
+        <PaginationInfo>
+          Página {currentPage} de {totalPages}
+        </PaginationInfo>
 
-        <PaginationContainer>
-          <PaginationButton
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Anterior
-          </PaginationButton>
+        <PaginationButton
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(p => p + 1)}
+        >
+          Próxima
+        </PaginationButton>
+      </PaginationContainer>
 
-          <PaginationInfo>
-            Página {currentPage} de {totalPages} ({filteredOrdens.length} ordens)
-          </PaginationInfo>
-
-          <PaginationButton
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Próxima
-          </PaginationButton>
-        </PaginationContainer>
-
-        <ModalDetalhesOrdemDeServico isOpen={isDetalhesModalOpen} onClose={closeModal} item={selectedItem} />
-        <ModalEdicaoOrdemDeServico isOpen={isEdicaoModalOpen} onClose={closeModal} item={selectedItem} onSubmit={handleSave} />
-        <ModalNovoOrdemDeServico isOpen={isNovoModalOpen} onClose={closeModal} onSubmit={handleSave} />
-      </>
+      <ModalDetalhesOrdemDeServico isOpen={modal === 'detalhes'} onClose={closeModal} item={selectedItem} />
+      <ModalEdicaoOrdemDeServico isOpen={modal === 'edicao'} onClose={closeModal} item={selectedItem} />
+      <ModalNovoOrdemDeServico isOpen={modal === 'novo'} onClose={closeModal} />
     </OrdemDeServicoContainer>
   );
 };

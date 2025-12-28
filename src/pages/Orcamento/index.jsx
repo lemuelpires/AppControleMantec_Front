@@ -15,7 +15,8 @@ import {
 	PaginationButton,
 	PaginationInfo,
 	HideMobile,
-	HideMobileTh
+	HideMobileTh,
+
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -251,7 +252,6 @@ const Orcamento = () => {
 					   <OrcamentoTable>
 						   <thead>
 							   <tr>
-								   <th>Número</th>
 								   <th>Cliente</th>
 								   <HideMobileTh>Entrada</HideMobileTh>
 								   <th style={{ textAlign: 'center' }}>Ações</th>
@@ -260,7 +260,6 @@ const Orcamento = () => {
 						   <tbody>
 							   {paginatedOrcamentos.map(orc => (
 								   <tr key={orc.id}>
-									   <td>{orc.numeroOrcamento || orc.id}</td>
 									   <td>{clientes[orc.clienteID]}</td>
 									   <HideMobile>{formatDate(orc.dataEntrada)}</HideMobile>
 									   <td>

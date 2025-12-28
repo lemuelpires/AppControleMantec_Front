@@ -1,5 +1,31 @@
 import styled from "styled-components";
 
+export const NFSeButton = styled.button`
+  background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+  .icon {
+    font-size: 1.1rem;
+  }
+`;
+
 export const Container = styled.div`
   padding: 2rem;
   min-height: 100vh;
@@ -291,4 +317,60 @@ export const ExportButton = styled.button`
   .icon {
     font-size: 1.1rem;
   }
+`;
+
+export const FiltrosContainer = styled.div`
+  display: flex;
+  gap: 32px;
+  margin: 32px 0 28px 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(90deg, #f8fafc 60%, #e9ecef 100%);
+  border-radius: 14px;
+  padding: 24px 32px;
+  box-shadow: 0 4px 24px 0 #0002;
+  border: 1.5px solid #e0e3e7;
+`;
+
+export const FiltroInput = styled.input`
+  padding: 10px 16px;
+  min-width: 180px;
+  border: 1.5px solid #bfc9d1;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+  color: #2c3e50;
+  box-shadow: 0 1px 4px #0001;
+  transition: border 0.2s, box-shadow 0.2s;
+  &:focus {
+    border-color: #764ba2;
+    box-shadow: 0 2px 8px #764ba233;
+  }
+`;
+
+export const FiltroSelect = styled.select`
+  padding: 10px 16px;
+  min-width: 140px;
+  border: 1.5px solid #bfc9d1;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+  color: #2c3e50;
+  box-shadow: 0 1px 4px #0001;
+  transition: border 0.2s, box-shadow 0.2s;
+  &:focus {
+    border-color: #764ba2;
+    box-shadow: 0 2px 8px #764ba233;
+  }
+`;
+
+export const FiltroSpan = styled.span`
+  align-self: center;
+  color: #888;
+  font-weight: 500;
+  font-size: 1rem;
+  margin: 0 4px;
 `;
