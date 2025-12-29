@@ -12,6 +12,98 @@ import {
   SectionHeader
 } from './style';
 
+// ===== Componentes Estilizados Locais =====
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #495057;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  background-color: #fff;
+
+  &:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  &:disabled, &[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+    color: #6c757d;
+    border-color: #dee2e6;
+  }
+`;
+
+const StyledTextArea = styled.textarea`
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #495057;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  resize: vertical;
+  min-height: 80px;
+
+  &:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+`;
+
+const Button = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-radius: 0.375rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+  border: 1px solid transparent;
+  
+  ${props => props.variant === 'primary' && `
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    &:hover { background-color: #0b5ed7; border-color: #0a58ca; }
+  `}
+
+  ${props => props.variant === 'secondary' && `
+    color: #6c757d;
+    background-color: transparent;
+    border-color: #6c757d;
+    &:hover { color: #fff; background-color: #6c757d; border-color: #6c757d; }
+  `}
+
+  ${props => props.variant === 'danger' && `
+    color: #dc3545;
+    background-color: transparent;
+    border-color: #dc3545;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    &:hover { color: #fff; background-color: #dc3545; }
+  `}
+
+  ${props => props.variant === 'success' && `
+    color: #fff;
+    background-color: #198754;
+    border-color: #198754;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    &:hover { background-color: #157347; border-color: #146c43; }
+  `}
+`;
+
 const statusOptions = [
   { value: 'Pendente', label: 'Pendente' },
   { value: 'Aceito', label: 'Aceito' },
@@ -98,9 +190,16 @@ const FormularioOrcamento = ({
   });
   const [errors, setErrors] = useState({});
 
+  // Atualiza o estado quando initialData mudar (importante para edição e carregamento assíncrono)
+  useEffect(() => {
+    if (initialData) {
+      setFormData((prev) => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
   // Cálculo automático dos valores
   useEffect(() => {
-    // valorPecas
+    // 1. Calcular valorPecas
     const produtoMap = {};
     (produtoOptions || []).forEach(opt => {
       const id = String(opt?.value ?? '');
@@ -116,10 +215,9 @@ const FormularioOrcamento = ({
       const preco = produtoMap[id] || 0;
       somaPecas += preco * qtd;
     });
-    if (parseFloat(somaPecas.toFixed(2)) !== Number(formData.valorPecas || 0)) {
-      setFormData(prev => ({ ...prev, valorPecas: parseFloat(somaPecas.toFixed(2)) }));
-    }
-    // valorServicos
+    somaPecas = parseFloat(somaPecas.toFixed(2));
+
+    // 2. Calcular valorServicos
     const servicoMap = {};
     (servicoOptions || []).forEach(opt => {
       const id = String(opt?.value ?? '');
@@ -135,27 +233,33 @@ const FormularioOrcamento = ({
       const preco = servicoMap[id] || 0;
       somaServicos += preco * qtd;
     });
-    if (parseFloat(somaServicos.toFixed(2)) !== Number(formData.valorServicos || 0)) {
-      setFormData(prev => ({ ...prev, valorServicos: parseFloat(somaServicos.toFixed(2)) }));
+    somaServicos = parseFloat(somaServicos.toFixed(2));
+
+    // 3. Calcular valorTotal (usando as somas calculadas agora, não o estado antigo)
+    const valorMaoDeObra = toNumber(formData.valorMaoDeObra, 0);
+    const somaTotal = parseFloat((valorMaoDeObra + somaPecas + somaServicos).toFixed(2));
+
+    // 4. Atualizar estado se houver divergência
+    if (
+      somaPecas !== Number(formData.valorPecas || 0) ||
+      somaServicos !== Number(formData.valorServicos || 0) ||
+      somaTotal !== Number(formData.valorTotal || 0)
+    ) {
+      setFormData(prev => ({ ...prev, valorPecas: somaPecas, valorServicos: somaServicos, valorTotal: somaTotal }));
     }
-    // valorTotal
-    const somaTotal = (Number(formData.valorMaoDeObra) || 0)
-      + (Number(formData.valorPecas) || 0)
-      + (Number(formData.valorServicos) || 0);
-    if (parseFloat(somaTotal.toFixed(2)) !== Number(formData.valorTotal || 0)) {
-      setFormData(prev => ({ ...prev, valorTotal: parseFloat(somaTotal.toFixed(2)) }));
-    }
-  }, [formData.produtos, formData.servicos, formData.valorMaoDeObra, produtoOptions, servicoOptions]);
+  }, [formData.produtos, formData.servicos, formData.valorMaoDeObra, formData.valorPecas, formData.valorServicos, formData.valorTotal, produtoOptions, servicoOptions]);
 
   // Funções auxiliares para manipulação dos campos de produtos e serviços
   const handleProdutoChange = (index, selectedOption) => {
-    const newProdutos = [...formData.produtos];
-    newProdutos[index].produtoID = selectedOption ? selectedOption.value : '';
+    const newProdutos = formData.produtos.map((item, i) =>
+      i === index ? { ...item, produtoID: selectedOption ? selectedOption.value : '' } : item
+    );
     setFormData({ ...formData, produtos: newProdutos });
   };
   const handleProdutoQuantityChange = (index, value) => {
-    const newProdutos = [...formData.produtos];
-    newProdutos[index].quantidade = value;
+    const newProdutos = formData.produtos.map((item, i) =>
+      i === index ? { ...item, quantidade: value } : item
+    );
     setFormData({ ...formData, produtos: newProdutos });
   };
   const addProduto = () => {
@@ -167,13 +271,15 @@ const FormularioOrcamento = ({
   };
 
   const handleServicoChange = (index, selectedOption) => {
-    const newServicos = [...formData.servicos];
-    newServicos[index].servicoID = selectedOption ? selectedOption.value : '';
+    const newServicos = formData.servicos.map((item, i) =>
+      i === index ? { ...item, servicoID: selectedOption ? selectedOption.value : '' } : item
+    );
     setFormData({ ...formData, servicos: newServicos });
   };
   const handleServicoQuantityChange = (index, value) => {
-    const newServicos = [...formData.servicos];
-    newServicos[index].quantidade = value;
+    const newServicos = formData.servicos.map((item, i) =>
+      i === index ? { ...item, quantidade: value } : item
+    );
     setFormData({ ...formData, servicos: newServicos });
   };
   const addServico = () => {
@@ -209,7 +315,7 @@ const FormularioOrcamento = ({
   };
 
   return (
-    <FormContainer>
+    <FormContainer style={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '2rem' }}>
       <FormTitle>{title}</FormTitle>
       <Form onSubmit={handleFormSubmit}>
         {/* Cliente */}
@@ -242,7 +348,7 @@ const FormularioOrcamento = ({
                   isSearchable
                   styles={customSelectStyles}
                 />
-                <input
+                <StyledInput
                   type="number"
                   min="1"
                   value={produto.quantidade}
@@ -250,11 +356,11 @@ const FormularioOrcamento = ({
                   style={{ width: 60 }}
                 />
                 {formData.produtos.length > 1 && (
-                  <button type="button" onClick={() => removeProduto(index)} style={{ marginLeft: 4 }}>Remover</button>
+                  <Button type="button" variant="danger" onClick={() => removeProduto(index)} style={{ marginLeft: 4 }}>Remover</Button>
                 )}
               </div>
             ))}
-            <button type="button" onClick={addProduto} style={{ marginTop: 4 }}>Adicionar Produto</button>
+            <Button type="button" variant="success" onClick={addProduto}>+ Adicionar Produto</Button>
           </FormGroup>
           <FormGroup>
             <SectionHeader>Serviços sugeridos</SectionHeader>
@@ -269,7 +375,7 @@ const FormularioOrcamento = ({
                   isSearchable
                   styles={customSelectStyles}
                 />
-                <input
+                <StyledInput
                   type="number"
                   min="1"
                   value={servico.quantidade}
@@ -277,11 +383,11 @@ const FormularioOrcamento = ({
                   style={{ width: 60 }}
                 />
                 {formData.servicos.length > 1 && (
-                  <button type="button" onClick={() => removeServico(index)} style={{ marginLeft: 4 }}>Remover</button>
+                  <Button type="button" variant="danger" onClick={() => removeServico(index)} style={{ marginLeft: 4 }}>Remover</Button>
                 )}
               </div>
             ))}
-            <button type="button" onClick={addServico} style={{ marginTop: 4 }}>Adicionar Serviço</button>
+            <Button type="button" variant="success" onClick={addServico}>+ Adicionar Serviço</Button>
           </FormGroup>
         </FormRow>
 
@@ -289,22 +395,20 @@ const FormularioOrcamento = ({
         <FormRow>
           <FormGroup>
             <Label>Defeito Relatado</Label>
-            <input
+            <StyledInput
               type="text"
               name="defeitoRelatado"
               value={formData.defeitoRelatado}
               onChange={handleChange}
-              style={{ width: '100%' }}
             />
           </FormGroup>
           <FormGroup>
             <Label>Diagnóstico Técnico</Label>
-            <input
+            <StyledInput
               type="text"
               name="diagnostico"
               value={formData.diagnostico}
               onChange={handleChange}
-              style={{ width: '100%' }}
             />
           </FormGroup>
         </FormRow>
@@ -312,31 +416,30 @@ const FormularioOrcamento = ({
         {/* Observações */}
         <FormGroup>
           <Label>Observações</Label>
-          <textarea
+          <StyledTextArea
             name="observacoes"
             value={formData.observacoes}
             onChange={handleChange}
             rows={3}
-            style={{ width: '100%' }}
           />
         </FormGroup>
 
         {/* Status (fixo) */}
         <FormGroup>
           <Label>Status</Label>
-          <input
+          <StyledInput
             type="text"
             name="status"
             value={formData.status}
             readOnly
-            style={{ background: '#f8f9fa', border: '1.5px solid #d1d5db', borderRadius: 8, padding: 6, width: '100%' }}
           />
+          {errors.status && <div style={{ color: 'red', fontSize: '12px' }}>{errors.status}</div>}
         </FormGroup>
 
         {/* Data de Entrada */}
         <FormGroup>
           <Label>Data de Criação</Label>
-          <input
+          <StyledInput
             type="date"
             name="dataEntrada"
             value={formData.dataEntrada}
@@ -349,53 +452,49 @@ const FormularioOrcamento = ({
         <FormRow>
           <FormGroup>
             <Label>Valor Mão de Obra</Label>
-            <input
+            <StyledInput
               type="number"
               name="valorMaoDeObra"
               value={formData.valorMaoDeObra}
               onChange={handleChange}
               placeholder="R$ 0,00"
-              style={{ background: '#fff', border: '1.5px solid #d1d5db', borderRadius: 8, padding: 6, width: '100%' }}
             />
           </FormGroup>
           <FormGroup>
             <Label>Valor Serviços</Label>
-            <input
+            <StyledInput
               type="number"
               name="valorServicos"
               value={formData.valorServicos}
               readOnly
               placeholder="R$ 0,00"
-              style={{ background: '#f8f9fa', border: '1.5px solid #d1d5db', borderRadius: 8, padding: 6, width: '100%' }}
             />
           </FormGroup>
           <FormGroup>
             <Label>Valor Peças</Label>
-            <input
+            <StyledInput
               type="number"
               name="valorPecas"
               value={formData.valorPecas}
               readOnly
               placeholder="R$ 0,00"
-              style={{ background: '#f8f9fa', border: '1.5px solid #d1d5db', borderRadius: 8, padding: 6, width: '100%' }}
             />
           </FormGroup>
           <FormGroup>
             <Label>Valor Total</Label>
-            <input
+            <StyledInput
               type="number"
               name="valorTotal"
               value={formData.valorTotal}
               readOnly
               placeholder="R$ 0,00"
-              style={{ background: '#f8f9fa', border: '1.5px solid #d1d5db', borderRadius: 8, padding: 6, width: '100%' }}
             />
           </FormGroup>
         </FormRow>
 
         <div style={{ marginTop: 24, display: 'flex', gap: 12, justifyContent: 'center' }}>
-          <button type="submit">Salvar</button>
-          <button type="button" onClick={onClose}>Cancelar</button>
+          <Button type="submit" variant="primary" style={{ minWidth: '120px' }}>Salvar</Button>
+          <Button type="button" variant="secondary" onClick={onClose} style={{ minWidth: '120px' }}>Cancelar</Button>
         </div>
       </Form>
     </FormContainer>

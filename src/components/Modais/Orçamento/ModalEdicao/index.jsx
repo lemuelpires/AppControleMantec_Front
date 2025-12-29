@@ -2,35 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import FormularioOrcamento from '../../../Forms/FormularioOrcamento';
 import apiCliente from '../../../../services/apiCliente';
-
-const modalStyles = {
-	overlay: {
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		zIndex: 9999,
-		position: 'fixed',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-	},
-	content: {
-		backgroundColor: 'transparent',
-		padding: '1rem',
-		border: 'none',
-		borderRadius: '0',
-		boxShadow: 'none',
-		maxWidth: '750px',
-		width: '95%',
-		maxHeight: '90vh',
-		inset: 'unset',
-		zIndex: 10000,
-		position: 'relative',
-		overflow: 'auto',
-	},
-};
+import { modalStyles } from '../ModalNovo/style';
 
 const ModalEdicaoOrcamento = ({ isOpen, onClose, item, onSubmit }) => {
 	const [formData, setFormData] = useState({
@@ -88,47 +60,93 @@ const ModalEdicaoOrcamento = ({ isOpen, onClose, item, onSubmit }) => {
 
 	useEffect(() => {
 		if (item) {
-			const formatDate = (dateStr) => dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
+			const loadData = async () => {
+				let dados = item;
+				// Busca os dados completos da API para garantir que temos os arrays de produtos/serviços
+				if (item.id) {
+					try {
+						const response = await apiCliente.get(`/OrdemDeServico/${item.id}`);
+						dados = response.data;
+					} catch (error) {
+						console.error('Erro ao buscar detalhes da OS:', error);
+					}
+				}
 
-			let produtos = [{ produtoID: '', quantidade: 1 }];
-			let servicos = [{ servicoID: '', quantidade: 1 }];
+				const formatDate = (dateStr) => dateStr ? new Date(dateStr).toISOString().slice(0, 10) : '';
 
-			if (item.produtos?.length > 0) {
-				produtos = item.produtos.map(p => ({
-					produtoID: p.produtoID,
-					quantidade: p.quantidade || 1
-				}));
-			}
-			if (item.servicos?.length > 0) {
-				servicos = item.servicos.map(s => ({
-					servicoID: s.servicoID,
-					quantidade: s.quantidade || 1
-				}));
-			}
+				let produtos = [{ produtoID: '', quantidade: 1 }];
+				let servicos = [{ servicoID: '', quantidade: 1 }];
 
-			setFormData({
-				id: item.id || '',
-				clienteID: item.clienteID || '',
-				produtos,
-				servicos,
-				defeitoRelatado: item.defeitoRelatado || '',
-				diagnostico: item.diagnostico || '',
-				observacoes: item.observacoes || '',
-				status: item.status || '',
-				dataValidade: formatDate(item.dataValidade),
-				aceiteCliente: !!item.aceiteCliente,
-				dataEntrada: formatDate(item.dataEntrada),
-				valorMaoDeObra: item.valorMaoDeObra ?? 0,
-				valorServicos: item.valorServicos ?? 0,
-				valorPecas: item.valorPecas ?? 0,
-				valorTotal: item.valorTotal ?? 0,
-			});
+				// Mapeamento de Produtos (pecasUtilizadas > produtoIDs > produtos)
+				if (dados.pecasUtilizadas?.length > 0) {
+					produtos = dados.pecasUtilizadas.map(p => ({
+						produtoID: p.produtoID,
+						quantidade: p.quantidade || 1
+					}));
+				} else if (dados.produtoIDs?.length > 0) {
+					produtos = dados.produtoIDs.map(id => ({
+						produtoID: id,
+						quantidade: 1
+					}));
+				} else if (dados.produtos?.length > 0) {
+					produtos = dados.produtos.map(p => ({
+						produtoID: p.produtoID,
+						quantidade: p.quantidade || 1
+					}));
+				}
+
+				// Mapeamento de Serviços (servicoIDs > servicos)
+				if (dados.servicoIDs?.length > 0) {
+					servicos = dados.servicoIDs.map(id => ({
+						servicoID: id,
+						quantidade: 1
+					}));
+				} else if (dados.servicos?.length > 0) {
+					servicos = dados.servicos.map(s => ({
+						servicoID: s.servicoID,
+						quantidade: s.quantidade || 1
+					}));
+				}
+
+				setFormData({
+					id: dados.id || '',
+					clienteID: dados.clienteID || '',
+					produtos,
+					servicos,
+					defeitoRelatado: dados.defeitoRelatado || '',
+					diagnostico: dados.diagnostico || '',
+					observacoes: dados.observacoes || '',
+					status: dados.status || '',
+					dataValidade: formatDate(dados.dataValidade),
+					aceiteCliente: !!dados.aceiteCliente,
+					dataEntrada: formatDate(dados.dataEntrada),
+					valorMaoDeObra: dados.valorMaoDeObra ?? 0,
+					valorServicos: dados.valorServicos ?? 0,
+					valorPecas: dados.valorPecas ?? 0,
+					valorTotal: dados.valorTotal ?? 0,
+				});
+			};
+			loadData();
 		}
 	}, [item, isOpen]);
 
 	const handleSubmit = async (data) => {
 		try {
-			await onSubmit(data);
+			// Prepara o payload no formato correto para OrdemDeServico
+			const payload = {
+				...data,
+				produtoIDs: data.produtos.filter(p => p.produtoID).map(p => p.produtoID),
+				servicoIDs: data.servicos.filter(s => s.servicoID).map(s => s.servicoID),
+				pecasUtilizadas: data.produtos.filter(p => p.produtoID).map(p => ({
+					produtoID: p.produtoID,
+					quantidade: p.quantidade
+				})),
+				valorMaoDeObra: Number(data.valorMaoDeObra) || 0,
+				valorPecas: Number(data.valorPecas) || 0,
+				valorServicos: Number(data.valorServicos) || 0,
+				valorTotal: Number(data.valorTotal) || 0,
+			};
+			await onSubmit(payload);
 			onClose();
 		} catch (error) {
 			console.error('Erro ao salvar orçamento:', error);
@@ -145,7 +163,7 @@ const ModalEdicaoOrcamento = ({ isOpen, onClose, item, onSubmit }) => {
 			contentElement={(props, children) => <div {...props}>{children}</div>}
 			style={modalStyles}
 		>
-			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				<FormularioOrcamento
 					title="Editar Orçamento"
 					initialData={formData}

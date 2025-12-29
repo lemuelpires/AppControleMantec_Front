@@ -2,35 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import FormularioOrcamento from '../../../Forms/FormularioOrcamento';
 import apiCliente from '../../../../services/apiCliente';
-
-const modalStyles = {
-	overlay: {
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		zIndex: 9999,
-		position: 'fixed',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-	},
-	content: {
-		backgroundColor: 'transparent',
-		padding: '1rem',
-		border: 'none',
-		borderRadius: '0',
-		boxShadow: 'none',
-		maxWidth: '750px',
-		width: '95%',
-		maxHeight: '90vh',
-		inset: 'unset',
-		zIndex: 10000,
-		position: 'relative',
-		overflow: 'auto',
-	},
-};
+import { modalStyles } from './style';
 
 const ModalNovoOrcamento = ({ isOpen, onClose }) => {
 	const [clienteOptions, setClienteOptions] = useState([]);
@@ -43,7 +15,7 @@ const ModalNovoOrcamento = ({ isOpen, onClose }) => {
 		defeitoRelatado: '',
 		diagnostico: '',
 		observacoes: '',
-		status: '',
+		status: 'Orçamento',
 		dataValidade: '',
 		aceiteCliente: false,
 		dataEntrada: '',
@@ -95,6 +67,7 @@ const ModalNovoOrcamento = ({ isOpen, onClose }) => {
 			const servicos = response.data.filter(servico => servico.ativo).map(servico => ({
 				value: servico.id,
 				label: servico.nome,
+				preco: servico.preco,
 			}));
 			setServicoOptions(servicos);
 		} catch (error) {
@@ -104,26 +77,45 @@ const ModalNovoOrcamento = ({ isOpen, onClose }) => {
 
 	const handleSubmit = async (formData) => {
 		try {
-			// Aqui você pode ajustar o DTO conforme o backend de orçamento
-			const dataEntrada = formData.dataEntrada ? new Date(formData.dataEntrada).toISOString() : null;
-			const dataValidade = formData.dataValidade ? new Date(formData.dataValidade).toISOString() : null;
-			const orcamentoDto = {
-				...formData,
-				dataEntrada,
-				dataValidade,
-				produtos: formData.produtos || [],
-				servicos: formData.servicos || [],
-				valorMaoDeObra: formData.valorMaoDeObra ? parseFloat(formData.valorMaoDeObra) : 0,
-				valorServicos: formData.valorServicos ? parseFloat(formData.valorServicos) : 0,
-				valorPecas: formData.valorPecas ? parseFloat(formData.valorPecas) : 0,
-				valorTotal: formData.valorTotal ? parseFloat(formData.valorTotal) : 0,
-				aceiteCliente: !!formData.aceiteCliente,
+			const payload = {
+				clienteID: formData.clienteID,
+				funcionarioID: null,
+				produtoIDs: formData.produtos.filter(p => p.produtoID).map(p => p.produtoID),
+				servicoIDs: formData.servicos.filter(s => s.servicoID).map(s => s.servicoID),
+				dataEntrada: formData.dataEntrada ? new Date(formData.dataEntrada).toISOString() : new Date().toISOString(),
+				dataConclusao: null,
+				status: 'Orçamento',
+				observacoes: formData.observacoes,
+				ativo: true,
+				defeitoRelatado: formData.defeitoRelatado,
+				diagnostico: formData.diagnostico,
+				laudoTecnico: null,
+				marca: null,
+				modelo: null,
+				imeIouSerial: null,
+				senhaAcesso: null,
+				emGarantia: false,
+				dataGarantia: null,
+				valorMaoDeObra: Number(formData.valorMaoDeObra) || 0,
+				valorPecas: Number(formData.valorPecas) || 0,
+				valorTotal: Number(formData.valorTotal) || 0,
+				formaPagamento: null,
+				pago: false,
+				tipoAtendimento: null,
+				prioridade: null,
+				assinaturaClienteBase64: null,
+				assinaturaTecnicoBase64: null,
+				pecasUtilizadas: formData.produtos.filter(p => p.produtoID).map(p => ({
+					produtoID: p.produtoID,
+					quantidade: p.quantidade
+				}))
 			};
-			// Envie para a API de orçamento (ajuste endpoint conforme necessário)
-			await apiCliente.post('/OrdemDeServico', orcamentoDto);
+
+			await apiCliente.post('/OrdemDeServico', payload);
 			onClose();
 		} catch (error) {
 			console.error('Erro ao salvar orçamento:', error.response ? error.response.data : error.message);
+			alert('Erro ao salvar orçamento. Verifique o console para mais detalhes.');
 		}
 	};
 
@@ -139,10 +131,10 @@ const ModalNovoOrcamento = ({ isOpen, onClose }) => {
 			)}
 			style={modalStyles}
 		>
-			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				<FormularioOrcamento
 					title="Novo Orçamento"
-					initialValues={formData}
+					initialData={formData}
 					onSubmit={handleSubmit}
 					onClose={onClose}
 					clienteOptions={clienteOptions}
