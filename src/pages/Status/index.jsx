@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
 import { FaShareAlt, FaWhatsapp, FaCreditCard, FaClock, FaCalendarCheck, FaBoxOpen, FaClipboardList, FaPrint } from 'react-icons/fa';
@@ -23,18 +23,13 @@ import {
   StatusFooter,
   Label,
   StatusLabelSection,
-  StatusStatusBadge,
   ActionCard,
   ActionTitle,
-  ActionIcon,
-  QrCode,
   PixButton,
   WhatsappButton,
   HorarioCard,
   HorarioTitle,
   HorarioIcon,
-  HorarioList,
-  HorarioItem,
   Timeline,
   TimelineItem,
   TimelineIcon,
@@ -80,9 +75,9 @@ const StatusTimeline = ({ status }) => {
   return (
     <Timeline>
       {statuses.map((s, index) => (
-        <TimelineItem key={s} active={index <= currentStatusIndex}>
-          <TimelineIcon active={index <= currentStatusIndex}>{getStatusIcon(s)}</TimelineIcon>
-          <TimelineContent>{s}</TimelineContent>
+        <TimelineItem key={s} active={index <= currentStatusIndex} current={index === currentStatusIndex}>
+          <TimelineIcon active={index <= currentStatusIndex} current={index === currentStatusIndex}>{getStatusIcon(s)}</TimelineIcon>
+          <TimelineContent current={index === currentStatusIndex}>{s}</TimelineContent>
         </TimelineItem>
       ))}
     </Timeline>
@@ -235,7 +230,7 @@ const StatusOS = () => {
                   <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>📱</div>
                   <strong>Pix (QR Code)</strong><br />
                   <span style={{ fontSize: '0.9em', color: '#666' }}>Escaneie para pagar via Pix</span><br />
-                  <QrCode src={qrsumup} alt="QR Code Pagamento Pix" style={{ width: '80px', height: '80px', marginTop: '0.5em' }} />
+                  <img src={qrsumup} alt="QR Code Pagamento Pix" style={{ width: '80px', height: '80px', marginTop: '0.5em' }} />
                 </div>
                 <div style={{ textAlign: 'center', padding: '1em', border: '1px solid #e1e7f0', borderRadius: '8px', background: '#f8f9fa' }}>
                   <div style={{ fontSize: '2em', marginBottom: '0.5em' }}>🏦</div>

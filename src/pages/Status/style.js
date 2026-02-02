@@ -355,9 +355,10 @@ export const TimelineItem = styled.div`
   position: relative;
   z-index: 1;
   color: ${({ active }) => (active ? '#007bff' : '#adb5bd')};
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, transform 0.2s ease;
   text-align: center;
-  width: 100px;
+  width: ${({ current }) => (current ? '140px' : '100px')};
+  transform: ${({ current }) => (current ? 'translateY(-6px)' : 'none')};
   
   @media (max-width: 768px) {
     flex-direction: row;
@@ -371,17 +372,18 @@ export const TimelineItem = styled.div`
 `;
 
 export const TimelineIcon = styled.div`
-  width: 40px;
-  height: 40px;
+  width: ${({ current }) => (current ? '52px' : '40px')};
+  height: ${({ current }) => (current ? '52px' : '40px')};
   border-radius: 50%;
   background-color: ${({ active }) => (active ? '#007bff' : '#e9ecef')};
   color: ${({ active }) => (active ? '#fff' : '#adb5bd')};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: ${({ current }) => (current ? '1.45rem' : '1.2rem')};
   border: 4px solid #f8f9fa; /* Match card background */
   transition: all 0.3s ease;
+  box-shadow: ${({ current }) => (current ? '0 6px 18px rgba(0,123,255,0.18)' : 'none')};
   
   ${TimelineItem}:hover & {
     transform: scale(1.1);
@@ -395,8 +397,8 @@ export const TimelineIcon = styled.div`
 
 export const TimelineContent = styled.div`
   margin-top: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: ${({ current }) => (current ? '1rem' : '0.8rem')};
+  font-weight: ${({ current }) => (current ? '700' : '500')};
 
   @media (max-width: 768px) {
     margin-top: 0;
