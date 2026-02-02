@@ -377,6 +377,28 @@ export const ActionButton = styled.button`
     }
   }
   
+  &.approve {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+    
+    &:hover {
+      background: linear-gradient(135deg, #5a6268, #4e555b);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+  }
+  
+  &.approve-active {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: white;
+    
+    &:hover {
+      background: linear-gradient(135deg, #218838, #1e7e34);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+  }
+  
   &:active {
     transform: translateY(0);
   }

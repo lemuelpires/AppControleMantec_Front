@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
 	OrdemDeServicoContainer as OrcamentoContainer,
 	OrdemDeServicoTitle as OrcamentoTitle,
@@ -20,7 +20,7 @@ import {
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrash, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash, faDownload, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrcamento from '../../components/Modais/Orçamento/ModalDetalhes';
@@ -42,7 +42,7 @@ const Orcamento = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
-	const [statusFilter, setStatusFilter] = useState('');
+	const [approvedOrcamentos, setApprovedOrcamentos] = useState({});
 
 	useEffect(() => {
 		fetchOrcamentos();
@@ -111,6 +111,21 @@ const Orcamento = () => {
 		}
 	};
 
+	const handleAprovarOrcamento = async (id) => {
+		try {
+			const orc = orcamentos.find(o => o.id === id);
+			if (orc) {
+				const dataToSend = { ...orc, status: 'Não iniciado' };
+				await apiCliente.put(`/OrdemDeServico/${id}`, dataToSend);
+				setApprovedOrcamentos(prev => ({ ...prev, [id]: true }));
+				fetchOrcamentos();
+			}
+		} catch (error) {
+			console.error('Erro ao aprovar orçamento:', error);
+			alert('Erro ao aprovar o orçamento');
+		}
+	};
+
 	const openDetalhesModal = (item) => {
 		setSelectedItem(item);
 		setIsDetalhesModalOpen(true);
@@ -159,8 +174,7 @@ const Orcamento = () => {
 
 	const filteredOrcamentos = orcamentos.filter(orc => {
 		const matchesCliente = clientes[orc.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase());
-		const matchesStatus = statusFilter ? orc.status === statusFilter : true;
-		return matchesCliente && matchesStatus;
+		return matchesCliente;
 	});
 
 	const totalPages = Math.ceil(filteredOrcamentos.length / itemsPerPage);
@@ -210,28 +224,6 @@ const Orcamento = () => {
 							value={searchTerm}
 							onChange={e => setSearchTerm(e.target.value)}
 						/>
-						<select
-							value={statusFilter}
-							onChange={(e) => setStatusFilter(e.target.value)}
-							style={{
-								marginLeft: '8px',
-								padding: '4px',
-								borderRadius: '10px',
-								border: '2px solid rgba(108, 117, 125, 0.2)',
-								height: '48px',
-								fontSize: '14px',
-								backgroundColor: '#fff',
-								color: '#333',
-								outline: 'none',
-								cursor: 'pointer',
-							}}
-						>
-							<option value="">Todos os Status</option>
-							<option value="Orçamento">Orçamento</option>
-							<option value="Aprovado">Aprovado</option>
-							<option value="Reprovado">Reprovado</option>
-							<option value="Cancelado">Cancelado</option>
-						</select>
 						<PerPageSelect
 							value={itemsPerPage}
 							onChange={e => setItemsPerPage(Number(e.target.value))}
@@ -248,50 +240,57 @@ const Orcamento = () => {
 					</AddButton>
 				</HeaderControls>
 
-				   <OrcamentoTableWrapper>
-					   <OrcamentoTable>
-						   <thead>
-							   <tr>
-								   <th>Cliente</th>
-								   <HideMobileTh>Entrada</HideMobileTh>
-								   <th style={{ textAlign: 'center' }}>Ações</th>
-							   </tr>
-						   </thead>
-						   <tbody>
-							   {paginatedOrcamentos.map(orc => (
-								   <tr key={orc.id}>
-									   <td>{clientes[orc.clienteID]}</td>
-									   <HideMobile>{formatDate(orc.dataEntrada)}</HideMobile>
-									   <td>
-										   <IconWrapper>
-											   <ActionButton
-												   className="view"
-												   onClick={() => openDetalhesModal(orc)}
-												   title="Visualizar detalhes"
-											   >
-												   <FontAwesomeIcon icon={faEye} />
-											   </ActionButton>
-											   <ActionButton
-												   className="edit"
-												   onClick={() => openEdicaoModal(orc)}
-												   title="Editar orçamento"
-											   >
-												   <FontAwesomeIcon icon={faEdit} />
-											   </ActionButton>
-											   <ActionButton
-												   className="delete"
-												   onClick={() => handleExcluir(orc.id)}
-												   title="Excluir orçamento"
-											   >
-												   <FontAwesomeIcon icon={faTrash} />
-											   </ActionButton>
-										   </IconWrapper>
-									   </td>
-								   </tr>
-							   ))}
-						   </tbody>
-					   </OrcamentoTable>
-				   </OrcamentoTableWrapper>
+				<OrcamentoTableWrapper>
+					<OrcamentoTable>
+						<thead>
+							<tr>
+								<th>Cliente</th>
+								<HideMobileTh>Entrada</HideMobileTh>
+								<th style={{ textAlign: 'center' }}>Ações</th>
+							</tr>
+						</thead>
+						<tbody>
+							{paginatedOrcamentos.map(orc => (
+								<tr key={orc.id}>
+									<td>{clientes[orc.clienteID]}</td>
+									<HideMobile>{formatDate(orc.dataEntrada)}</HideMobile>
+									<td>
+										<IconWrapper>
+											<ActionButton
+												className="view"
+												onClick={() => openDetalhesModal(orc)}
+												title="Visualizar detalhes"
+											>
+												<FontAwesomeIcon icon={faEye} />
+											</ActionButton>
+											<ActionButton
+												className={approvedOrcamentos[orc.id] ? 'approve-active' : 'approve'}
+												onClick={() => handleAprovarOrcamento(orc.id)}
+												title="Aprovar orçamento"
+											>
+												<FontAwesomeIcon icon={faCheck} />
+											</ActionButton>
+											<ActionButton
+												className="edit"
+												onClick={() => openEdicaoModal(orc)}
+												title="Editar orçamento"
+											>
+												<FontAwesomeIcon icon={faEdit} />
+											</ActionButton>
+											<ActionButton
+												className="delete"
+												onClick={() => handleExcluir(orc.id)}
+												title="Excluir orçamento"
+											>
+												<FontAwesomeIcon icon={faTrash} />
+											</ActionButton>
+										</IconWrapper>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</OrcamentoTable>
+				</OrcamentoTableWrapper>
 
 				<PaginationContainer>
 					<PaginationButton
@@ -313,10 +312,10 @@ const Orcamento = () => {
 					</PaginationButton>
 				</PaginationContainer>
 
-				<ModalDetalhesOrcamento 
-					isOpen={isDetalhesModalOpen} 
-					onClose={closeModal} 
-					item={selectedItem} 
+				<ModalDetalhesOrcamento
+					isOpen={isDetalhesModalOpen}
+					onClose={closeModal}
+					item={selectedItem}
 					cliente={selectedItem ? clientes[selectedItem.clienteID] : ''}
 					produtos={produtos}
 					servicos={servicos}

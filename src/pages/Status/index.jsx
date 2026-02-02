@@ -44,7 +44,9 @@ import {
 const formatDate = (dateStr) => {
   if (!dateStr) return '--/--/----';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-BR');
+  // Ajusta para timezone local
+  const localDate = new Date(d.getTime() + Math.abs(d.getTimezoneOffset()) * 60000);
+  return localDate.toLocaleDateString('pt-BR');
 };
 
 const prazoRestante = (dataConclusao, status) => {
@@ -61,14 +63,15 @@ const prazoRestante = (dataConclusao, status) => {
 };
 
 const StatusTimeline = ({ status }) => {
-  const statuses = ['Orçamento', 'Em andamento', 'Concluído', 'Entregue'];
+  const statuses = ['Orçamento', 'Em andamento', 'Aguardando Peças', 'Concluido', 'Entregue'];
   const currentStatusIndex = statuses.indexOf(status);
 
   const getStatusIcon = (s) => {
     switch (s) {
       case 'Orçamento': return <FaClipboardList />;
+      case 'Aguardando Peças': return <FaClock />;
       case 'Em andamento': return <FaBoxOpen />;
-      case 'Concluído': return <FaCalendarCheck />;
+      case 'Concluido': return <FaCalendarCheck />;
       case 'Entregue': return <FaPrint />;
       default: return <FaClipboardList />;
     }
@@ -208,9 +211,6 @@ const StatusOS = () => {
             <InfoSectionCard>
               <StatusLabelSection>
                 <Label>Status:</Label>
-                <StatusStatusBadge status={ordem.status}>
-                  {ordem.status}
-                </StatusStatusBadge>
               </StatusLabelSection>
               <StatusTimeline status={ordem.status} />
             </InfoSectionCard>

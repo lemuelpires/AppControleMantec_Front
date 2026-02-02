@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   OrdemDeServicoContainer,
   OrdemDeServicoTitle,
@@ -20,13 +20,13 @@ import {
 } from './style';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEye, faEdit, faTrash, faStar, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faEye, faEdit, faTrash, faStar } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import apiCliente from '../../services/apiCliente';
 import ModalDetalhesOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalDetalhes';
 import ModalEdicaoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalEdicao';
 import ModalNovoOrdemDeServico from '../../components/Modais/OrdemDeServico/ModalNovo';
-import * as XLSX from 'xlsx';
+
 
 Modal.setAppElement('#root');
 
@@ -40,8 +40,13 @@ const parseDate = d => {
   return isNaN(dt) ? new Date(0) : dt;
 };
 
-const formatDate = d =>
-  d ? new Date(d).toLocaleDateString('pt-BR') : '--/--/----';
+const formatDate = d => {
+  if (!d) return '--/--/----';
+  const date = new Date(d);
+  // Ajusta para timezone local
+  const localDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset()) * 60000);
+  return localDate.toLocaleDateString('pt-BR');
+};
 
 /* =========================
    COMPONENTE
@@ -107,8 +112,10 @@ const OrdemDeServico = () => {
   const filteredOrdens = useMemo(() => {
     return ordens.filter(o => {
       const nomeCliente = clientes[o.clienteID]?.toLowerCase() || '';
+      const statusLower = (o.status || '').toLowerCase();
       return (
         nomeCliente.includes(searchTerm.toLowerCase()) &&
+        statusLower !== 'entregue' &&
         (!statusFilter || o.status === statusFilter)
       );
     });
@@ -140,13 +147,6 @@ const OrdemDeServico = () => {
       console.error('Erro ao atualizar ordem de serviço:', error);
     }
   }, []);
-
-  const handleExport = () => {
-    const ws = XLSX.utils.json_to_sheet(filteredOrdens);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Ordens');
-    XLSX.writeFile(wb, 'ordens_de_servico.xlsx');
-  };
 
   const openModal = (type, item = null) => {
     setSelectedItem(item);
@@ -195,12 +195,11 @@ const OrdemDeServico = () => {
 
           <SelectStatus value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
             <option value="">Todos</option>
-            <option value="Orçamento">Orçamento</option>
             <option value="Não iniciado">Não iniciado</option>
+            <option value="Aguardando Peças">Aguardando Peças</option>
             <option value="Em andamento">Em andamento</option>
             <option value="Concluido">Concluído</option>
             <option value="Cancelado">Cancelado</option>
-            <option value="Entregue">Entregue</option>
           </SelectStatus>
 
           <PerPageSelect value={itemsPerPage} onChange={e => setItemsPerPage(+e.target.value)}>
@@ -221,6 +220,7 @@ const OrdemDeServico = () => {
             <tr>
               <th>OS</th>
               <th>Cliente</th>
+              <th>Status</th>
               <HideMobileTh>Entrada</HideMobileTh>
               <HideMobileTh>Conclusão</HideMobileTh>
               <th>Ações</th>
@@ -231,6 +231,7 @@ const OrdemDeServico = () => {
               <tr key={o.id}>
                 <td>{o.numeroOS}</td>
                 <td>{clientes[o.clienteID]}</td>
+                <td>{o.status}</td>
                 <HideMobile>{formatDate(o.dataEntrada)}</HideMobile>
                 <HideMobile>{formatDate(o.dataConclusao)}</HideMobile>
                 <td>

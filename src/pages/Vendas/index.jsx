@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faBox } from '@fortawesome/free-solid-svg-icons';
 import apiCliente from '../../services/apiCliente';
 import Table from '../../components/Tables';
 import ReciboCliente from '../../components/Modais/OrdemDeServico/ReciboCliente';
@@ -37,8 +40,13 @@ const formatCurrency = value =>
     currency: 'BRL',
   }).format(value || 0);
 
-const formatDate = value =>
-  value ? new Date(value).toLocaleDateString('pt-BR') : '—';
+const formatDate = value => {
+  if (!value) return '—';
+  const date = new Date(value);
+  // Ajusta para timezone local
+  const localDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset()) * 60000);
+  return localDate.toLocaleDateString('pt-BR');
+};
 
 /* =========================
    COMPONENTE
@@ -95,6 +103,21 @@ const Vendas = () => {
   useEffect(() => {
     fetchVendasData();
   }, []);
+
+  const handleMarcarEntregue = useCallback(async (id) => {
+    try {
+      const ordem = ordens.find(o => o.id === id);
+      if (!ordem) return;
+      const now = new Date().toISOString();
+      const dataToSend = { ...ordem, status: 'Entregue', dataConclusao: now };
+      await apiCliente.put(`/OrdemDeServico/${id}`, dataToSend);
+      // Atualiza localmente para resposta imediata
+      setOrdens(prev => prev.map(o => (o.id === id ? { ...o, status: 'Entregue', dataConclusao: now } : o)));
+    } catch (err) {
+      console.error('Erro ao marcar entregue:', err);
+      alert('Erro ao marcar como entregue.');
+    }
+  }, [ordens]);
 
   // Filtro aplicado sobre ordens
   const ordensFiltradas = useMemo(() => {
@@ -161,6 +184,50 @@ const Vendas = () => {
   /* =========================
      COLUNAS
   ========================= */
+  const ActionCell = ({ row, handleMarcarEntregue, setOrdemSelecionada, setReciboModalOpen }) => {
+    const status = (row.original.status || '').toLowerCase();
+    const isEntregue = status === 'entregue';
+
+    return (
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+        <ActionButton
+          onClick={() => {
+            setOrdemSelecionada(row.original);
+            setReciboModalOpen(true);
+          }}
+        >
+          🧾
+        </ActionButton>
+
+        <ActionButton
+          onClick={() => { if (!isEntregue) handleMarcarEntregue(row.original.id); }}
+          title={isEntregue ? 'Entregue ao cliente' : 'Marcar como entregue'}
+          style={{
+            background: isEntregue ? 'linear-gradient(135deg,#28a745,#218838)' : 'linear-gradient(135deg,#6c757d,#5a6268)',
+            color: '#fff',
+          }}
+          aria-label={isEntregue ? 'Entregue ao cliente' : 'Não entregue'}
+        >
+          <FontAwesomeIcon icon={isEntregue ? faCheck : faBox} />
+        </ActionButton>
+
+        <a
+          href="https://www.nfse.gov.br/EmissorNacional/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <NFSeButton>NFSe</NFSeButton>
+        </a>
+      </div>
+    );
+  };
+
+  ActionCell.propTypes = {
+    row: PropTypes.object.isRequired,
+    handleMarcarEntregue: PropTypes.func.isRequired,
+    setOrdemSelecionada: PropTypes.func.isRequired,
+    setReciboModalOpen: PropTypes.func.isRequired,
+  };
 
   const columns = useMemo(
     () => [
@@ -185,33 +252,18 @@ const Vendas = () => {
       },
       {
         Header: 'Ações',
-        Cell: ({ row }) => (
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-            <ActionButton
-              onClick={() => {
-                setOrdemSelecionada(row.original);
-                setReciboModalOpen(true);
-              }}
-            >
-              🧾 Recibo
-            </ActionButton>
-            <a
-              href="https://www.nfse.gov.br/EmissorNacional/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <NFSeButton>NFSe</NFSeButton>
-            </a>
-          </div>
+        Cell: (cell) => (
+          <ActionCell
+            row={cell.row}
+            handleMarcarEntregue={handleMarcarEntregue}
+            setOrdemSelecionada={setOrdemSelecionada}
+            setReciboModalOpen={setReciboModalOpen}
+          />
         ),
       },
     ],
-    [clientesMap]
+    [clientesMap, handleMarcarEntregue, setOrdemSelecionada, setReciboModalOpen]
   );
-
-  /* =========================
-     RENDER
-  ========================= */
 
   if (loading) {
     return (

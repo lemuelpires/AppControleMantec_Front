@@ -174,6 +174,7 @@ const CompactFormRow = styled(FormRow)`
 const statusColors = {
   'Orçamento': '#6c757d',
   'Não iniciado': '#eba50dff',
+  'Aguardando Peças': '#cc0e76',
   'Em andamento': '#007bff',
   'Concluido': '#28a745',
   'Cancelado': '#dc3545',
@@ -906,6 +907,7 @@ const FormularioOrdemDeServico = ({
               options={[
                 { value: 'Orçamento', label: 'Orçamento' },
                 { value: 'Não iniciado', label: 'Não iniciado' },
+                { value: 'Aguardando Peças', label: 'Aguardando Peças' },
                 { value: 'Em andamento', label: 'Em andamento' },
                 { value: 'Concluido', label: 'Concluido' },
                 { value: 'Cancelado', label: 'Cancelado' },

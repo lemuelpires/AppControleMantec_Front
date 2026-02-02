@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { 
   FaBars, 
@@ -21,7 +22,7 @@ import {
   FaUserPlus,
   FaTools,
   FaWarehouse,
-  FaAddressBook
+  FaSearch
 } from 'react-icons/fa';
 import useAuthentication from '../../hooks/userAuthentication';
 import {
@@ -230,15 +231,9 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                   </SubMenu>
                 )}
               </MenuItem>
-              <MenuItem>
-                <MenuLink onClick={openCadastroUsuarioModal}>
-                  <FaUserPlus size="1.1em" />
-                  Cadastro de Usuários
-                </MenuLink>
-              </MenuItem>
               <MenuItem onClick={toggleIMEISubMenu}>
                 <MenuLink as="div">
-                  <FaCogs size="1.1em" />
+                  <FaSearch size="1.1em" />
                   Consulta IMEI
                   <span style={{ marginLeft: '8px', transition: 'transform 0.3s ease', transform: isIMEISubMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
                     {isIMEISubMenuOpen ? <FaCaretUp size="0.8em" /> : <FaCaretDown size="0.8em" />}
@@ -260,6 +255,12 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                     </SubMenuItem>
                   </SubMenu>
                 )}
+              </MenuItem>
+              <MenuItem>
+                <MenuLink onClick={openCadastroUsuarioModal}>
+                  <FaUserPlus size="1.1em" />
+                  Cadastro de Usuários
+                </MenuLink>
               </MenuItem>
             </>
           ) : (
@@ -301,6 +302,11 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
       <MenuOverlay open={isOpen} onClick={toggleMenu} />
     </MenuContainer>
   );
+};
+
+Menu.propTypes = {
+  onLoginClick: PropTypes.func.isRequired,
+  onCadastroUsuarioClick: PropTypes.func.isRequired,
 };
 
 export default Menu;

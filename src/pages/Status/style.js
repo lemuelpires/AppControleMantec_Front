@@ -178,7 +178,9 @@ export const StatusStatusBadge = styled.span`
       'Entregue': '#17a2b8',
       'Cancelado': '#dc3545',
       'Orçamento': '#ffc107',
-      'Em andamento': '#007bff'
+      'Em andamento': '#007bff',
+      'Não iniciado': '#6c757d',
+      'Aguardando Peças': '#cc0e76',
     }[status] || '#6c757d')};
   color: #fff;
   border-radius: 50px;
