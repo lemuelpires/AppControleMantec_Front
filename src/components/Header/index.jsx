@@ -48,6 +48,7 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isListagensSubMenuOpen, setIsListagensSubMenuOpen] = useState(false); // Estado para controlar o submenu de Listagens
   const [isOperacoesSubMenuOpen, setIsOperacoesSubMenuOpen] = useState(false); // Estado para controlar o submenu de Operações
+  const [isIMEISubMenuOpen, setIsIMEISubMenuOpen] = useState(false); // Estado para controlar o submenu de Consulta IMEI
   const { loading, error, logout, auth } = useAuthentication(); // Use seu hook de autenticação
 
   const toggleMenu = () => {
@@ -66,6 +67,10 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
   const toggleOperacoesSubMenu = () => {
     setIsOperacoesSubMenuOpen(!isOperacoesSubMenuOpen);
     if (isListagensSubMenuOpen) setIsListagensSubMenuOpen(false); // Fecha o submenu de Listagens se estiver aberto
+  };
+
+  const toggleIMEISubMenu = () => {
+    setIsIMEISubMenuOpen(!isIMEISubMenuOpen);
   };
 
   const navigate = useNavigate();
@@ -230,6 +235,31 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                   <FaUserPlus size="1.1em" />
                   Cadastro de Usuários
                 </MenuLink>
+              </MenuItem>
+              <MenuItem onClick={toggleIMEISubMenu}>
+                <MenuLink as="div">
+                  <FaCogs size="1.1em" />
+                  Consulta IMEI
+                  <span style={{ marginLeft: '8px', transition: 'transform 0.3s ease', transform: isIMEISubMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                    {isIMEISubMenuOpen ? <FaCaretUp size="0.8em" /> : <FaCaretDown size="0.8em" />}
+                  </span>
+                </MenuLink>
+                {isIMEISubMenuOpen && (
+                  <SubMenu>
+                    <SubMenuItem>
+                      <SubMenuLink as="a" href="https://www.gov.br/anatel/pt-br/assuntos/celular-legal/consulte-sua-situacao" target="_blank" rel="noopener noreferrer" onClick={toggleMenu}>
+                        <FaClipboardList size="0.9em" />
+                        IMEI Impedido?
+                      </SubMenuLink>
+                    </SubMenuItem>
+                    <SubMenuItem>
+                      <SubMenuLink as="a" href="https://www.imei.info/pt/" target="_blank" rel="noopener noreferrer" onClick={toggleMenu}>
+                        <FaShoppingCart size="0.9em" />
+                        Modelo do Aparelho IMEI
+                      </SubMenuLink>
+                    </SubMenuItem>
+                  </SubMenu>
+                )}
               </MenuItem>
             </>
           ) : (
