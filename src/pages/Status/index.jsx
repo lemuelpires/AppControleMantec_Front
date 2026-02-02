@@ -134,7 +134,7 @@ const StatusOS = () => {
     const marca = ordem?.marca || 'N/A';
     const modelo = ordem?.modelo || 'N/A';
     const dataEntrada = formatDate(ordem?.dataEntrada);
-    const msg = `Acompanhe o status da sua OS:\n\n📱 Marca: ${marca}\n📋 Modelo: ${modelo}\n📅 Data de Entrada: ${dataEntrada}\n\n${window.location.href}`;
+    const msg = `Acompanhe o status do reparo do Seu Aparelho:\n\n📱 Marca: ${marca}\n📋 Modelo: ${modelo}\n📅 Data de Entrada: ${dataEntrada}\n\n${window.location.href}`;
     window.open(`https://wa.me/${clienteTelefone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
