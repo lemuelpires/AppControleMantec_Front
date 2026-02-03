@@ -22,7 +22,8 @@ import {
   FaUserPlus,
   FaTools,
   FaWarehouse,
-  FaSearch
+  FaSearch,
+  FaChartLine
 } from 'react-icons/fa';
 import useAuthentication from '../../hooks/userAuthentication';
 import {
@@ -155,6 +156,12 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                 <MenuLink to="/" onClick={toggleMenu}>
                   <FaHome size="1.1em" />
                   Início
+                </MenuLink>
+              </MenuItem>
+              <MenuItem>
+                <MenuLink to="/relatorios-resultados" onClick={toggleMenu}>
+                  <FaChartLine size="1.1em" />
+                  Relatórios e Resultados
                 </MenuLink>
               </MenuItem>
               <MenuItem onClick={toggleListagensSubMenu}>

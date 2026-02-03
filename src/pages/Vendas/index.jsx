@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faBox } from '@fortawesome/free-solid-svg-icons';
+import { FaWhatsapp } from 'react-icons/fa';
 import apiCliente from '../../services/apiCliente';
 import Table from '../../components/Tables';
 import ReciboCliente from '../../components/Modais/OrdemDeServico/ReciboCliente';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 import {
   Container,
@@ -77,7 +80,7 @@ const Vendas = () => {
       ]);
       const clientes = {};
       clientesRes.data.forEach(c => {
-        clientes[c.id] = c.nome;
+        clientes[c.id] = { nome: c.nome, telefone: c.telefone };
       });
       setClientesMap(clientes);
       const ordensDeVenda = ordensRes.data
@@ -119,10 +122,66 @@ const Vendas = () => {
     }
   }, [ordens]);
 
+  const handleCompartilharRecibo = useCallback(async (ordem) => {
+    try {
+      if (!ordem.clienteID) {
+        alert('Cliente não identificado.');
+        return;
+      }
+
+      const cliente = clientesMap[ordem.clienteID];
+      if (!cliente || !cliente.telefone) {
+        alert('Telefone do cliente não encontrado.');
+        return;
+      }
+
+      // Formata o telefone para WhatsApp (remove caracteres especiais)
+      const telefoneLimpo = cliente.telefone.replace(/\D/g, '');
+      const telefoneFormatado = telefoneLimpo.startsWith('55') ? telefoneLimpo : '55' + telefoneLimpo;
+
+      // Gera o nome do arquivo
+      const nomeArquivo = `recibo-${ordem.numeroOS || ordem.id}.pdf`;
+
+      // Prepara elemento do recibo
+      const reciboElement = document.querySelector(`[data-recibo-id="${ordem.id}"]`);
+      if (!reciboElement) {
+        // Se elemento não existe, cria um alert informativo
+        const mensagem = `Olá! Segue o recibo da sua compra:\n\nNº OS: ${ordem.numeroOS}\nValor: R$ ${(ordem.valorTotal || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\nData: ${new Date(ordem.dataConclusao).toLocaleDateString('pt-BR')}`;
+        const whatsappLink = `https://wa.me/${telefoneFormatado}?text=${encodeURIComponent(mensagem)}`;
+        window.open(whatsappLink, '_blank');
+        return;
+      }
+
+      // Gera PDF a partir do elemento
+      const canvas = await html2canvas(reciboElement, { scale: 2 });
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      const pdfWidth = 210; // A4 width in mm
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+      // Baixa o PDF localmente
+      const pdfBlob = pdf.output('blob');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(pdfBlob);
+      link.download = nomeArquivo;
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+      // Abre WhatsApp para compartilhamento
+      const mensagem = `Olá ${cliente.nome || 'cliente'}! 📄 Segue em anexo o recibo da sua compra.\n\nNº OS: ${ordem.numeroOS}\nValor: R$ ${(ordem.valorTotal || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n\nAtenciosamente, Manutenção Mantec.`;
+      const whatsappLink = `https://wa.me/${telefoneFormatado}?text=${encodeURIComponent(mensagem)}`;
+      window.open(whatsappLink, '_blank');
+    } catch (err) {
+      console.error('Erro ao gerar/compartilhar recibo:', err);
+      alert('Erro ao gerar recibo em PDF.');
+    }
+  }, [clientesMap]);
+
   // Filtro aplicado sobre ordens
   const ordensFiltradas = useMemo(() => {
     return ordens.filter(o => {
-      const clienteNome = clientesMap[o.clienteID]?.toLowerCase() || '';
+      const clienteNome = (clientesMap[o.clienteID]?.nome || '').toLowerCase();
       const status = (o.status || '').toLowerCase();
       const dataConclusao = o.dataConclusao ? new Date(o.dataConclusao) : null;
       let passa = true;
@@ -211,6 +270,18 @@ const Vendas = () => {
           <FontAwesomeIcon icon={isEntregue ? faCheck : faBox} />
         </ActionButton>
 
+        <ActionButton
+          onClick={() => handleCompartilharRecibo(row.original)}
+          title="Compartilhar recibo via WhatsApp"
+          style={{
+            background: 'linear-gradient(135deg,#25d366,#20ba58)',
+            color: '#fff',
+          }}
+          aria-label="Compartilhar via WhatsApp"
+        >
+          <FaWhatsapp size={18} />
+        </ActionButton>
+
         <a
           href="https://www.nfse.gov.br/EmissorNacional/"
           target="_blank"
@@ -234,7 +305,7 @@ const Vendas = () => {
       {
         Header: 'Cliente',
         accessor: 'clienteID',
-        Cell: ({ value }) => clientesMap[value] || '—',
+        Cell: ({ value }) => clientesMap[value]?.nome || '—',
       },
       {
         Header: 'Status',
@@ -262,7 +333,7 @@ const Vendas = () => {
         ),
       },
     ],
-    [clientesMap, handleMarcarEntregue, setOrdemSelecionada, setReciboModalOpen]
+    [clientesMap, handleMarcarEntregue, handleCompartilharRecibo, setOrdemSelecionada, setReciboModalOpen]
   );
 
   if (loading) {

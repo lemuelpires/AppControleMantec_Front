@@ -25,6 +25,7 @@ import ModalCadastroUsuario from './components/Modais/CadastroUsuario';
 import ResetPasswordModal from './components/Modais/RedefinicaoSenha';
 import StatusOS from './pages/Status';
 import Orcamento from './pages/Orcamento';
+import RelatoriosResultados from './pages/RelatoriosResultados';
 
 Modal.setAppElement('#root');
 
@@ -70,6 +71,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/relatorios-resultados" element={<ProtectedRoute element={<RelatoriosResultados />} />} />
           <Route path="/unauthorized" element={<UnauthorizedWrapper />} />
           <Route path="/clientes" element={<ProtectedRoute element={<Clientes />} />} />
           <Route path="/funcionarios" element={<ProtectedRoute element={<Funcionarios />} />} />
