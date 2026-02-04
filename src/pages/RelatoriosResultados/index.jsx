@@ -33,17 +33,65 @@ import {
   Cell
 } from 'recharts';
 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip" style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc' }}>
+        <p className="label">{`${label} : R$ ${payload[0].value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const RelatoriosResultados = () => {
   const [rangeStart, setRangeStart] = useState('');
   const [rangeEnd, setRangeEnd] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({});
+  const [selectedMonth, setSelectedMonth] = useState('');
+
+  // Generate last 12 months for the dropdown
+  const last12Months = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    return {
+      value: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+      label: `${d.toLocaleString('default', { month: 'long' })} ${d.getFullYear()}`,
+    };
+  });
 
   useEffect(() => {
     // fetch initial summary (today)
     fetchResumo();
   }, []);
 
+  const handleMonthChange = (e) => {
+    const monthValue = e.target.value;
+    setSelectedMonth(monthValue);
+
+    if (monthValue) {
+      const [year, month] = monthValue.split('-');
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0); // Day 0 of next month is last day of current
+
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+
+      setRangeStart(startDateStr);
+      setRangeEnd(endDateStr);
+      fetchResumo(startDateStr, endDateStr);
+    } else {
+      // "Todos os Períodos" selected
+      setRangeStart('');
+      setRangeEnd('');
+      fetchResumo();
+    }
+  };
+  
   const fetchResumo = async (start, end) => {
     setLoading(true);
     try {
@@ -271,6 +319,15 @@ const RelatoriosResultados = () => {
 
       <Controls>
         <div>
+            <label>Filtrar por Mês</label>
+            <select value={selectedMonth} onChange={handleMonthChange}>
+              <option value="">Todos os Períodos</option>
+              {last12Months.map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+        </div>
+        <div>
           <label>Início</label>
           <DateInput type="date" value={rangeStart} onChange={(e) => setRangeStart(e.target.value)} />
         </div>
@@ -343,15 +400,12 @@ const RelatoriosResultados = () => {
         <SectionBody style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={[{ name: 'Mês Anterior', value: data.faturPrevMonth ?? 0 }, { name: 'Mês Atual', value: data.faturThisMonth ?? 0 }]}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#f5f5f5', border: '1px solid #ccc', borderRadius: '8px' }}
-                formatter={(v) => [`R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 'Faturamento']} 
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Line type="monotone" dataKey="value" stroke="#0d6efd" strokeWidth={2} activeDot={{ r: 8 }} dot={{ r: 5 }} />
+              <Line type="monotone" dataKey="value" stroke={COLORS[0]} strokeWidth={2} activeDot={{ r: 8 }} />
             </LineChart>
           </ResponsiveContainer>
         </SectionBody>
@@ -365,14 +419,11 @@ const RelatoriosResultados = () => {
         <SectionBody style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={(data.topServicos || []).map(s => ({ name: s.nome, count: s.count }))}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#f5f5f5', border: '1px solid #ccc', borderRadius: '8px' }}
-                formatter={(v) => [`${v} OS`, 'Quantidade']}
-              />
-              <Bar dataKey="count" fill="#20c997" />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc' }} formatter={(value) => `${value} OS`} />
+              <Bar dataKey="count" fill={COLORS[1]} />
             </BarChart>
           </ResponsiveContainer>
         </SectionBody>
@@ -386,15 +437,13 @@ const RelatoriosResultados = () => {
         <SectionBody style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={Object.keys(data.faturamentoPorForma || {}).map(k => ({ name: k, value: data.faturamentoPorForma[k] }))} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label>
-                {(Object.keys(data.faturamentoPorForma || {})).map((k, i) => (
-                  <Cell key={k} fill={["#0d6efd", "#20c997", "#ffc107", "#dc3545", "#6f42c1", "#17a2b8", "#fd7e14"][i % 7]} />
+              <Pie data={Object.keys(data.faturamentoPorForma || {}).map(k => ({ name: k, value: data.faturamentoPorForma[k] }))} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
+                {(Object.keys(data.faturamentoPorForma || {})).map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#f5f5f5', border: '1px solid #ccc', borderRadius: '8px' }}
-                formatter={(v) => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-              />
+              <Tooltip formatter={(value) => `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </SectionBody>

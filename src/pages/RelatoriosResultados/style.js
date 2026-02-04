@@ -1,43 +1,61 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  padding: 2rem 3rem;
-  min-height: 78vh;
-  background: linear-gradient(180deg, #f7fbff 0%, #f4f7fa 100%);
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f0f2f5;
 `;
 
 export const Title = styled.h2`
-  margin: 0 0 1.25rem 0;
-  font-size: 2rem;
-  color: #1f2d3d;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 2rem;
 `;
 
 export const Controls = styled.div`
   display: flex;
-  gap: 1rem;
-  align-items: end;
-  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 
   label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 0.5rem;
     display: block;
-    font-size: 0.85rem;
-    color: #475569;
-    margin-bottom: 6px;
   }
 
   button {
-    padding: 0.6rem 1rem;
-    border-radius: 10px;
+    padding: 10px 20px;
     border: none;
-    background: linear-gradient(135deg,#0d6efd,#0b5ed7);
+    border-radius: 6px;
+    background-color: #007bff;
     color: white;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    &:hover {
+      background-color: #0056b3;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
   }
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
+  select, input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    min-width: 180px;
   }
 `;
 
@@ -49,111 +67,102 @@ export const DateInput = styled.input`
 
 export const KPIsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 `;
 
 export const KpiCard = styled.div`
-  background: white;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
 
   strong {
-    color: #0f172a;
-    font-size: 0.95rem;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 0.5rem;
+    display: block;
   }
 
   div {
-    color: #0b1220;
-    font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
   }
 `;
 
 export const Section = styled.section`
-  margin-top: 1rem;
-  background: rgba(255,255,255,0.98);
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(15,23,42,0.04);
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
 `;
 
 export const SectionHeader = styled.h3`
-  margin: 0 0 0.5rem 0;
-  font-size: 1.05rem;
-  color: #0f172a;
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const SectionBody = styled.div`
-  p {
-    margin: 0.35rem 0;
-    color: #374151;
-  }
+  color: #555;
 `;
 
 export const ExportButtons = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 
   button {
-    padding: 0.5rem 0.75rem;
-    border-radius: 10px;
-    border: 1px solid rgba(16,24,40,0.06);
-    background: white;
-    color: #111827;
-    cursor: pointer;
-    font-weight: 600;
+    background-color: #6c757d;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    &:hover {
+      background-color: #5a6268;
+    }
   }
 `;
 
 export const TableWrapper = styled.div`
   overflow-x: auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 `;
 
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 14px;
 
   thead {
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-    color: white;
+    background-color: #f8f9fa;
   }
 
   th {
-    padding: 1rem;
+    padding: 12px 15px;
     text-align: left;
     font-weight: 600;
-    letter-spacing: 0.5px;
+    color: #333;
+    border-bottom: 2px solid #dee2e6;
   }
 
   td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    color: #333;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    color: #555;
   }
 
   tbody tr {
-    transition: background-color 0.2s ease;
-    
     &:hover {
-      background-color: rgba(13, 110, 253, 0.05);
+      background-color: #f1f3f5;
     }
-
-    &:nth-child(even) {
-      background-color: rgba(248, 249, 250, 0.5);
-    }
-  }
-
-  tbody tr:last-child td {
-    border-bottom: none;
   }
 `;
 
