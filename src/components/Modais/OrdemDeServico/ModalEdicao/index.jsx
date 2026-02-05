@@ -2,6 +2,7 @@
 import Modal from 'react-modal';
 import FormularioOrdemDeServico from '../../../Forms/FormularioOrdemDeServico';
 import apiCliente from '../../../../services/apiCliente';
+import { ajustarEstoquePorProdutos, isStatusConcluido } from '../../../../services/estoque';
 
 const modalStyles = {
   overlay: {
@@ -178,20 +179,8 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onOrderSaved }) => {
 
       const oldStatus = item.status;
       const newStatus = data.status;
-
-      // Se mudou de "Concluido" para outro status, adicionar de volta as quantidades
-      if (oldStatus === "Concluido" && newStatus !== "Concluido" && Array.isArray(data.produtos)) {
-        for (const produto of data.produtos) {
-          if (produto.produtoID && produto.quantidade) {
-            const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
-            const novaQuantidade = produtoAtual.data.quantidade + produto.quantidade;
-            await apiCliente.put(`/Produto/${produto.produtoID}`, {
-              ...produtoAtual.data,
-              quantidade: novaQuantidade
-            });
-          }
-        }
-      }
+      const oldConcluido = isStatusConcluido(oldStatus);
+      const newConcluido = isStatusConcluido(newStatus);
 
       // Ao preparar os dados para envio:
       const dataEntradaFormatada = data.dataEntrada ? new Date(data.dataEntrada).toISOString().slice(0, 10) : null;
@@ -205,18 +194,12 @@ const ModalEdicaoOrdemDeServico = ({ isOpen, onClose, item, onOrderSaved }) => {
 
       await apiCliente.put(`/OrdemDeServico/${ordemData.id}`, ordemData);
 
-      // Se mudou para "Concluido", subtrair quantidades
-      if (newStatus === "Concluido" && oldStatus !== "Concluido" && Array.isArray(data.produtos)) {
-        for (const produto of data.produtos) {
-          if (produto.produtoID && produto.quantidade) {
-            const produtoAtual = await apiCliente.get(`/Produto/${produto.produtoID}`);
-            const novaQuantidade = produtoAtual.data.quantidade - produto.quantidade;
-            await apiCliente.put(`/Produto/${produto.produtoID}`, {
-              ...produtoAtual.data,
-              quantidade: novaQuantidade
-            });
-          }
-        }
+      if (oldConcluido && !newConcluido) {
+        await ajustarEstoquePorProdutos(data.pecasUtilizadas, 1);
+      }
+
+      if (!oldConcluido && newConcluido) {
+        await ajustarEstoquePorProdutos(data.pecasUtilizadas, -1);
       }
 
       onOrderSaved(); // Notify parent to refresh

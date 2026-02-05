@@ -2,6 +2,7 @@
 import Modal from 'react-modal';
 import FormularioOrdemDeServico from '../../../Forms/FormularioOrdemDeServico';
 import apiCliente from '../../../../services/apiCliente';
+import { ajustarEstoquePorProdutos, isStatusConcluido } from '../../../../services/estoque';
 
 const modalStyles = {
   overlay: {
@@ -155,6 +156,10 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose, onOrderSaved }) => {
 
       const response = await apiCliente.post('/OrdemDeServico', ordemDeServicoDto);
       console.log('Ordem de Serviço criada:', response.data);
+
+      if (isStatusConcluido(formData.status)) {
+        await ajustarEstoquePorProdutos(formData.pecasUtilizadas, -1);
+      }
 
       if (onOrderSaved) {
         onOrderSaved();

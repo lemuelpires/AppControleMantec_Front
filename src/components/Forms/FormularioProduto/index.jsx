@@ -15,6 +15,7 @@ import ReactSelect from 'react-select';
 const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle, produtoOptions }) => {
   const [formData, setFormData] = useState({ ...initialValues });
   const [errors, setErrors] = useState({});
+  const disableQuantidadePreco = true;
 
   useEffect(() => {
     // Atualiza o estado do formulário quando initialValues mudar
@@ -33,7 +34,6 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle, produ
   const validate = () => {
     const newErrors = {};
     if (!formData.nome) newErrors.nome = 'Informe o nome.';
-    if (!formData.preco) newErrors.preco = 'Informe o preço.';
     if (!formData.fornecedor) newErrors.fornecedor = 'Informe o fornecedor.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -94,7 +94,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle, produ
 
         <FormRow>
           <FormGroup delay="0.3s">
-            <Label htmlFor="preco">Preço (R$) <span style={{color:'red'}}>*</span></Label>
+            <Label htmlFor="preco">Preço (R$)</Label>
             <Input 
               type="number" 
               step="0.01"
@@ -104,7 +104,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle, produ
               value={formData.preco || ''} 
               onChange={handleChange}
               placeholder="0,00"
-              required 
+              disabled={disableQuantidadePreco}
             />
             {errors.preco && <div style={{color:'red',fontSize:'12px'}}>{errors.preco}</div>}
           </FormGroup>
@@ -119,7 +119,7 @@ const FormularioProduto = ({ initialValues, onSubmit, onClose, modalTitle, produ
               value={formData.quantidade || ''} 
               onChange={handleChange}
               placeholder="Digite a quantidade"
-              required 
+              disabled={disableQuantidadePreco}
             />
           </FormGroup>
         </FormRow>

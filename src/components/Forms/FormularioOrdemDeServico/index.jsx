@@ -15,7 +15,6 @@ import {
 } from './style';
 import ReactSelect from 'react-select';
 import styled from 'styled-components';
-import apiCliente from '../../../services/apiCliente'; 
 
 // ===== DEBUG =====
 const DEBUG_CALC = true;
@@ -649,21 +648,6 @@ const FormularioOrdemDeServico = ({
       assinaturaTecnicoBase64: formData.assinaturaTecnicoBase64 || '',
       pecasUtilizadas: (formData.produtos || []).map(p => ({ produtoID: p.produtoID, quantidade: Number(p.quantidade) || 0 })),
     };
-
-    // Se status for "Concluido", atualiza estoque dos produtos
-    if (finalData.status === 'Concluido') {
-      for (const produto of formData.produtos) {
-        if (produto.produtoID && produto.quantidade) {
-          try {
-            await apiCliente.patch(`/Produto/${produto.produtoID}/baixa-estoque`, {
-              quantidade: produto.quantidade
-            });
-          } catch (err) {
-            console.error(`Erro ao baixar estoque do produto ${produto.produtoID}:`, err);
-          }
-        }
-      }
-    }
 
     console.log('finalData enviado:', finalData);
     if (onSubmit) onSubmit(finalData);
