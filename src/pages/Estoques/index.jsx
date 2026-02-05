@@ -42,29 +42,27 @@ const Estoque = () => {
 
   useEffect(() => {
     fetchItensEstoque();
-  }, [itemsPerPage, currentPage]);
+  }, []);
 
   const fetchItensEstoque = async () => {
     try {
-      const responseEstoque = await apiEstoque.get('/Estoque');
-      const estoqueAtivo = responseEstoque.data.filter(item => item.ativo);
+      const [responseEstoque, responseProdutos] = await Promise.all([
+        apiEstoque.get('/Estoque'),
+        apiCliente.get('/Produto')
+      ]);
 
-      const itensEstoqueComNome = await Promise.all(estoqueAtivo.map(async item => {
-        try {
-          const responseProduto = await apiCliente.get(`/Produto/${item.produtoID}`);
-          const produto = responseProduto.data;
-          return {
-            ...item,
-            produtoNome: produto?.nome || 'Produto não encontrado',
-          };
-        } catch (error) {
-          console.error(`Erro ao buscar produto com ID ${item.produtoID}:`, error);
-          return {
-            ...item,
-            produtoNome: 'Produto não encontrado',
-          };
-        }
-      }));
+      const estoqueAtivo = (responseEstoque.data || []).filter(item => item.ativo);
+      const produtosMap = new Map(
+        (responseProdutos.data || []).map(produto => [produto.id, produto])
+      );
+
+      const itensEstoqueComNome = estoqueAtivo.map(item => {
+        const produto = produtosMap.get(item.produtoID);
+        return {
+          ...item,
+          produtoNome: produto?.nome || 'Produto não encontrado',
+        };
+      });
 
       setItensEstoque(itensEstoqueComNome);
     } catch (error) {
@@ -122,7 +120,6 @@ const Estoque = () => {
       const produtoResponse = await apiEstoque.put(`/Produto/${formData.produtoID}`, { quantidade: formData.quantidade });
       console.log('Quantidade do produto atualizada:', produtoResponse.data);
 
-      fetchItensEstoque(); // Atualiza lista de itens de estoque após salvar
       closeModal();
     } catch (error) {
       console.error('Erro ao atualizar item de estoque:', error);
@@ -142,12 +139,9 @@ const Estoque = () => {
       // Se não houver item existente, cria um novo item de estoque
       const response = await apiEstoque.post('/Estoque', formData);
       console.log('Novo item de estoque criado:', response.data);
-      fetchItensEstoque();
-
       // Atualizar quantidade na tabela de produtos
       const produtoResponse = await apiEstoque.put(`/Produto/${formData.produtoID}`, { quantidade: formData.quantidade });
       console.log('Quantidade do produto atualizada:', produtoResponse.data);
-      fetchItensEstoque(); // Atualiza lista de itens de estoque após salvar
       closeModal();
       alert('Novo item de inventário criado com sucesso!');
     } catch (error) {
