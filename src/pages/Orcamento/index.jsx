@@ -67,9 +67,24 @@ const Orcamento = () => {
 			const produtosIds = new Set();
 			const servicosIds = new Set();
 			orcamentosAtivos.forEach(orc => {
+				if (orc.pecasUtilizadas && Array.isArray(orc.pecasUtilizadas)) {
+					orc.pecasUtilizadas.forEach(produto => {
+						if (produto.produtoID) produtosIds.add(produto.produtoID);
+					});
+				}
+				if (orc.produtoIDs && Array.isArray(orc.produtoIDs)) {
+					orc.produtoIDs.forEach(produtoID => {
+						if (produtoID) produtosIds.add(produtoID);
+					});
+				}
 				if (orc.produtos && Array.isArray(orc.produtos)) {
 					orc.produtos.forEach(produto => {
 						if (produto.produtoID) produtosIds.add(produto.produtoID);
+					});
+				}
+				if (orc.servicoIDs && Array.isArray(orc.servicoIDs)) {
+					orc.servicoIDs.forEach(servicoID => {
+						if (servicoID) servicosIds.add(servicoID);
 					});
 				}
 				if (orc.servicos && Array.isArray(orc.servicos)) {
@@ -93,7 +108,7 @@ const Orcamento = () => {
 		await Promise.all(Array.from(ids).map(async id => {
 			if (!existing[id]) {
 				const response = await apiCliente.get(`${endpoint}${id}`);
-				dataMap[id] = response.data.nome;
+				dataMap[id] = response.data;
 			}
 		}));
 		setState(prev => ({ ...prev, ...dataMap }));
@@ -172,9 +187,15 @@ const Orcamento = () => {
 		XLSX.writeFile(wb, "orcamentos.xlsx");
 	};
 
+	const getClienteNome = (clienteID) => {
+		const cliente = clientes[clienteID];
+		return cliente?.nome || cliente || '';
+	};
+
 	const filteredOrcamentos = orcamentos.filter(orc => {
-		const matchesCliente = clientes[orc.clienteID]?.toLowerCase().includes(searchTerm.toLowerCase());
-		return matchesCliente;
+		const clienteNome = getClienteNome(orc.clienteID).toLowerCase();
+		const termo = searchTerm.toLowerCase();
+		return clienteNome.includes(termo);
 	});
 
 	const totalPages = Math.ceil(filteredOrcamentos.length / itemsPerPage);
@@ -252,7 +273,7 @@ const Orcamento = () => {
 						<tbody>
 							{paginatedOrcamentos.map(orc => (
 								<tr key={orc.id}>
-									<td>{clientes[orc.clienteID]}</td>
+									<td>{getClienteNome(orc.clienteID)}</td>
 									<HideMobile>{formatDate(orc.dataEntrada)}</HideMobile>
 									<td>
 										<IconWrapper>
@@ -316,7 +337,7 @@ const Orcamento = () => {
 					isOpen={isDetalhesModalOpen}
 					onClose={closeModal}
 					item={selectedItem}
-					cliente={selectedItem ? clientes[selectedItem.clienteID] : ''}
+					cliente={selectedItem ? getClienteNome(selectedItem.clienteID) : ''}
 					produtos={produtos}
 					servicos={servicos}
 				/>
