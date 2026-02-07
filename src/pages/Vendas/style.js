@@ -181,6 +181,214 @@ export const ActionButton = styled.button`
   }
 `;
 
+export const PaymentModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+`;
+
+export const PaymentModalContent = styled.div`
+  width: 360px;
+  max-width: 95vw;
+  background: white;
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
+export const PaymentModalTitle = styled.h3`
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+`;
+
+export const PaymentFormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+export const PaymentLabel = styled.label`
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+export const PaymentSelect = styled.select`
+  padding: 10px 12px;
+  border: 1.5px solid #bfc9d1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #fff;
+  color: #2c3e50;
+  box-shadow: 0 1px 4px #0001;
+  transition: border 0.2s, box-shadow 0.2s;
+  &:focus {
+    border-color: #764ba2;
+    box-shadow: 0 2px 8px #764ba233;
+  }
+`;
+
+export const PaymentCheckboxRow = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #2c3e50;
+`;
+
+export const PaymentActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+`;
+
+export const PaymentButton = styled.button`
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.primary {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &.secondary {
+    background: #6c757d;
+    color: white;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
+export const StatusModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+`;
+
+export const StatusModalContent = styled.div`
+  width: 360px;
+  max-width: 95vw;
+  background: white;
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
+export const StatusModalTitle = styled.h3`
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+`;
+
+export const StatusFormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+export const StatusLabel = styled.label`
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+export const StatusSelect = styled.select`
+  padding: 10px 12px;
+  border: 1.5px solid #bfc9d1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #fff;
+  color: #2c3e50;
+  box-shadow: 0 1px 4px #0001;
+  transition: border 0.2s, box-shadow 0.2s;
+  &:focus {
+    border-color: #764ba2;
+    box-shadow: 0 2px 8px #764ba233;
+  }
+`;
+
+export const StatusActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+`;
+
+export const StatusButton = styled.button`
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.primary {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &.secondary {
+    background: #6c757d;
+    color: white;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
 export const StatusBadge = styled.span`
   padding: 0.4rem 0.8rem;
   border-radius: 20px;

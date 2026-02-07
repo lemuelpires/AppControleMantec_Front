@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faBox } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from 'react-icons/fa';
 import apiCliente from '../../services/apiCliente';
 import Table from '../../components/Tables';
@@ -21,6 +19,23 @@ import {
   LoadingContainer,
   ExportButton,
   NFSeButton,
+  PaymentModalOverlay,
+  PaymentModalContent,
+  PaymentModalTitle,
+  PaymentFormGroup,
+  PaymentLabel,
+  PaymentSelect,
+  PaymentCheckboxRow,
+  PaymentActions,
+  PaymentButton,
+  StatusModalOverlay,
+  StatusModalContent,
+  StatusModalTitle,
+  StatusFormGroup,
+  StatusLabel,
+  StatusSelect,
+  StatusActions,
+  StatusButton,
   FiltrosContainer,
   FiltroInput,
   FiltroSelect,
@@ -64,6 +79,14 @@ const Vendas = () => {
   const itemsPerPage = 25;
   const [reciboModalOpen, setReciboModalOpen] = useState(false);
   const [ordemSelecionada, setOrdemSelecionada] = useState(null);
+  const [pagamentoModalOpen, setPagamentoModalOpen] = useState(false);
+  const [pagamentoOrdem, setPagamentoOrdem] = useState(null);
+  const [pagamentoForm, setPagamentoForm] = useState({ formaPagamento: '', pago: false });
+  const [pagamentoSaving, setPagamentoSaving] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [statusOrdem, setStatusOrdem] = useState(null);
+  const [statusValue, setStatusValue] = useState('');
+  const [statusSaving, setStatusSaving] = useState(false);
   const [filtroNome, setFiltroNome] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('');
   const [filtroDataInicio, setFiltroDataInicio] = useState('');
@@ -106,21 +129,6 @@ const Vendas = () => {
   useEffect(() => {
     fetchVendasData();
   }, []);
-
-  const handleMarcarEntregue = useCallback(async (id) => {
-    try {
-      const ordem = ordens.find(o => o.id === id);
-      if (!ordem) return;
-      const now = new Date().toISOString();
-      const dataToSend = { ...ordem, status: 'Entregue', dataConclusao: now };
-      await apiCliente.put(`/OrdemDeServico/${id}`, dataToSend);
-      // Atualiza localmente para resposta imediata
-      setOrdens(prev => prev.map(o => (o.id === id ? { ...o, status: 'Entregue', dataConclusao: now } : o)));
-    } catch (err) {
-      console.error('Erro ao marcar entregue:', err);
-      alert('Erro ao marcar como entregue.');
-    }
-  }, [ordens]);
 
   const handleCompartilharRecibo = useCallback(async (ordem) => {
     try {
@@ -177,6 +185,87 @@ const Vendas = () => {
       alert('Erro ao gerar recibo em PDF.');
     }
   }, [clientesMap]);
+
+  const handleAbrirPagamento = useCallback((ordem) => {
+    setPagamentoOrdem(ordem);
+    setPagamentoForm({
+      formaPagamento: ordem?.formaPagamento || '',
+      pago: !!ordem?.pago,
+    });
+    setPagamentoModalOpen(true);
+  }, []);
+
+  const handleFecharPagamento = useCallback(() => {
+    setPagamentoModalOpen(false);
+    setPagamentoOrdem(null);
+  }, []);
+
+  const handleSalvarPagamento = useCallback(async () => {
+    if (!pagamentoOrdem) return;
+    setPagamentoSaving(true);
+    try {
+      const dataToSend = {
+        ...pagamentoOrdem,
+        formaPagamento: pagamentoForm.formaPagamento || '',
+        pago: !!pagamentoForm.pago,
+      };
+      await apiCliente.put(`/OrdemDeServico/${pagamentoOrdem.id}`, dataToSend);
+      setOrdens(prev => prev.map(o => (
+        o.id === pagamentoOrdem.id
+          ? { ...o, formaPagamento: dataToSend.formaPagamento, pago: dataToSend.pago }
+          : o
+      )));
+      setPagamentoModalOpen(false);
+      setPagamentoOrdem(null);
+    } catch (err) {
+      console.error('Erro ao atualizar pagamento:', err);
+      alert('Erro ao salvar pagamento.');
+    } finally {
+      setPagamentoSaving(false);
+    }
+  }, [pagamentoOrdem, pagamentoForm]);
+
+  const handleAbrirStatus = useCallback((ordem) => {
+    setStatusOrdem(ordem);
+    setStatusValue(ordem?.status || '');
+    setStatusModalOpen(true);
+  }, []);
+
+  const handleFecharStatus = useCallback(() => {
+    setStatusModalOpen(false);
+    setStatusOrdem(null);
+  }, []);
+
+  const handleSalvarStatus = useCallback(async () => {
+    if (!statusOrdem) return;
+    setStatusSaving(true);
+    try {
+      const now = new Date().toISOString();
+      const dataConclusaoAtualizada =
+        statusValue === 'Entregue' && !statusOrdem.dataConclusao
+          ? now
+          : statusOrdem.dataConclusao;
+
+      const dataToSend = {
+        ...statusOrdem,
+        status: statusValue || '',
+        dataConclusao: dataConclusaoAtualizada,
+      };
+      await apiCliente.put(`/OrdemDeServico/${statusOrdem.id}`, dataToSend);
+      setOrdens(prev => prev.map(o => (
+        o.id === statusOrdem.id
+          ? { ...o, status: dataToSend.status, dataConclusao: dataToSend.dataConclusao }
+          : o
+      )));
+      setStatusModalOpen(false);
+      setStatusOrdem(null);
+    } catch (err) {
+      console.error('Erro ao atualizar status:', err);
+      alert('Erro ao salvar status.');
+    } finally {
+      setStatusSaving(false);
+    }
+  }, [statusOrdem, statusValue]);
 
   // Filtro aplicado sobre ordens
   const ordensFiltradas = useMemo(() => {
@@ -243,10 +332,7 @@ const Vendas = () => {
   /* =========================
      COLUNAS
   ========================= */
-  const ActionCell = ({ row, handleMarcarEntregue, setOrdemSelecionada, setReciboModalOpen }) => {
-    const status = (row.original.status || '').toLowerCase();
-    const isEntregue = status === 'entregue';
-
+  const ActionCell = ({ row, setOrdemSelecionada, setReciboModalOpen, handleAbrirPagamento, handleAbrirStatus }) => {
     return (
       <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
         <ActionButton
@@ -259,15 +345,27 @@ const Vendas = () => {
         </ActionButton>
 
         <ActionButton
-          onClick={() => { if (!isEntregue) handleMarcarEntregue(row.original.id); }}
-          title={isEntregue ? 'Entregue ao cliente' : 'Marcar como entregue'}
+          onClick={() => handleAbrirPagamento(row.original)}
+          title="Pagamento"
           style={{
-            background: isEntregue ? 'linear-gradient(135deg,#28a745,#218838)' : 'linear-gradient(135deg,#6c757d,#5a6268)',
+            background: 'linear-gradient(135deg,#17a2b8,#138496)',
             color: '#fff',
           }}
-          aria-label={isEntregue ? 'Entregue ao cliente' : 'Não entregue'}
+          aria-label="Pagamento"
         >
-          <FontAwesomeIcon icon={isEntregue ? faCheck : faBox} />
+          Pgto
+        </ActionButton>
+
+        <ActionButton
+          onClick={() => handleAbrirStatus(row.original)}
+          title="Status"
+          style={{
+            background: 'linear-gradient(135deg,#ffc107,#e0a800)',
+            color: '#212529',
+          }}
+          aria-label="Status"
+        >
+          Status
         </ActionButton>
 
         <ActionButton
@@ -295,9 +393,10 @@ const Vendas = () => {
 
   ActionCell.propTypes = {
     row: PropTypes.object.isRequired,
-    handleMarcarEntregue: PropTypes.func.isRequired,
     setOrdemSelecionada: PropTypes.func.isRequired,
     setReciboModalOpen: PropTypes.func.isRequired,
+    handleAbrirPagamento: PropTypes.func.isRequired,
+    handleAbrirStatus: PropTypes.func.isRequired,
   };
 
   const columns = useMemo(
@@ -326,14 +425,15 @@ const Vendas = () => {
         Cell: (cell) => (
           <ActionCell
             row={cell.row}
-            handleMarcarEntregue={handleMarcarEntregue}
             setOrdemSelecionada={setOrdemSelecionada}
             setReciboModalOpen={setReciboModalOpen}
+            handleAbrirPagamento={handleAbrirPagamento}
+            handleAbrirStatus={handleAbrirStatus}
           />
         ),
       },
     ],
-    [clientesMap, handleMarcarEntregue, handleCompartilharRecibo, setOrdemSelecionada, setReciboModalOpen]
+    [clientesMap, handleCompartilharRecibo, setOrdemSelecionada, setReciboModalOpen, handleAbrirPagamento, handleAbrirStatus]
   );
 
   if (loading) {
@@ -493,8 +593,100 @@ const Vendas = () => {
           </div>
         </div>
       )}
+
+      {pagamentoModalOpen && pagamentoOrdem && (
+        <PaymentModalOverlay onClick={handleFecharPagamento}>
+          <PaymentModalContent onClick={e => e.stopPropagation()}>
+            <PaymentModalTitle>Pagamento</PaymentModalTitle>
+            <PaymentFormGroup>
+              <PaymentLabel>Forma de pagamento</PaymentLabel>
+              <PaymentSelect
+                value={pagamentoForm.formaPagamento}
+                onChange={e =>
+                  setPagamentoForm(prev => ({ ...prev, formaPagamento: e.target.value }))
+                }
+              >
+                <option value="">Selecione</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Pix">Pix</option>
+                <option value="Débito">Débito</option>
+                <option value="Crédito">Crédito</option>
+              </PaymentSelect>
+            </PaymentFormGroup>
+            <PaymentCheckboxRow>
+              <input
+                type="checkbox"
+                checked={!!pagamentoForm.pago}
+                onChange={e => setPagamentoForm(prev => ({ ...prev, pago: e.target.checked }))}
+              />
+              Pago
+            </PaymentCheckboxRow>
+            <PaymentActions>
+              <PaymentButton
+                type="button"
+                className="secondary"
+                onClick={handleFecharPagamento}
+                disabled={pagamentoSaving}
+              >
+                Cancelar
+              </PaymentButton>
+              <PaymentButton
+                type="button"
+                className="primary"
+                onClick={handleSalvarPagamento}
+                disabled={pagamentoSaving}
+              >
+                {pagamentoSaving ? 'Salvando...' : 'Salvar'}
+              </PaymentButton>
+            </PaymentActions>
+          </PaymentModalContent>
+        </PaymentModalOverlay>
+      )}
+
+      {statusModalOpen && statusOrdem && (
+        <StatusModalOverlay onClick={handleFecharStatus}>
+          <StatusModalContent onClick={e => e.stopPropagation()}>
+            <StatusModalTitle>Status</StatusModalTitle>
+            <StatusFormGroup>
+              <StatusLabel>Alterar status</StatusLabel>
+              <StatusSelect
+                value={statusValue}
+                onChange={e => setStatusValue(e.target.value)}
+              >
+                <option value="">Selecione</option>
+                <option value="Orçamento">Orçamento</option>
+                <option value="Não iniciado">Não iniciado</option>
+                <option value="Aguardando Peças">Aguardando Peças</option>
+                <option value="Em andamento">Em andamento</option>
+                <option value="Concluido">Concluido</option>
+                <option value="Cancelado">Cancelado</option>
+                <option value="Entregue">Entregue</option>
+              </StatusSelect>
+            </StatusFormGroup>
+            <StatusActions>
+              <StatusButton
+                type="button"
+                className="secondary"
+                onClick={handleFecharStatus}
+                disabled={statusSaving}
+              >
+                Cancelar
+              </StatusButton>
+              <StatusButton
+                type="button"
+                className="primary"
+                onClick={handleSalvarStatus}
+                disabled={statusSaving}
+              >
+                {statusSaving ? 'Salvando...' : 'Salvar'}
+              </StatusButton>
+            </StatusActions>
+          </StatusModalContent>
+        </StatusModalOverlay>
+      )}
     </Container>
   );
 };
 
 export default Vendas;
+
