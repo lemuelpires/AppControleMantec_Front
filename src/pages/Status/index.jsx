@@ -44,8 +44,23 @@ const formatDate = (dateStr) => {
   return localDate.toLocaleDateString('pt-BR');
 };
 
+const normalizeStatus = (value) =>
+  String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const STATUS_LABELS = {
+  concluido: 'Concluído',
+  concluida: 'Concluído',
+  entregue: 'Entregue',
+  orcamento: 'Orçamento',
+};
+
 const prazoRestante = (dataConclusao, status) => {
-  if (['Concluído', 'Entregue', 'Orçamento'].includes(status)) return status;
+  const normalizedStatus = normalizeStatus(status);
+  if (STATUS_LABELS[normalizedStatus]) return STATUS_LABELS[normalizedStatus];
   if (!dataConclusao) return 'Sem prazo';
 
   const hoje = new Date();
