@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+/*import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
 import { FaShareAlt, FaWhatsapp, FaCreditCard, FaClock, FaCalendarCheck, FaBoxOpen, FaClipboardList, FaPrint } from 'react-icons/fa';
@@ -44,23 +44,8 @@ const formatDate = (dateStr) => {
   return localDate.toLocaleDateString('pt-BR');
 };
 
-const normalizeStatus = (value) =>
-  String(value || '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-
-const STATUS_LABELS = {
-  concluido: 'Concluído',
-  concluida: 'Concluído',
-  entregue: 'Entregue',
-  orcamento: 'Orçamento',
-};
-
 const prazoRestante = (dataConclusao, status) => {
-  const normalizedStatus = normalizeStatus(status);
-  if (STATUS_LABELS[normalizedStatus]) return STATUS_LABELS[normalizedStatus];
+  if (['Concluído', 'Entregue', 'Orçamento'].includes(status)) return status;
   if (!dataConclusao) return 'Sem prazo';
 
   const hoje = new Date();
@@ -73,7 +58,7 @@ const prazoRestante = (dataConclusao, status) => {
 };
 
 const StatusTimeline = ({ status }) => {
-  const statuses = ['Orçamento', 'Aguardando Peças','Em andamento', 'Concluido', 'Entregue'];
+  const statuses = ['Orçamento', 'Em andamento', 'Aguardando Peças', 'Concluido', 'Entregue'];
   const currentStatusIndex = statuses.indexOf(status);
 
   const getStatusIcon = (s) => {
@@ -291,4 +276,4 @@ const StatusOS = () => {
   );
 };
 
-export default StatusOS;
+export default StatusOS;*/
