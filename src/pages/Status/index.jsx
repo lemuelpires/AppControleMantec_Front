@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import apiCliente from '../../services/apiCliente';
 import { FaShareAlt, FaWhatsapp, FaCreditCard, FaClock, FaCalendarCheck, FaBoxOpen, FaClipboardList, FaPrint } from 'react-icons/fa';
@@ -97,6 +98,10 @@ const StatusTimeline = ({ status }) => {
       ))}
     </Timeline>
   );
+};
+
+StatusTimeline.propTypes = {
+  status: PropTypes.string,
 };
 
 
