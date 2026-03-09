@@ -66,6 +66,15 @@ const formatDate = value => {
   return localDate.toLocaleDateString('pt-BR');
 };
 
+const escapeCsv = value => {
+  if (value === null || value === undefined) return '';
+  const str = String(value).replace(/\r?\n/g, ' ');
+  if (/[",;\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
 /* =========================
    COMPONENTE
 ========================= */
@@ -282,6 +291,54 @@ const Vendas = () => {
     });
   }, [ordens, clientesMap, filtroNome, filtroStatus, filtroDataInicio, filtroDataFim]);
 
+  const handleExportar = useCallback(() => {
+    if (!ordensFiltradas.length) {
+      alert('Nenhuma venda para exportar.');
+      return;
+    }
+
+    const headers = [
+      'Numero OS',
+      'Cliente',
+      'Status',
+      'Valor Total',
+      'Data Conclusao',
+      'Forma Pagamento',
+      'Pago',
+    ];
+
+    const rows = ordensFiltradas.map(o => {
+      const cliente = clientesMap[o.clienteID]?.nome || '';
+      const dataConclusao = o.dataConclusao ? formatDate(o.dataConclusao) : '';
+      return [
+        o.numeroOS || o.id || '',
+        cliente,
+        o.status || '',
+        (o.valorTotal || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+        dataConclusao,
+        o.formaPagamento || '',
+        o.pago ? 'Sim' : 'Nao',
+      ];
+    });
+
+    const csvContent = [
+      headers.map(escapeCsv).join(';'),
+      ...rows.map(r => r.map(escapeCsv).join(';')),
+    ].join('\n');
+
+    const bom = '\ufeff'; // Excel UTF-8 BOM
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const today = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `vendas-${today}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }, [ordensFiltradas, clientesMap]);
+
   /* =========================
      PAGINAÇÃO
   ========================= */
@@ -463,7 +520,7 @@ const Vendas = () => {
           <Title>💰 Vendas</Title>
           <Subtitle>Ordens concluídas</Subtitle>
         </div>
-        <ExportButton>📊 Exportar</ExportButton>
+        <ExportButton onClick={handleExportar}>📊 Exportar</ExportButton>
       </Header>
 
       {/* Filtros */}
