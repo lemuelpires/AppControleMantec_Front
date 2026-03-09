@@ -26,6 +26,7 @@ import {
   FaChartLine
 } from 'react-icons/fa';
 import useAuthentication from '../../hooks/userAuthentication';
+import ImeiLookupModal from '../Modais/ImeiLookup';
 import {
   MenuContainer,
   Espacamento,
@@ -35,6 +36,7 @@ import {
   MenuItem,
   MenuLink,
   SubMenuLink,
+  SubMenuButton,
   UserMenu,
   UserMenuItem,
   SubMenu,
@@ -51,6 +53,7 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
   const [isListagensSubMenuOpen, setIsListagensSubMenuOpen] = useState(false); // Estado para controlar o submenu de Listagens
   const [isOperacoesSubMenuOpen, setIsOperacoesSubMenuOpen] = useState(false); // Estado para controlar o submenu de Operações
   const [isIMEISubMenuOpen, setIsIMEISubMenuOpen] = useState(false); // Estado para controlar o submenu de Consulta IMEI
+  const [isImeiModalOpen, setIsImeiModalOpen] = useState(false);
   const { loading, error, logout, auth } = useAuthentication(); // Use seu hook de autenticação
 
   const toggleMenu = () => {
@@ -73,6 +76,16 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
 
   const toggleIMEISubMenu = () => {
     setIsIMEISubMenuOpen(!isIMEISubMenuOpen);
+  };
+
+  const openImeiModal = () => {
+    setIsImeiModalOpen(true);
+    setIsOpen(false);
+    setIsIMEISubMenuOpen(false);
+  };
+
+  const closeImeiModal = () => {
+    setIsImeiModalOpen(false);
   };
 
   const navigate = useNavigate();
@@ -255,10 +268,16 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
                       </SubMenuLink>
                     </SubMenuItem>
                     <SubMenuItem>
-                      <SubMenuLink as="a" href="https://www.imei.info/pt/" target="_blank" rel="noopener noreferrer" onClick={toggleMenu}>
-                        <FaShoppingCart size="0.9em" />
+                      <SubMenuButton
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          openImeiModal();
+                        }}
+                      >
+                        <FaSearch size="0.9em" />
                         Modelo do Aparelho IMEI
-                      </SubMenuLink>
+                      </SubMenuButton>
                     </SubMenuItem>
                   </SubMenu>
                 )}
@@ -307,6 +326,7 @@ const Menu = ({ onLoginClick, onCadastroUsuarioClick }) => {
         </ul>
       </Sidebar>
       <MenuOverlay open={isOpen} onClick={toggleMenu} />
+      <ImeiLookupModal isOpen={isImeiModalOpen} onClose={closeImeiModal} />
     </MenuContainer>
   );
 };

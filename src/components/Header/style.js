@@ -315,6 +315,51 @@ export const SubMenuLink = styled(NavLink)`
   }
 `;
 
+export const SubMenuButton = styled.button`
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  margin: 0;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  cursor: pointer;
+
+  svg {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+  }
+
+  &:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    transform: translateX(4px);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    svg {
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+  }
+`;
+
 export const UserMenu = styled.div`
   position: absolute;
   top: 60px;
