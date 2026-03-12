@@ -267,12 +267,14 @@ const StatusOS = () => {
 
             <InfoSectionCard>
               <StatusInfoRow>
-                <StatusInfoLabel>Valor:</StatusInfoLabel>
+                <StatusInfoLabel>Valor do Serviço:</StatusInfoLabel>
                 <StatusInfoValue>R$ {ordem.valorTotal}</StatusInfoValue>
               </StatusInfoRow>
               <StatusInfoRow>
-                <StatusInfoLabel>Pago:</StatusInfoLabel>
-                <StatusInfoValue>{ordem.pago ? 'Sim' : 'Não'}</StatusInfoValue>
+                <StatusInfoLabel>Pagamento:</StatusInfoLabel>
+                <StatusInfoValue style={ordem.pago ? { color: '#28a745' } : undefined}>
+                  {ordem.pago ? 'Serviço Pago' : 'Aguarda Pagamento'}
+                </StatusInfoValue>
               </StatusInfoRow>
             </InfoSectionCard>
           </InfoColumn>
