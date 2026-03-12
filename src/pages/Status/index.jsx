@@ -34,7 +34,12 @@ import {
   Timeline,
   TimelineItem,
   TimelineIcon,
-  TimelineContent
+  TimelineContent,
+  PickupMessageCard,
+  PickupMessageHeader,
+  PickupMessageTitle,
+  PickupMessageBody,
+  PickupMessageClose
 } from './style';
 
 const formatDate = (dateStr) => {
@@ -74,15 +79,17 @@ const prazoRestante = (dataConclusao, status) => {
 };
 
 const StatusTimeline = ({ status }) => {
-  const statuses = ['Orçamento', 'Aguardando Peças','Em andamento', 'Concluido', 'Entregue'];
-  const currentStatusIndex = statuses.indexOf(status);
+  const statuses = ['Orçamento', 'Aguardando Peças', 'Em andamento', 'Concluído', 'Entregue'];
+  const currentStatusIndex = statuses.findIndex(
+    (s) => normalizeStatus(s) === normalizeStatus(status)
+  );
 
   const getStatusIcon = (s) => {
     switch (s) {
       case 'Orçamento': return <FaClipboardList />;
       case 'Aguardando Peças': return <FaClock />;
       case 'Em andamento': return <FaBoxOpen />;
-      case 'Concluido': return <FaCalendarCheck />;
+      case 'Concluído': return <FaCalendarCheck />;
       case 'Entregue': return <FaPrint />;
       default: return <FaClipboardList />;
     }
@@ -110,6 +117,7 @@ const StatusOS = () => {
   const [ordem, setOrdem] = useState(null);
   const [cliente, setCliente] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pickupMessageClosed, setPickupMessageClosed] = useState(false);
 
   useEffect(() => {
     const fetchDados = async () => {
@@ -138,7 +146,14 @@ const StatusOS = () => {
     fetchDados();
   }, [id]);
 
+  useEffect(() => {
+    setPickupMessageClosed(false);
+  }, [id]);
+
   const clienteTelefone = cliente?.telefone || '';
+  const clienteNome = cliente?.nome || 'cliente';
+  const statusNormalizado = normalizeStatus(ordem?.status);
+  const isConcluido = statusNormalizado === 'concluido' || statusNormalizado === 'concluida';
 
   const handleShare = () => {
     const url = window.location.href;
@@ -230,6 +245,23 @@ const StatusOS = () => {
               <StatusLabelSection>
                 <Label>Status:</Label>
               </StatusLabelSection>
+              {isConcluido && !pickupMessageClosed && (
+                <PickupMessageCard role="status" aria-live="polite">
+                  <PickupMessageHeader>
+                    <PickupMessageTitle>Retirada liberada</PickupMessageTitle>
+                    <PickupMessageBody>
+                      Oi, {clienteNome}, o seu celular já está disponível para retirada!
+                    </PickupMessageBody>
+                  </PickupMessageHeader>
+                  <PickupMessageClose
+                    type="button"
+                    aria-label="Fechar mensagem"
+                    onClick={() => setPickupMessageClosed(true)}
+                  >
+                    ×
+                  </PickupMessageClose>
+                </PickupMessageCard>
+              )}
               <StatusTimeline status={ordem.status} />
             </InfoSectionCard>
 

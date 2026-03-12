@@ -384,9 +384,24 @@ export const TimelineIcon = styled.div`
   border: 4px solid #f8f9fa; /* Match card background */
   transition: all 0.3s ease;
   box-shadow: ${({ current }) => (current ? '0 6px 18px rgba(0,123,255,0.18)' : 'none')};
+  position: relative;
   
   ${TimelineItem}:hover & {
     transform: scale(1.1);
+  }
+
+  &::after {
+    content: '';
+    display: ${({ current }) => (current ? 'block' : 'none')};
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #28a745;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.35);
   }
 
   @media (max-width: 768px) {
@@ -402,6 +417,64 @@ export const TimelineContent = styled.div`
 
   @media (max-width: 768px) {
     margin-top: 0;
+  }
+`;
+
+export const PickupMessageCard = styled.div`
+  background: linear-gradient(135deg, #e6f4ea 0%, #f4fff7 100%);
+  border: 1px solid #bfe3c8;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.12);
+  position: relative;
+  text-align: center;
+  margin-bottom: 1.5rem;
+`;
+
+export const PickupMessageHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+`;
+
+export const PickupMessageTitle = styled.span`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f7a3f;
+`;
+
+export const PickupMessageBody = styled.span`
+  font-size: 1rem;
+  color: #1f2d35;
+  line-height: 1.45;
+  font-weight: 600;
+`;
+
+export const PickupMessageClose = styled.button`
+  border: none;
+  background: #ffffff;
+  color: #4b5a63;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  &:hover {
+    transform: translateY(-2px);
+    background-color: #f1f3f5;
   }
 `;
 
