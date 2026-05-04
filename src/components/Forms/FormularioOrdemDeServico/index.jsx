@@ -1017,6 +1017,21 @@ const FormularioOrdemDeServico = ({
           </FormGroup>
         </CompactFormRow>
 
+        {/* Número de OS */}
+        <CompactFormRow>
+          <FormGroup>
+            <Label>Número da OS</Label>
+            <Input 
+              type="number" 
+              name="numeroOS" 
+              value={formData.numeroOS || ''} 
+              onChange={handleChange}
+              placeholder="Número sequencial da OS"
+              min="1"
+            />
+          </FormGroup>
+        </CompactFormRow>
+
         {/* Assinaturas */}
         <FormGroup>
           <Label>Assinatura Cliente (base64)</Label>

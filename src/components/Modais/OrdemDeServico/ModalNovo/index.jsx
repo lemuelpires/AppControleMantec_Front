@@ -56,7 +56,8 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose, onOrderSaved }) => {
     fetchFuncionarios();
     fetchProdutos();
     fetchServicos();
-  }, []);
+    fetchProximoNumeroOS();
+  }, [isOpen]);
 
   const fetchClientes = async () => {
     try {
@@ -113,6 +114,29 @@ const ModalNovaOrdemDeServico = ({ isOpen, onClose, onOrderSaved }) => {
       setServicoOptions(servicos);
     } catch (error) {
       console.error('Erro ao buscar serviÃ§os:', error);
+    }
+  };
+
+  const fetchProximoNumeroOS = async () => {
+    try {
+      const response = await apiCliente.get('/OrdemDeServico');
+      const ordensAtivas = response.data.filter(o => o.ativo);
+      
+      if (ordensAtivas.length === 0) {
+        // Se não houver ordens, começa com 1
+        setFormData(prev => ({ ...prev, numeroOS: 1 }));
+        return;
+      }
+
+      // Encontra o máximo numeroOS
+      const maxNumeroOS = Math.max(...ordensAtivas.map(o => o.numeroOS || 0));
+      const proximoNumero = maxNumeroOS + 1;
+      
+      setFormData(prev => ({ ...prev, numeroOS: proximoNumero }));
+    } catch (error) {
+      console.error('Erro ao buscar próximo número de OS:', error);
+      // Se der erro, começa com 1
+      setFormData(prev => ({ ...prev, numeroOS: 1 }));
     }
   };
 
